@@ -18,7 +18,7 @@ SnackTrack soll:
 - Auf verschiedenen Endgeräten (Smartphone, Tablet, Desktop) reibungslos funktionieren
 - Einen Beitrag zu einem nachhaltigeren Umgang mit Lebensmitteln leisten
 
-## 🛠️ Technologien (geplant oder im Einsatz)
+## 🛠️ Technologien
 
 - **Frontend:** 
 - **Backend:** 
