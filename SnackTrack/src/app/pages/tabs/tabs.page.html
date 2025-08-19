@@ -1,13 +1,33 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>tabs</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <!-- Tab 1: Dashboard -->
+    <ion-tab-button tab="dashboard" [routerLink]="['/tabs/dashboard']">
+      <ion-icon aria-hidden="true" name="home-outline"></ion-icon>
+      <ion-label>Dashboard</ion-label>
+    </ion-tab-button>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">tabs</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+    <!-- Tab 2: Küche -->
+    <ion-tab-button tab="kitchen" [routerLink]="['/tabs/kitchen']">
+      <ion-icon aria-hidden="true" name="restaurant-outline"></ion-icon>
+      <ion-label>Küche</ion-label>
+    </ion-tab-button>
+
+    <!-- Tab 3: Liste -->
+    <ion-tab-button tab="list" [routerLink]="['/tabs/list']">
+      <ion-icon aria-hidden="true" name="list-circle-outline"></ion-icon>
+      <ion-label>Liste</ion-label>
+    </ion-tab-button>
+
+    <!-- Tab 4: Rezepte -->
+    <ion-tab-button tab="recipes" [routerLink]="['/tabs/recipes']">
+      <ion-icon aria-hidden="true" name="book-outline"></ion-icon>
+      <ion-label>Rezepte</ion-label>
+    </ion-tab-button>
+
+    <!-- Tab 5: Profil -->
+    <ion-tab-button tab="profile" [routerLink]="['/tabs/profile']">
+      <ion-icon aria-hidden="true" name="person-outline"></ion-icon>
+      <ion-label>Profil</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

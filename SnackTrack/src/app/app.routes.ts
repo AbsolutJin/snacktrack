@@ -1,41 +1,61 @@
 import { Routes } from '@angular/router';
+import { TabsPage } from './pages/tabs/tabs.page';
 
 export const routes: Routes = [
   {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
-  },
-  {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'tabs/dashboard',
     pathMatch: 'full',
   },
   {
-    path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard.page').then( m => m.DashboardPage)
-  },
-  {
-    path: 'inventory',
-    loadComponent: () => import('./pages/inventory/inventory.page').then( m => m.InventoryPage)
-  },
-  {
-    path: 'add-item',
-    loadComponent: () => import('./pages/add-item/add-item.page').then( m => m.AddItemPage)
-  },
-  {
-    path: 'item-detail',
-    loadComponent: () => import('./pages/item-detail/item-detail.page').then( m => m.ItemDetailPage)
-  },
-  {
-    path: 'account',
-    loadComponent: () => import('./pages/account/account.page').then( m => m.AccountPage)
-  },
-  {
     path: 'tabs',
-    loadComponent: () => import('./pages/tabs/tabs.page').then( m => m.TabsPage)
+    component: TabsPage, // TabsPage ist das Container-Layout
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/dashboard/dashboard.page').then(
+            (m) => m.DashboardPage
+          ),
+      },
+      {
+        path: 'kitchen',
+        loadComponent: () =>
+          import('./pages/inventory/inventory.page').then(
+            (m) => m.InventoryPage
+          ),
+      },
+      {
+        path: 'list',
+        loadComponent: () =>
+          import('./pages/add-item/add-item.page').then((m) => m.AddItemPage),
+      },
+      {
+        path: 'recipes',
+        loadComponent: () =>
+          import('./pages/item-detail/item-detail.page').then(
+            (m) => m.ItemDetailPage
+          ),
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./pages/account/account.page').then((m) => m.AccountPage),
+      },
+      {
+        path: '',
+        redirectTo: '/tabs/dashboard',
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: 'login',
-    loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
+    loadComponent: () =>
+      import('./pages/login/login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: 'home',
+    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
   },
 ];
