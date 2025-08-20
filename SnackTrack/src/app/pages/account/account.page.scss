@@ -1,0 +1,50 @@
+.toolbar-brand {
+	--background: #6ED37F; 
+	--color: #0b0b0b; 
+}
+
+.page-content {
+	padding: 16px;
+}
+
+.profile-top {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.avatar {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	background: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.user-info h2 {
+	margin: 0;
+	font-size: 18px;
+}
+.muted {
+	color: rgba(0,0,0,0.45);
+	margin: 0;
+}
+
+.profile-form ion-card {
+	box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.actions {
+	margin-top: 16px;
+	display: flex;
+	gap: 8px;
+	flex-direction: column;
+}
+
+.modal-content { padding: 16px; }
+.modal-actions { margin-top: 16px; display: flex; gap: 8px; flex-direction: column; }
