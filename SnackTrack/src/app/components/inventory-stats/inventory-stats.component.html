@@ -35,12 +35,6 @@
     </ion-card-header>
     <ion-card-content>
       <div class="stat-item">
-        <ion-icon
-          [name]="stats.mostUsedLocation.icon"
-          [color]="stats.mostUsedLocation.color"
-          size="large"
-        >
-        </ion-icon>
         <div class="stat-info">
           <h3>{{ stats.mostUsedLocation.name }}</h3>
           <p>{{ stats.itemsByLocation[stats.mostUsedLocation.id] }} Artikel</p>
@@ -56,12 +50,6 @@
     </ion-card-header>
     <ion-card-content>
       <div class="stat-item">
-        <ion-icon
-          [name]="stats.mostUsedCategory.icon"
-          [color]="stats.mostUsedCategory.color"
-          size="large"
-        >
-        </ion-icon>
         <div class="stat-info">
           <h3>{{ stats.mostUsedCategory.name }}</h3>
           <p>{{ stats.itemsByCategory[stats.mostUsedCategory.id] }} Artikel</p>
@@ -85,8 +73,6 @@
           class="location-item"
         >
           <div class="location-info">
-            <ion-icon [name]="location.icon" [color]="location.color">
-            </ion-icon>
             <span>{{ location.name }}</span>
           </div>
           <div class="location-count">
@@ -111,8 +97,6 @@
           class="category-item"
         >
           <div class="category-info">
-            <ion-icon [name]="category.icon" [color]="category.color">
-            </ion-icon>
             <span>{{ category.name }}</span>
           </div>
           <div class="category-count">
