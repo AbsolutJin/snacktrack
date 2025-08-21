@@ -70,7 +70,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   getWelcomeMessage(): string {
     const hour = new Date().getHours();
-    const userName = 'Koch'; // Hier könnte der echte Benutzername stehen
+    const userName = 'Koch'; // Hier muss der Nutzername geladen werden
 
     if (hour < 12) {
       return `Guten Morgen, ${userName}! Zeit für ein gesundes Frühstück.`;
@@ -84,35 +84,31 @@ export class DashboardPage implements OnInit, OnDestroy {
   refreshData() {
     this.isRefreshing = true;
 
-    // Simuliere Refresh
+    // Neuladen simulieren
     setTimeout(() => {
       this.isRefreshing = false;
-      // Hier würden Sie die Services neu laden
+      //Services neu laden
       console.log('Dashboard Daten wurden aktualisiert');
     }, 2000);
   }
 
   openSettings() {
-    // Navigation zu Settings
+    // Route zu Inventory List
     console.log('Öffne Einstellungen');
-    // this.router.navigate(['/settings']);
   }
 
   navigateToAddItem() {
-    // Navigation zu Add Item Page
+    // Route zu Inventory List
     console.log('Navigation zu Add Item');
-    // this.router.navigate(['/tabs/add-item']);
   }
 
   navigateToInventory() {
-    // Navigation zu Inventory List
+    // Route zu Inventory List
     console.log('Navigation zu Inventar');
-    // this.router.navigate(['/tabs/inventory']);
   }
 
   scanBarcode() {
-    // Barcode Scanner öffnen
+    // Hatten wir BarcodeScanner besprochen? erstmal platzhalter
     console.log('Öffne Barcode Scanner');
-    // Hier würde der Barcode-Scanner gestartet
   }
 }

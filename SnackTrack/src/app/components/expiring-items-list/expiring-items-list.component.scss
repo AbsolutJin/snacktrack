@@ -1,0 +1,39 @@
+      .no-items {
+        text-align: center;
+        padding: 2rem 0;
+        color: var(--ion-color-medium);
+      }
+
+      .no-items ion-icon {
+        margin-bottom: 1rem;
+      }
+
+      .expiry-info {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.25rem;
+      }
+
+      .days-left {
+        font-weight: 600;
+        margin-left: 0.25rem;
+      }
+
+      ion-item[color='danger'] {
+        --background: var(--ion-color-danger-tint);
+        --color: var(--ion-color-danger-contrast);
+      }
+
+      ion-item[color='warning'] {
+        --background: var(--ion-color-warning-tint);
+        --color: var(--ion-color-warning-contrast);
+      }
+
+      ion-card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
