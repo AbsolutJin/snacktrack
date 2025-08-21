@@ -101,3 +101,7 @@
           grid-column: span 1;
         }
       }
+
+      ion-card.stat-card.featured *{
+        color: black;
+      }
