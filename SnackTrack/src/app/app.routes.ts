@@ -37,6 +37,13 @@ export const routes: Routes = [
             (m) => m.ItemDetailPage
           ),
       },
+            {
+        path: 'administration',
+        loadComponent: () =>
+          import('./pages/administration/administration.page').then(
+            (m) => m.AdministrationPage
+          ),
+      },
       {
         path: 'profile',
         loadComponent: () =>
@@ -53,7 +60,8 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./pages/login/login.page').then((m) => m.LoginPage),
-  },  {
+  },
+  {
     path: 'administration',
     loadComponent: () => import('./pages/administration/administration.page').then( m => m.AdministrationPage)
   },

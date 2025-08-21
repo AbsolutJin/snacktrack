@@ -15,6 +15,7 @@ import {
   restaurantOutline,
   listCircleOutline,
   bookOutline,
+  optionsOutline
 } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
 
@@ -35,6 +36,7 @@ export class TabsPage {
       restaurantOutline,
       listCircleOutline,
       bookOutline,
+      optionsOutline
     });
   }
 }
