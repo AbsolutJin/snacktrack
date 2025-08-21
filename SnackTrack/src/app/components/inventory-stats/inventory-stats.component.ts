@@ -6,8 +6,7 @@ import { Observable } from 'rxjs';
 import { InventoryStatsInterface } from 'src/app/models/inventory-stats.interface';
 import { InventoryService } from '../../services/inventory.service';
 import { addIcons } from 'ionicons';
-import { warningOutline } from 'ionicons/icons';
-import { cubeOutline } from 'ionicons/icons';
+import { warningOutline, cubeOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-inventory-stats',
