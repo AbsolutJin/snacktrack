@@ -5,6 +5,8 @@ import { IonicModule } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { FoodItemInterface } from '../../models/food-item.interface';
 import { InventoryService } from '../../services/inventory.service';
+import { checkmarkCircleOutline } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 
 @Component({
   selector: 'app-expiring-items-list',
@@ -16,7 +18,11 @@ import { InventoryService } from '../../services/inventory.service';
 export class ExpiringItemsListComponent implements OnInit {
   expiringSoonItems$!: Observable<FoodItemInterface[]>;
 
-  constructor(private inventoryService: InventoryService) {}
+  constructor(private inventoryService: InventoryService) {
+    addIcons({
+      checkmarkCircleOutline,
+    });
+  }
 
   ngOnInit() {
     this.expiringSoonItems$ = this.inventoryService.getExpiringSoonItems(7);

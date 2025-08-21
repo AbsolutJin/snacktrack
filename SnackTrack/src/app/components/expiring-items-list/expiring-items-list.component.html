@@ -19,13 +19,6 @@
       </div>
 
       <ion-item *ngFor="let item of items" [color]="getItemColor(item)">
-        <ion-icon
-          [name]="item.storageLocation.icon"
-          [color]="item.storageLocation.color"
-          slot="start"
-        >
-        </ion-icon>
-
         <ion-label>
           <h2>{{ item.name }}</h2>
           <p>{{ item.quantity }} {{ item.unit }} - {{ item.category.name }}</p>
