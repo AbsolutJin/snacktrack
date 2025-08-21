@@ -1,13 +1,50 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>account</ion-title>
+  <ion-toolbar class="toolbar-brand">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Profil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="page-content">
   <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">account</ion-title>
+    <ion-toolbar class="toolbar-brand">
+      <ion-title size="large">Profil</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <div class="profile-top">
+    <div class="avatar">A</div>
+    <div class="user-info">
+      <h2>{{ user.name }}</h2>
+      <p class="muted">{{ user.email }}</p>
+    </div>
+  </div>
+
+  <form (ngSubmit)="saveProfile()" #profileForm="ngForm" class="profile-form">
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Name</ion-label>
+          <ion-input name="name" [(ngModel)]="user.name" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">E-Mail</ion-label>
+          <ion-input type="email" name="email" [(ngModel)]="user.email" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Telefon</ion-label>
+          <ion-input type="tel" name="phone" [(ngModel)]="user.phone"></ion-input>
+        </ion-item>
+
+        <div class="actions">
+          <ion-button expand="block" color="primary" type="submit" [disabled]="profileForm.invalid">Speichern</ion-button>
+          <ion-button expand="block" fill="clear" (click)="openChangePassword()">Passwort ändern</ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </form>
 </ion-content>
