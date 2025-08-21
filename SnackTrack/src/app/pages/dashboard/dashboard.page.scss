@@ -1,0 +1,279 @@
+    .dashboard-content {
+      --background: var(--ion-color-light-tint);
+    }
+
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 50vh;
+      gap: 1rem;
+      color: var(--ion-color-medium);
+    }
+
+    .welcome-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--ion-color-primary-contrast);
+    }
+
+    .welcome-text h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .welcome-text p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+
+    .welcome-icon {
+      font-size: 2.5rem;
+      opacity: 0.7;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      --border-radius: 8px;
+      --padding-top: 0.75rem;
+      --padding-bottom: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Responsive Button Text */
+    .btn-text-full {
+      display: none;
+    }
+
+    .btn-text-short {
+      display: inline;
+    }
+
+    .tips-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--ion-color-light-tint);
+      border-radius: 8px;
+    }
+
+    .tip-content h4 {
+      margin: 0 0 0.25rem 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+
+    .tip-content p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--ion-color-medium);
+      line-height: 1.4;
+    }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Card Styling */
+    ion-card {
+      margin: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+
+    ion-card-content {
+  display: flex;
+  justify-content: center;  /* vertikal zentrieren */
+  align-items: center;      /* horizontal zentrieren */
+  height: 100%;             /* braucht feste Höhe */
+}
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+    }
+
+    /* Floating Action Button */
+    ion-fab-button {
+      --box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 460px) {
+      .dashboard-container {
+        padding: 0.75rem;
+      }
+
+      .welcome-text h2 {
+        font-size: 1.1rem;
+      }
+
+      .welcome-text p {
+        font-size: 0.8rem;
+      }
+
+      .welcome-icon {
+        font-size: 2rem;
+      }
+
+      ion-card-title {
+        font-size: 0.9rem;
+      }
+
+      .action-buttons {
+        gap: 0.4rem;
+      }
+
+      .action-btn {
+        --padding-top: 0.5rem;
+        --padding-bottom: 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      .tip-item {
+        padding: 0.5rem;
+      }
+
+      .tip-content h4 {
+        font-size: 0.85rem;
+      }
+
+      .tip-content p {
+        font-size: 0.75rem;
+      }
+    }
+
+    /* Tablet & Desktop Optimizations */
+    @media (min-width: 768px) {
+      .dashboard-container {
+        padding: 1.5rem;
+      }
+
+      .action-buttons {
+        gap: 0.75rem;
+        max-width: none;
+      }
+
+      .btn-text-full {
+        display: inline;
+      }
+
+      .btn-text-short {
+        display: none;
+      }
+
+      .action-btn {
+        max-width: 300px;
+        margin: 0 auto;
+      }
+
+      .welcome-text h2 {
+        font-size: 1.4rem;
+      }
+
+      .welcome-icon {
+        font-size: 2.8rem;
+      }
+    }
+
+    /* Large Desktop - Prevent over-stretching */
+    @media (min-width: 1200px) {
+      .dashboard-container {
+        padding: 2rem;
+      }
+      
+      .action-buttons {
+        max-width: 280px;
+      }
+      
+      .action-btn {
+        max-width: 280px;
+      }
+
+      /* Kompaktere Cards auf Desktop */
+      ion-card {
+        max-width: none;
+      }
+    }
+
+    /* Ultra-wide screens */
+    @media (min-width: 1400px) {
+      .dashboard-container {
+        max-width: 1400px;
+        padding: 2rem 3rem;
+      }
+    }
+
+    /* Extra Small Screens */
+    @media (max-width: 360px) {
+      .dashboard-container {
+        padding: 0.5rem;
+      }
+
+      .welcome-content {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+      }
+
+      .action-buttons ion-button {
+        --padding-top: 0.5rem;
+        --padding-bottom: 0.5rem;
+        font-size: 0.85rem;
+      }
+    }
+
+    .dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* Zentriert die Inhalte */
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.dashboard-grid > * {
+  width: 100%;           /* Container nehmen volle Breite */
+  max-width: 100%;        /* aber maximal 90% vom Viewport */
+  margin: 0 auto;        /* horizontal zentriert */
+}
+
+/* Ausnahme: Tabs sollen volle Breite behalten */
+.dashboard-grid > .tabs-section {
+  max-width: none;
+}

@@ -1,13 +1,141 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>dashboard</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <div class="header-content">
+        <ion-icon name="speedometer-outline"></ion-icon>
+        Dashboard
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="refreshData()">
+        <ion-icon name="refresh-outline" [class.spin]="isRefreshing"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="openSettings()">
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="dashboard-content">
+  <!-- Header Spacer für translucent -->
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">dashboard</ion-title>
+      <ion-title size="large">Dashboard</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Lade Dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading" class="dashboard-grid">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <ion-card color="primary">
+        <ion-card-content>
+          <div class="welcome-content">
+            <div class="welcome-text">
+              <h2>Willkommen zurück!</h2>
+              <p>{{ getWelcomeMessage() }}</p>
+            </div>
+            <ion-icon name="restaurant-outline" class="welcome-icon"></ion-icon>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="flash-outline" color="tertiary"></ion-icon>
+            Schnellaktionen
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="action-buttons">
+            <ion-button
+              expand="block"
+              fill="outline"
+              color="success"
+              (click)="navigateToAddItem()"
+            >
+              <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+              Artikel hinzufügen
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              fill="outline"
+              color="primary"
+              (click)="navigateToInventory()"
+            >
+              <ion-icon name="list-outline" slot="start"></ion-icon>
+              Inventar anzeigen
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              fill="outline"
+              color="tertiary"
+              (click)="scanBarcode()"
+            >
+              <ion-icon name="scan-outline" slot="start"></ion-icon>
+              Barcode scannen
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Ablaufende Artikel - Höchste Priorität -->
+    <div class="expiring-section">
+      <app-expiring-items-list></app-expiring-items-list>
+    </div>
+
+    <!-- Statistiken -->
+    <div class="stats-section">
+      <app-inventory-stats></app-inventory-stats>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-section">
+      <app-inventory-chart></app-inventory-chart>
+    </div>
+
+    <!-- Zusätzliche Infos -->
+    <div class="additional-info">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon
+              name="information-circle-outline"
+              color="medium"
+            ></ion-icon>
+            Tipps & Hinweise
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="tips-container">
+            <div class="tip-item" *ngFor="let tip of dailyTips">
+              <ion-icon
+                [name]="tip.icon"
+                [color]="tip.color"
+                slot="start"
+              ></ion-icon>
+              <div class="tip-content">
+                <h4>{{ tip.title }}</h4>
+                <p>{{ tip.description }}</p>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
 </ion-content>

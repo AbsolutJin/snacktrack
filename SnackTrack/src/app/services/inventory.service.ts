@@ -13,24 +13,24 @@ export class InventoryService {
   public foodItems$ = this.foodItemsSubject.asObservable();
 
   private storageLocations: StorageLocationInterface[] = [
-    { id: '1', name: 'Kühlschrank', icon: 'snow-outline', color: 'primary' },
+    { id: '1', name: 'Kühlschrank', icon: '', color: 'primary' },
     {
       id: '2',
       name: 'Gefrierschrank',
       icon: 'ice-cream-outline',
       color: 'secondary',
     },
-    { id: '3', name: 'Vorratskammer', icon: 'home-outline', color: 'tertiary' },
-    { id: '4', name: 'Gewürzregal', icon: 'leaf-outline', color: 'success' },
+    { id: '3', name: 'Vorratskammer', icon: '', color: 'tertiary' },
+    { id: '4', name: 'Gewürzregal', icon: '', color: 'success' },
   ];
 
   private categories: FoodCategoryInterface[] = [
-    { id: '1', name: 'Gemüse', icon: 'leaf-outline', color: 'success' },
-    { id: '2', name: 'Fleisch', icon: 'restaurant-outline', color: 'danger' },
-    { id: '3', name: 'Milchprodukte', icon: 'cafe-outline', color: 'warning' },
-    { id: '4', name: 'Getränke', icon: 'wine-outline', color: 'primary' },
-    { id: '5', name: 'Backwaren', icon: 'pizza-outline', color: 'medium' },
-    { id: '6', name: 'Konserven', icon: 'cube-outline', color: 'dark' },
+    { id: '1', name: 'Gemüse', icon: '', color: 'success' },
+    { id: '2', name: 'Fleisch', icon: '', color: 'danger' },
+    { id: '3', name: 'Milchprodukte', icon: '', color: 'warning' },
+    { id: '4', name: 'Getränke', icon: '', color: 'primary' },
+    { id: '5', name: 'Backwaren', icon: '', color: 'medium' },
+    { id: '6', name: 'Konserven', icon: '', color: 'dark' },
   ];
 
   constructor() {
