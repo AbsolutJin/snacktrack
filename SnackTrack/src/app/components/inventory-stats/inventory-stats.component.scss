@@ -1,0 +1,103 @@
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        padding: 0;
+      }
+
+      .stat-card {
+        margin: 0;
+        height: fit-content;
+      }
+
+      .stat-card.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .stat-card.featured {
+        background: linear-gradient(
+          135deg,
+          var(--ion-color-primary-tint) 0%,
+          var(--ion-color-secondary-tint) 100%
+        );
+      }
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .stat-info h2 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--ion-color-primary);
+      }
+
+      .stat-info h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .stat-info p {
+        margin: 0.25rem 0 0 0;
+        color: var(--ion-color-medium);
+        font-size: 0.9rem;
+      }
+
+      .location-distribution,
+      .category-distribution {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .location-item,
+      .category-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--ion-color-light);
+      }
+
+      .location-item:last-child,
+      .category-item:last-child {
+        border-bottom: none;
+      }
+
+      .location-info,
+      .category-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .location-info span,
+      .category-info span {
+        font-weight: 500;
+      }
+
+      .location-count,
+      .category-count {
+        display: flex;
+        align-items: center;
+      }
+
+      @media (max-width: 768px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .stat-card.featured {
+          grid-column: span 1;
+        }
+      }
