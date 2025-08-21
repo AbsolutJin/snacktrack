@@ -8,6 +8,15 @@ import { InventoryStatsInterface } from 'src/app/models/inventory-stats.interfac
 import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
 import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
 import { InventoryService } from '../../services/inventory.service';
+import { addIcons } from 'ionicons';
+import {
+  homeOutline,
+  analyticsOutline,
+  warningOutline,
+  cubeOutline,
+  albumsOutline,
+  pieChartOutline,
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-inventory-chart',
@@ -20,7 +29,16 @@ export class InventoryChartComponent implements OnInit {
   inventoryStats$!: Observable<InventoryStatsInterface>;
   selectedSegment: string = 'locations';
 
-  constructor(private inventoryService: InventoryService) {}
+  constructor(private inventoryService: InventoryService) {
+    addIcons({
+      homeOutline,
+      analyticsOutline,
+      warningOutline,
+      cubeOutline,
+      albumsOutline,
+      pieChartOutline,
+    });
+  }
 
   ngOnInit() {
     this.inventoryStats$ = this.inventoryService.getInventoryStats();
