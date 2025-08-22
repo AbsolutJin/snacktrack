@@ -1,14 +1,51 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController, IonicModule } from '@ionic/angular';
+import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
+import { addIcons } from 'ionicons';
+import { snowOutline, cubeOutline } from 'ionicons/icons';
+import { IonHeader } from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-storage-location-modal',
   templateUrl: './storage-location-modal.component.html',
   styleUrls: ['./storage-location-modal.component.scss'],
+  imports: [IonHeader, IonicModule, FormsModule, CommonModule],
 })
-export class StorageLocationModalComponent  implements OnInit {
+export class StorageLocationModalComponent implements OnInit {
+  isEdit: boolean = false;
+  item?: StorageLocationInterface;
 
-  constructor() { }
+  formData = {
+    name: '',
+    color: 'primary',
+  };
 
-  ngOnInit() {}
+  // Suggested icons for storage locations
+  suggestedIcons = [
+    { name: 'Kühlschrank', icon: 'snow-outline' },
+    { name: 'Tiefkühlfach', icon: 'cube-outline' },
+  ];
 
+  constructor(private modalController: ModalController) {
+    addIcons({ snowOutline, cubeOutline });
+  }
+
+  ngOnInit() {
+    if (this.isEdit && this.item) {
+      this.formData = {
+        name: this.item.name,
+        color: this.item.color,
+      };
+    }
+  }
+
+  dismiss() {
+    this.modalController.dismiss();
+  }
+
+  save() {
+    this.modalController.dismiss(this.formData);
+  }
 }

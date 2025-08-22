@@ -13,15 +13,14 @@ export class InventoryService {
   public foodItems$ = this.foodItemsSubject.asObservable();
 
   private storageLocations: StorageLocationInterface[] = [
-    { id: '1', name: 'Kühlschrank', icon: '', color: 'primary' },
+    { id: '1', name: 'Kühlschrank', color: 'primary' },
     {
       id: '2',
       name: 'Gefrierschrank',
-      icon: 'ice-cream-outline',
       color: 'secondary',
     },
-    { id: '3', name: 'Vorratskammer', icon: '', color: 'tertiary' },
-    { id: '4', name: 'Gewürzregal', icon: '', color: 'success' },
+    { id: '3', name: 'Vorratskammer', color: 'tertiary' },
+    { id: '4', name: 'Gewürzregal', color: 'success' },
   ];
 
   private categories: FoodCategoryInterface[] = [

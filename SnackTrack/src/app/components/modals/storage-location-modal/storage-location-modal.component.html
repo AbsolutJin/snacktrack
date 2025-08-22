@@ -1,3 +1,67 @@
-<p>
-  storage-location-modal works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{
+      isEdit ? "Lagerort bearbeiten" : "Neuer Lagerort"
+    }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #form="ngForm">
+    <ion-item>
+      <ion-label position="stacked">Name des Lagerorts</ion-label>
+      <ion-input
+        [(ngModel)]="formData.name"
+        name="name"
+        required
+        placeholder="z.B. Kühlschrank, Speisekammer..."
+      >
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Farbe</ion-label>
+      <ion-select
+        [(ngModel)]="formData.color"
+        name="color"
+        required
+        interface="popover"
+      >
+        <ion-select-option value="primary">Blau (Primary)</ion-select-option>
+        <ion-select-option value="secondary"
+          >Grau (Secondary)</ion-select-option
+        >
+        <ion-select-option value="tertiary">Lila (Tertiary)</ion-select-option>
+        <ion-select-option value="success">Grün (Success)</ion-select-option>
+        <ion-select-option value="warning">Orange (Warning)</ion-select-option>
+        <ion-select-option value="danger">Rot (Danger)</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Preview -->
+    <div class="preview-section" *ngIf="formData.name">
+      <ion-label class="preview-label">Vorschau:</ion-label>
+      <ion-item class="preview-item">
+        <ion-label>{{ formData.name }}</ion-label>
+      </ion-item>
+    </div>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button
+      expand="block"
+      (click)="save()"
+      [disabled]="!form.valid"
+      class="ion-margin"
+    >
+      {{ isEdit ? "Aktualisieren" : "Hinzufügen" }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
