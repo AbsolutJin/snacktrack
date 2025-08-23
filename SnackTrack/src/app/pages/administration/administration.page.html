@@ -18,96 +18,89 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
-    <!-- Lager -->
-    <div *ngIf="selectedSegment === 'storage'" class="segment-content">
-      <ion-list *ngIf="storageLocations.length > 0">
-        <ion-item *ngFor="let location of storageLocations">
-          <ion-label>
-            <h2>{{ location.name }}</h2>
-            <p>{{ location.color | titlecase }}</p>
-          </ion-label>
-
-          <ion-button
-            fill="clear"
-            color="medium"
-            (click)="editItem(location, 'storage')"
-            slot="end"
-          >
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-button>
-
-          <ion-button
-            fill="clear"
-            color="danger"
-            (click)="deleteItem(location, 'storage')"
-            slot="end"
-          >
-            <ion-icon name="trash-outline"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ion-list>
-
-      <div *ngIf="storageLocations.length === 0" class="empty-state">
-        <ion-icon name="archive-outline" color="medium"></ion-icon>
-        <p>Keine Lagerorte vorhanden</p>
-      </div>
-
-      <!-- Add Button für Lager -->
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addItem('storage')" color="primary">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
+  
+  <!-- Lager -->
+  <div *ngIf="selectedSegment === 'storage'" class="segment-content">
+    <ion-list *ngIf="storageLocations.length > 0">
+      <ion-item *ngFor="let location of storageLocations">
+        <ion-label>
+          <h2>{{ location.name }}</h2>
+          <p>{{ location.color | titlecase }}</p>
+        </ion-label>
+        
+        <ion-button
+          fill="clear"
+          color="medium"
+          (click)="editItem(location, 'storage')"
+          slot="end"
+        >
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+        
+        <ion-button
+          fill="clear"
+          color="danger"
+          (click)="deleteItem(location, 'storage')"
+          slot="end"
+        >
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    
+    <div *ngIf="storageLocations.length === 0" class="empty-state">
+      <ion-icon name="archive-outline" color="medium"></ion-icon>
+      <p>Keine Lagerorte vorhanden</p>
     </div>
+  </div>
 
-    <!-- Kategorien -->
-    <div *ngIf="selectedSegment === 'categories'" class="segment-content">
-      <ion-list *ngIf="foodCategories.length > 0">
-        <ion-item *ngFor="let category of foodCategories">
-          <ion-icon
-            [name]="category.icon"
-            [color]="category.color"
-            slot="start"
-          >
-          </ion-icon>
-
-          <ion-label>
-            <h2>{{ category.name }}</h2>
-            <p>{{ category.color | titlecase }}</p>
-          </ion-label>
-
-          <ion-button
-            fill="clear"
-            color="medium"
-            (click)="editItem(category, 'category')"
-            slot="end"
-          >
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-button>
-
-          <ion-button
-            fill="clear"
-            color="danger"
-            (click)="deleteItem(category, 'category')"
-            slot="end"
-          >
-            <ion-icon name="trash-outline"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ion-list>
-
-      <div *ngIf="foodCategories.length === 0" class="empty-state">
-        <ion-icon name="grid-outline" color="medium"></ion-icon>
-        <p>Keine Essenskategorien vorhanden</p>
-      </div>
-
-      <!-- Add Button für Kategorien -->
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addItem('category')" color="primary">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
+  <!-- Kategorien -->
+  <div *ngIf="selectedSegment === 'categories'" class="segment-content">
+    <ion-list *ngIf="foodCategories.length > 0">
+      <ion-item *ngFor="let category of foodCategories">
+        <ion-icon
+          [name]="category.icon"
+          [color]="category.color"
+          slot="start"
+        >
+        </ion-icon>
+        
+        <ion-label>
+          <h2>{{ category.name }}</h2>
+          <p>{{ category.color | titlecase }}</p>
+        </ion-label>
+        
+        <ion-button
+          fill="clear"
+          color="medium"
+          (click)="editItem(category, 'category')"
+          slot="end"
+        >
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+        
+        <ion-button
+          fill="clear"
+          color="danger"
+          (click)="deleteItem(category, 'category')"
+          slot="end"
+        >
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    
+    <div *ngIf="foodCategories.length === 0" class="empty-state">
+      <ion-icon name="grid-outline" color="medium"></ion-icon>
+      <p>Keine Essenskategorien vorhanden</p>
     </div>
+  </div>
+
+  <!-- Fixed FAB Button außerhalb der scrollbaren Bereiche -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-with-tabs">
+    <ion-fab-button (click)="addItem(selectedSegment === 'storage' ? 'storage' : 'category')" color="primary">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 </ion-content>
