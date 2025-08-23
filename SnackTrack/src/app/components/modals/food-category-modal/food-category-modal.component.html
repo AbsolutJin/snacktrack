@@ -24,20 +24,9 @@
       </ion-input>
     </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Icon</ion-label>
-      <ion-input
-        [(ngModel)]="formData.icon"
-        name="icon"
-        required
-        placeholder="z.B. leaf-outline"
-      >
-      </ion-input>
-    </ion-item>
-
-    <!-- Icon Suggestions -->
+    <!-- Icon auswahl -->
     <div class="icon-suggestions" *ngIf="!isEdit">
-      <ion-label class="suggestions-label">Beliebte Kategorie-Icons:</ion-label>
+      <ion-label class="suggestions-label">Icon:</ion-label>
       <div class="icon-grid">
         <ion-button
           *ngFor="let suggestion of suggestedIcons"
@@ -60,14 +49,14 @@
         required
         interface="popover"
       >
-        <ion-select-option value="success">Grün (Success)</ion-select-option>
-        <ion-select-option value="primary">Blau (Primary)</ion-select-option>
+        <ion-select-option value="success">Grün</ion-select-option>
+        <ion-select-option value="primary">Blau</ion-select-option>
         <ion-select-option value="secondary"
-          >Grau (Secondary)</ion-select-option
+          >Grau</ion-select-option
         >
-        <ion-select-option value="tertiary">Lila (Tertiary)</ion-select-option>
-        <ion-select-option value="warning">Orange (Warning)</ion-select-option>
-        <ion-select-option value="danger">Rot (Danger)</ion-select-option>
+        <ion-select-option value="tertiary">Lila</ion-select-option>
+        <ion-select-option value="warning">Orange</ion-select-option>
+        <ion-select-option value="danger">Rot</ion-select-option>
       </ion-select>
     </ion-item>
 
