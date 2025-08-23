@@ -19,16 +19,18 @@ import {
   heartOutline,
   wineOutline,
   flowerOutline,
+  addOutline
 } from 'ionicons/icons';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './administration.page.html',
   styleUrls: ['./administration.page.scss'],
-  imports: [IonicModule, TitleCasePipe, CommonModule],
+  imports: [IonicModule, TitleCasePipe, CommonModule, FormsModule],
 })
 export class AdministrationPage {
-  selectedTab: string = 'storage';
+  selectedSegment: string = 'storage';
 
   // DEMODATEN
   storageLocations: StorageLocationInterface[] = [
@@ -60,12 +62,13 @@ export class AdministrationPage {
       heartOutline,
       wineOutline,
       flowerOutline,
+      addOutline
     });
   }
 
   // Tab change handler
-  onTabChange(event: any) {
-    this.selectedTab = event.detail.value;
+  onSegmentChange(event: any) {
+    this.selectedSegment = event.detail.value;
   }
 
   // Add new item
