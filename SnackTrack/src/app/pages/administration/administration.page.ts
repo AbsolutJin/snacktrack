@@ -1,3 +1,5 @@
+//TODO - Refactor this page to use InventoryService for data management
+
 import { Component } from '@angular/core';
 import { AlertController, ModalController, IonicModule } from '@ionic/angular';
 import { StorageLocationModalComponent } from 'src/app/components/modals/storage-location-modal/storage-location-modal.component';
@@ -22,6 +24,7 @@ import {
   addOutline
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
+import { InventoryService } from 'src/app/services/inventory.service';
 
 @Component({
   selector: 'app-admin',
@@ -47,8 +50,8 @@ export class AdministrationPage {
 
   constructor(
     private alertController: AlertController,
-    private modalController: ModalController
-  ) {
+    private modalController: ModalController,
+    private inventoryService: InventoryService ) {
     addIcons({
       archiveOutline,
       gridOutline,
@@ -174,6 +177,14 @@ export class AdministrationPage {
     });
 
     await alert.present();
+  }
+
+  getStorageLocations(): StorageLocationInterface[] {
+    return this.inventoryService.getStorageLocations();
+  }
+
+  getCategories(): FoodCategoryInterface[] {
+    return this.inventoryService.getCategories();
   }
 
   private generateId(): string {

@@ -22,7 +22,7 @@
   <!-- Lager -->
   <div *ngIf="selectedSegment === 'storage'" class="segment-content">
     <ion-list *ngIf="storageLocations.length > 0">
-      <ion-item *ngFor="let location of storageLocations">
+      <ion-item *ngFor="let location of getStorageLocations()">
         <ion-label>
           <h2>{{ location.name }}</h2>
           <p>{{ location.color | titlecase }}</p>
@@ -57,7 +57,7 @@
   <!-- Kategorien -->
   <div *ngIf="selectedSegment === 'categories'" class="segment-content">
     <ion-list *ngIf="foodCategories.length > 0">
-      <ion-item *ngFor="let category of foodCategories">
+      <ion-item *ngFor="let category of getCategories()">
         <ion-icon
           [name]="category.icon"
           [color]="category.color"
