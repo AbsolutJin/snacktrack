@@ -21,12 +21,6 @@ export class StorageLocationModalComponent implements OnInit {
     color: 'primary',
   };
 
-  // Suggested icons for storage locations
-  suggestedIcons = [
-    { name: 'Kühlschrank', icon: 'snow-outline' },
-    { name: 'Tiefkühlfach', icon: 'cube-outline' },
-  ];
-
   constructor(private modalController: ModalController) {
     addIcons({ snowOutline, cubeOutline });
   }
