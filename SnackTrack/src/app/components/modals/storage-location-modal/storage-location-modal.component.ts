@@ -3,7 +3,6 @@ import { ModalController, IonicModule } from '@ionic/angular';
 import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
 import { addIcons } from 'ionicons';
 import { snowOutline, cubeOutline } from 'ionicons/icons';
-import { IonHeader } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +10,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-storage-location-modal',
   templateUrl: './storage-location-modal.component.html',
   styleUrls: ['./storage-location-modal.component.scss'],
-  imports: [IonHeader, IonicModule, FormsModule, CommonModule],
+  imports: [IonicModule, FormsModule, CommonModule],
 })
 export class StorageLocationModalComponent implements OnInit {
   isEdit: boolean = false;
