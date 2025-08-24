@@ -70,31 +70,69 @@ export class SupabaseDummyService {
   // Food Items CRUD
   // ------------------------
 
-  async getFoodItems(): Promise<FoodItemInterface[]> {
-    // TODO: Backend-Implementierung
-    return [
-      {
-        id: 'f1',
-        name: 'Milch',
-        quantity: 1,
-        unit: 'l',
-        expiryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // +3 Tage
-        addedDate: new Date(),
-        storageLocation: { id: 's1', name: 'Kühlschrank', color: '#4cafef' },
-        category: { id: 'c2', name: 'Getränke', icon: '🥤', color: '#3f51b5' }
-      },
-      {
-        id: 'f2',
-        name: 'Äpfel',
-        quantity: 6,
-        unit: 'Stk',
-        expiryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // +10 Tage
-        addedDate: new Date(),
-        storageLocation: { id: 's2', name: 'Gefrierschrank', color: '#009688' },
-        category: { id: 'c1', name: 'Obst', icon: '🍎', color: '#ff9800' }
-      }
-    ];
-  }
+async getFoodItems(): Promise<FoodItemInterface[]> {
+  const storageLocations = await this.getStorageLocations();
+  const categories = await this.getCategories();
+
+  const fridge = storageLocations.find(s => s.name === 'Kühlschrank')!;
+  const freezer = storageLocations.find(s => s.name === 'Gefrierschrank')!;
+  const fruits = categories.find(c => c.name === 'Obst')!;
+  const drinks = categories.find(c => c.name === 'Getränke')!;
+
+  return [
+    {
+      id: 'f1',
+      name: 'Milch',
+      quantity: 1,
+      unit: 'l',
+      expiryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      addedDate: new Date(),
+      storageLocation: fridge,
+      category: drinks
+    },
+    {
+      id: 'f2',
+      name: 'Äpfel',
+      quantity: 6,
+      unit: 'Stk',
+      expiryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+      addedDate: new Date(),
+      storageLocation: fridge,
+      category: fruits
+    },
+    {
+      id: 'f3',
+      name: 'Bananen',
+      quantity: 4,
+      unit: 'Stk',
+      expiryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+      addedDate: new Date(),
+      storageLocation: fridge,
+      category: fruits
+    },
+    {
+      id: 'f4',
+      name: 'Eiswürfel',
+      quantity: 1,
+      unit: 'Beutel',
+      expiryDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+      addedDate: new Date(),
+      storageLocation: freezer,
+      category: drinks
+    },
+    {
+      id: 'f5',
+      name: 'Orangen',
+      quantity: 8,
+      unit: 'Stk',
+      expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      addedDate: new Date(),
+      storageLocation: fridge,
+      category: fruits
+    }
+  ];
+}
+
 
   async createFoodItem(item: Omit<FoodItemInterface, 'id'>): Promise<FoodItemInterface> {
     // TODO: Backend-Implementierung
