@@ -19,8 +19,8 @@ export class SupabaseDummyService {
   async getStorageLocations(): Promise<StorageLocationInterface[]> {
     // TODO: Backend-Implementierung
     return [
-      { id: 's1', name: 'Kühlschrank', color: '#4cafef' },
-      { id: 's2', name: 'Gefrierschrank', color: '#009688' }
+      { id: '1', name: 'Kühlschrank', color: 'warning' },
+      { id: '2', name: 'Gefrierschrank', color: 'danger' }
     ];
   }
 
@@ -46,8 +46,8 @@ export class SupabaseDummyService {
   async getCategories(): Promise<FoodCategoryInterface[]> {
     // TODO: Backend-Implementierung
     return [
-      { id: 'c1', name: 'Obst', icon: '🍎', color: '#ff9800' },
-      { id: 'c2', name: 'Getränke', icon: '🥤', color: '#3f51b5' }
+      { id: '1', name: 'Obst', icon: '', color: 'danger' },
+      { id: '2', name: 'Getränke', icon: '', color: 'warning' }
     ];
   }
 
