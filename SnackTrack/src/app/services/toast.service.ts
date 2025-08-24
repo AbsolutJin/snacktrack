@@ -10,11 +10,19 @@ export class ToastService {
   private async show(message: string, color: 'success' | 'danger' | 'warning') {
     const toast = await this.toastController.create({
       message,
-      duration: 3000,
+      duration: 2500,
       color,
-      position: 'bottom',
+      position: 'middle',
     });
     await toast.present();
+
+        // Toast wird bei Klick auf den Bildschirm verworfen
+    const clickHandler = () => {
+      toast.dismiss();
+      document.removeEventListener('click', clickHandler);
+    };
+
+    document.addEventListener('click', clickHandler, { once: true });
   }
 
   success(message: string) {

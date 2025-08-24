@@ -7,7 +7,7 @@ import { FoodCategoryInterface } from '../models/food-category.interface';
 import { InventoryStatsInterface } from '../models/inventory-stats.interface';
 import { StorageLocationModalComponent } from '../components/modals/storage-location-modal/storage-location-modal.component';
 import { FoodCategoryModalComponent } from '../components/modals/food-category-modal/food-category-modal.component';
-import { SupabaseService } from './supabase.service'; // Ihr Backend-Service
+import { SupabaseDummyService } from './supa-base-dummy-data.service'; // Zu ersetzen durch den richtigen Backend-Service
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +28,7 @@ export class InventoryService {
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   public isLoading$ = this.isLoadingSubject.asObservable();
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(private supabaseService: SupabaseDummyService) {
     this.initializeData();
   }
 
@@ -441,35 +441,35 @@ export class InventoryService {
 
         if (currentStorageLocations.length === 0 || currentCategories.length === 0) {
           return {
-            totalItems: items.length,
-            expiringSoonCount,
-            itemsByLocation,
-            itemsByCategory,
-            mostUsedLocation: null,
-            mostUsedCategory: null,
+          totalItems: items.length,
+          expiringSoonCount,
+          itemsByLocation,
+          itemsByCategory,
+          mostUsedLocation: currentStorageLocations[0] ?? { id: 'fallback', name: 'Unbekannt' },
+          mostUsedCategory: currentCategories[0] ?? { id: 'fallback', name: 'Unbekannt' },
           };
         }
 
-        const mostUsedLocationId = Object.keys(itemsByLocation).reduce(
-          (a, b) => (itemsByLocation[a] > itemsByLocation[b] ? a : b),
-          currentStorageLocations[0]?.id || '1'
-        );
-        const mostUsedCategoryId = Object.keys(itemsByCategory).reduce(
-          (a, b) => (itemsByCategory[a] > itemsByCategory[b] ? a : b),
-          currentCategories[0]?.id || '1'
-        );
+      const mostUsedLocationId = Object.keys(itemsByLocation).reduce(
+        (a, b) => (itemsByLocation[a] > itemsByLocation[b] ? a : b),
+        currentStorageLocations[0].id
+      );
+      const mostUsedCategoryId = Object.keys(itemsByCategory).reduce(
+        (a, b) => (itemsByCategory[a] > itemsByCategory[b] ? a : b),
+        currentCategories[0].id
+      );
 
         return {
           totalItems: items.length,
           expiringSoonCount,
           itemsByLocation,
           itemsByCategory,
-          mostUsedLocation: currentStorageLocations.find(
-            (loc) => loc.id === mostUsedLocationId
-          ) || null,
-          mostUsedCategory: currentCategories.find(
-            (cat) => cat.id === mostUsedCategoryId
-          ) || null,
+        mostUsedLocation:
+          currentStorageLocations.find((loc) => loc.id === mostUsedLocationId) ||
+          currentStorageLocations[0],
+        mostUsedCategory:
+          currentCategories.find((cat) => cat.id === mostUsedCategoryId) ||
+          currentCategories[0],
         };
       })
     );
