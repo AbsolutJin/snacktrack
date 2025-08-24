@@ -22,6 +22,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { InventoryService } from 'src/app/services/inventory.service';
 import { Observable, Subject } from 'rxjs';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-admin',
@@ -43,7 +44,7 @@ export class AdministrationPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private modalController: ModalController,
     private inventoryService: InventoryService,
-    private toastController: ToastController
+    private toastService: ToastService
   ) {
 
     this.storageLocations$ = this.inventoryService.storageLocations$;
@@ -86,10 +87,10 @@ export class AdministrationPage implements OnInit, OnDestroy {
   async addItem(type: 'storage' | 'category') {
     try {
       await this.inventoryService.openAddModal(type, this.modalController);
-      await this.showToast(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich hinzugefügt.`, 'success');
+      await this.toastService.show(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich hinzugefügt.`, 'success');
     } catch (error) {
       console.error('Fehler beim Hinzufügen:', error);
-      await this.showToast('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.', 'danger');
+      await this.toastService.show('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.', 'danger');
     }
   }
 
@@ -100,10 +101,10 @@ export class AdministrationPage implements OnInit, OnDestroy {
   ) {
     try {
       await this.inventoryService.openEditModal(item, type, this.modalController);
-      await this.showToast(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`, 'success');
+      await this.toastService.show(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`, 'success');
     } catch (error) {
       console.error('Fehler beim Bearbeiten:', error);
-      await this.showToast('Fehler beim Bearbeiten. Bitte versuchen Sie es erneut.', 'danger');
+      await this.toastService.show('Fehler beim Bearbeiten. Bitte versuchen Sie es erneut.', 'danger');
     }
   }
 
@@ -114,24 +115,13 @@ export class AdministrationPage implements OnInit, OnDestroy {
   ) {
     try {
       await this.inventoryService.openDeleteConfirmation(item, type, this.alertController);
-      await this.showToast(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`, 'success');
+      await this.toastService.show(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`, 'success');
     } catch (error) {
       console.error('Fehler beim Löschen:', error);
-      await this.showToast(
+      await this.toastService.show(
         error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.',
         'danger'
       );
     }
-  }
-
-  // Helper method für Toast-Nachrichten
-  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
   }
 }
