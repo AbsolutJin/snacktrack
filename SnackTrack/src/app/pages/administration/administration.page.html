@@ -21,8 +21,8 @@
   
   <!-- Lager -->
   <div *ngIf="selectedSegment === 'storage'" class="segment-content">
-    <ion-list *ngIf="storageLocations.length > 0">
-      <ion-item *ngFor="let location of getStorageLocations()">
+    <ion-list *ngIf="storageLocations$ | async as storageLocations; else emptyStorage">
+      <ion-item *ngFor="let location of storageLocations">
         <ion-label>
           <h2>{{ location.name }}</h2>
           <p>{{ location.color | titlecase }}</p>
@@ -48,16 +48,18 @@
       </ion-item>
     </ion-list>
     
-    <div *ngIf="storageLocations.length === 0" class="empty-state">
-      <ion-icon name="archive-outline" color="medium"></ion-icon>
-      <p>Keine Lagerorte vorhanden</p>
-    </div>
+    <ng-template #emptyStorage>
+      <div class="empty-state">
+        <ion-icon name="archive-outline" color="medium"></ion-icon>
+        <p>Keine Lagerorte vorhanden</p>
+      </div>
+    </ng-template>
   </div>
 
   <!-- Kategorien -->
   <div *ngIf="selectedSegment === 'categories'" class="segment-content">
-    <ion-list *ngIf="foodCategories.length > 0">
-      <ion-item *ngFor="let category of getCategories()">
+    <ion-list *ngIf="categories$ | async as categories; else emptyCategories">
+      <ion-item *ngFor="let category of categories">
         <ion-icon
           [name]="category.icon"
           [color]="category.color"
@@ -90,10 +92,12 @@
       </ion-item>
     </ion-list>
     
-    <div *ngIf="foodCategories.length === 0" class="empty-state">
-      <ion-icon name="grid-outline" color="medium"></ion-icon>
-      <p>Keine Essenskategorien vorhanden</p>
-    </div>
+    <ng-template #emptyCategories>
+      <div class="empty-state">
+        <ion-icon name="grid-outline" color="medium"></ion-icon>
+        <p>Keine Essenskategorien vorhanden</p>
+      </div>
+    </ng-template>
   </div>
 
   <!-- Fixed FAB Button außerhalb der scrollbaren Bereiche -->

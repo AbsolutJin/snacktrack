@@ -1,9 +1,5 @@
-//TODO - Refactor this page to use InventoryService for data management
-
-import { Component } from '@angular/core';
-import { AlertController, ModalController, IonicModule } from '@ionic/angular';
-import { StorageLocationModalComponent } from 'src/app/components/modals/storage-location-modal/storage-location-modal.component';
-import { FoodCategoryModalComponent } from 'src/app/components/modals/food-category-modal/food-category-modal.component';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AlertController, ModalController, IonicModule, ToastController } from '@ionic/angular';
 import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
 import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
 import { TitleCasePipe, CommonModule } from '@angular/common';
@@ -25,6 +21,7 @@ import {
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { InventoryService } from 'src/app/services/inventory.service';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
@@ -32,26 +29,26 @@ import { InventoryService } from 'src/app/services/inventory.service';
   styleUrls: ['./administration.page.scss'],
   imports: [IonicModule, TitleCasePipe, CommonModule, FormsModule],
 })
-export class AdministrationPage {
+export class AdministrationPage implements OnInit, OnDestroy {
   selectedSegment: string = 'storage';
 
-  // DEMODATEN
-  storageLocations: StorageLocationInterface[] = [
-    { id: '1', name: 'Kühlschrank', color: 'primary' },
-    { id: '2', name: 'Tiefkühler', color: 'tertiary' },
-    { id: '3', name: 'Speisekammer', color: 'secondary' },
-  ];
+  // Observables für reactive Daten
+  storageLocations$: Observable<StorageLocationInterface[]>;
+  categories$: Observable<FoodCategoryInterface[]>;
 
-  foodCategories: FoodCategoryInterface[] = [
-    { id: '1', name: 'Obst', icon: 'leaf-outline', color: 'success' },
-    { id: '2', name: 'Gemüse', icon: 'nutrition-outline', color: 'success' },
-    { id: '3', name: 'Milchprodukte', icon: 'water-outline', color: 'primary' },
-  ];
+  // Für Unsubscribe
+  private destroy$ = new Subject<void>();
 
   constructor(
     private alertController: AlertController,
     private modalController: ModalController,
-    private inventoryService: InventoryService ) {
+    private inventoryService: InventoryService,
+    private toastController: ToastController
+  ) {
+
+    this.storageLocations$ = this.inventoryService.storageLocations$;
+    this.categories$ = this.inventoryService.categories$;
+
     addIcons({
       archiveOutline,
       gridOutline,
@@ -69,6 +66,17 @@ export class AdministrationPage {
     });
   }
 
+  ngOnInit() {
+    // Observables vom Service abonnieren
+    this.storageLocations$ = this.inventoryService.storageLocations$;
+    this.categories$ = this.inventoryService.categories$;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   // Tab change handler
   onSegmentChange(event: any) {
     this.selectedSegment = event.detail.value;
@@ -76,34 +84,13 @@ export class AdministrationPage {
 
   // Add new item
   async addItem(type: 'storage' | 'category') {
-    const component =
-      type === 'storage'
-        ? StorageLocationModalComponent
-        : FoodCategoryModalComponent;
-
-    const modal = await this.modalController.create({
-      component: component,
-      componentProps: {
-        isEdit: false,
-      },
-    });
-
-    modal.onDidDismiss().then((result) => {
-      if (result.data) {
-        const newItem = {
-          id: this.generateId(),
-          ...result.data,
-        };
-
-        if (type === 'storage') {
-          this.storageLocations.push(newItem);
-        } else {
-          this.foodCategories.push(newItem);
-        }
-      }
-    });
-
-    return await modal.present();
+    try {
+      await this.inventoryService.openAddModal(type, this.modalController);
+      await this.showToast(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich hinzugefügt.`, 'success');
+    } catch (error) {
+      console.error('Fehler beim Hinzufügen:', error);
+      await this.showToast('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.', 'danger');
+    }
   }
 
   // Edit item
@@ -111,38 +98,13 @@ export class AdministrationPage {
     item: StorageLocationInterface | FoodCategoryInterface,
     type: 'storage' | 'category'
   ) {
-    const component =
-      type === 'storage'
-        ? StorageLocationModalComponent
-        : FoodCategoryModalComponent;
-
-    const modal = await this.modalController.create({
-      component: component,
-      componentProps: {
-        isEdit: true,
-        item: { ...item },
-      },
-    });
-
-    modal.onDidDismiss().then((result) => {
-      if (result.data) {
-        if (type === 'storage') {
-          const index = this.storageLocations.findIndex(
-            (s) => s.id === item.id
-          );
-          if (index !== -1) {
-            this.storageLocations[index] = { ...item, ...result.data };
-          }
-        } else {
-          const index = this.foodCategories.findIndex((c) => c.id === item.id);
-          if (index !== -1) {
-            this.foodCategories[index] = { ...item, ...result.data };
-          }
-        }
-      }
-    });
-
-    return await modal.present();
+    try {
+      await this.inventoryService.openEditModal(item, type, this.modalController);
+      await this.showToast(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`, 'success');
+    } catch (error) {
+      console.error('Fehler beim Bearbeiten:', error);
+      await this.showToast('Fehler beim Bearbeiten. Bitte versuchen Sie es erneut.', 'danger');
+    }
   }
 
   // Delete item
@@ -150,44 +112,26 @@ export class AdministrationPage {
     item: StorageLocationInterface | FoodCategoryInterface,
     type: 'storage' | 'category'
   ) {
-    const alert = await this.alertController.create({
-      header: 'Löschen bestätigen',
-      message: `Möchten Sie "${item.name}" wirklich löschen?`,
-      buttons: [
-        {
-          text: 'Abbrechen',
-          role: 'cancel',
-        },
-        {
-          text: 'Löschen',
-          role: 'destructive',
-          handler: () => {
-            if (type === 'storage') {
-              this.storageLocations = this.storageLocations.filter(
-                (s) => s.id !== item.id
-              );
-            } else {
-              this.foodCategories = this.foodCategories.filter(
-                (c) => c.id !== item.id
-              );
-            }
-          },
-        },
-      ],
+    try {
+      await this.inventoryService.openDeleteConfirmation(item, type, this.alertController);
+      await this.showToast(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`, 'success');
+    } catch (error) {
+      console.error('Fehler beim Löschen:', error);
+      await this.showToast(
+        error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.',
+        'danger'
+      );
+    }
+  }
+
+  // Helper method für Toast-Nachrichten
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'bottom'
     });
-
-    await alert.present();
-  }
-
-  getStorageLocations(): StorageLocationInterface[] {
-    return this.inventoryService.getStorageLocations();
-  }
-
-  getCategories(): FoodCategoryInterface[] {
-    return this.inventoryService.getCategories();
-  }
-
-  private generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
+    await toast.present();
   }
 }
