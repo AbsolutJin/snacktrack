@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { StorageLocationInterface } from '../models/storage-location.interface';
 import { FoodCategoryInterface } from '../models/food-category.interface';
-import { FoodItemInterface } from '../models/food-item.interface';
+import { FoodItemInterface, FoodUnit } from '../models/food-item.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -84,7 +84,7 @@ async getFoodItems(): Promise<FoodItemInterface[]> {
       id: 'f1',
       name: 'Milch',
       quantity: 1,
-      unit: 'l',
+      unit: FoodUnit.Piece,
       expiryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
       addedDate: new Date(),
       storageLocation: fridge,
@@ -94,7 +94,7 @@ async getFoodItems(): Promise<FoodItemInterface[]> {
       id: 'f2',
       name: 'Äpfel',
       quantity: 6,
-      unit: 'Stk',
+      unit: FoodUnit.Piece,
       expiryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
       addedDate: new Date(),
       storageLocation: fridge,
@@ -104,7 +104,7 @@ async getFoodItems(): Promise<FoodItemInterface[]> {
       id: 'f3',
       name: 'Bananen',
       quantity: 4,
-      unit: 'Stk',
+      unit: FoodUnit.Piece,
       expiryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       addedDate: new Date(),
       storageLocation: fridge,
@@ -114,7 +114,7 @@ async getFoodItems(): Promise<FoodItemInterface[]> {
       id: 'f4',
       name: 'Eiswürfel',
       quantity: 1,
-      unit: 'Beutel',
+      unit: FoodUnit.Piece,
       expiryDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
       addedDate: new Date(),
       storageLocation: freezer,
@@ -124,7 +124,7 @@ async getFoodItems(): Promise<FoodItemInterface[]> {
       id: 'f5',
       name: 'Orangen',
       quantity: 8,
-      unit: 'Stk',
+      unit: FoodUnit.Piece,
       expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       addedDate: new Date(),
       storageLocation: fridge,
