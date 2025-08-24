@@ -87,10 +87,10 @@ export class AdministrationPage implements OnInit, OnDestroy {
   async addItem(type: 'storage' | 'category') {
     try {
       await this.inventoryService.openAddModal(type, this.modalController);
-      await this.toastService.show(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich hinzugefügt.`, 'success');
+      await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich hinzugefügt.`);
     } catch (error) {
       console.error('Fehler beim Hinzufügen:', error);
-      await this.toastService.show('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.', 'danger');
+      await this.toastService.error('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.');
     }
   }
 
@@ -101,10 +101,10 @@ export class AdministrationPage implements OnInit, OnDestroy {
   ) {
     try {
       await this.inventoryService.openEditModal(item, type, this.modalController);
-      await this.toastService.show(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`, 'success');
+      await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`);
     } catch (error) {
       console.error('Fehler beim Bearbeiten:', error);
-      await this.toastService.show('Fehler beim Bearbeiten. Bitte versuchen Sie es erneut.', 'danger');
+      await this.toastService.error('Fehler beim Bearbeiten. Bitte versuchen Sie es erneut.');
     }
   }
 
@@ -115,13 +115,11 @@ export class AdministrationPage implements OnInit, OnDestroy {
   ) {
     try {
       await this.inventoryService.openDeleteConfirmation(item, type, this.alertController);
-      await this.toastService.show(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`, 'success');
+      await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`);
     } catch (error) {
       console.error('Fehler beim Löschen:', error);
-      await this.toastService.show(
-        error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.',
-        'danger'
-      );
+      await this.toastService.error(
+        error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.');
     }
   }
 }
