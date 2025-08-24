@@ -84,15 +84,20 @@ export class AdministrationPage implements OnInit, OnDestroy {
   }
 
   // Add new item
-  async addItem(type: 'storage' | 'category') {
-    try {
-      await this.inventoryService.openAddModal(type, this.modalController);
+async addItem(type: 'storage' | 'category') {
+  try {
+    const result = await this.inventoryService.openAddModal(type, this.modalController);
+    
+    // Bei erfolgreichem Hinzufügen
+    if (result && result.success) {
       await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich hinzugefügt.`);
-    } catch (error) {
-      console.error('Fehler beim Hinzufügen:', error);
-      await this.toastService.error('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.');
     }
+    // Bei Abbruch
+  } catch (error) {
+    console.error('Fehler beim Hinzufügen:', error);
+    await this.toastService.error('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.');
   }
+}
 
   // Edit item
   async editItem(
@@ -100,26 +105,39 @@ export class AdministrationPage implements OnInit, OnDestroy {
     type: 'storage' | 'category'
   ) {
     try {
-      await this.inventoryService.openEditModal(item, type, this.modalController);
-      await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`);
-    } catch (error) {
+      const result = await this.inventoryService.openEditModal(item, type, this.modalController);
+
+      // Bei erfolgreichem editieren
+      if (result && result.success) {
+        await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`);
+      }
+       // Bei Abbruch
+       }catch (error) {
       console.error('Fehler beim Bearbeiten:', error);
       await this.toastService.error('Fehler beim Bearbeiten. Bitte versuchen Sie es erneut.');
     }
   }
 
   // Delete item
-  async deleteItem(
-    item: StorageLocationInterface | FoodCategoryInterface,
-    type: 'storage' | 'category'
-  ) {
-    try {
-      await this.inventoryService.openDeleteConfirmation(item, type, this.alertController);
-      await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`);
-    } catch (error) {
-      console.error('Fehler beim Löschen:', error);
-      await this.toastService.error(
-        error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.');
+async deleteItem(
+  item: StorageLocationInterface | FoodCategoryInterface,
+  type: 'storage' | 'category'
+) {
+  try {
+    const result = await this.inventoryService.openDeleteConfirmation(item, type, this.alertController);
+
+    if (result.success) {
+      await this.toastService.success(
+        `${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`
+      );
     }
+    // Abbruch
+  } catch (error) {
+    console.error('Fehler beim Löschen:', error);
+    await this.toastService.error(
+      error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.'
+    );
   }
+}
+
 }

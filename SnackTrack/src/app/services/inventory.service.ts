@@ -32,9 +32,7 @@ export class InventoryService {
     this.initializeData();
   }
 
-  /**
-   * Initialisiert alle Daten beim Service-Start
-   */
+  //Initialisiert alle Daten beim Service-Start
   private async initializeData(): Promise<void> {
     this.isLoadingSubject.next(true);
     
@@ -54,9 +52,7 @@ export class InventoryService {
     }
   }
 
-  /**
-   * Lädt Lagerorte vom Backend
-   */
+  //Lädt Lagerorte vom Backend
   private async loadStorageLocations(): Promise<void> {
     try {
       const locations = await this.supabaseService.getStorageLocations();
@@ -67,9 +63,7 @@ export class InventoryService {
     }
   }
 
-  /**
-   * Lädt Kategorien vom Backend
-   */
+  //Lädt Kategorien vom Backend
   private async loadCategories(): Promise<void> {
     try {
       const categories = await this.supabaseService.getCategories();
@@ -80,9 +74,7 @@ export class InventoryService {
     }
   }
 
-  /**
-   * Lädt Food Items vom Backend
-   */
+  //Lädt Food Items vom Backend
   private async loadFoodItems(): Promise<void> {
     try {
       const foodItems = await this.supabaseService.getFoodItems();
@@ -93,9 +85,7 @@ export class InventoryService {
     }
   }
 
-  /**
-   * Fallback-Daten bei Backend-Fehlern
-   */
+//Fallback-Daten bei Backend-Fehlern für Demo-Zwecke
   private loadFallbackData(): void {
     const fallbackLocations: StorageLocationInterface[] = [
       { id: '1', name: 'Kühlschrank', color: 'primary' },
@@ -119,7 +109,6 @@ export class InventoryService {
   }
 
   // CRUD Lagerort mit Backend-Integration
-
   getStorageLocations(): StorageLocationInterface[] {
     return [...this.storageLocationsSubject.value];
   }
@@ -258,51 +247,50 @@ export class InventoryService {
     }
   }
 
-  /**
-   * Refresh-Methode für manuelle Aktualisierung
-   */
+  //Refresh-Methode für manuelle Aktualisierung
   async refreshData(): Promise<void> {
     await this.initializeData();
   }
 
-  // Modal Methoden (bleiben unverändert)
-  async openAddModal(type: 'storage' | 'category', modalController: ModalController): Promise<boolean> {
-    const component = type === 'storage' 
-      ? StorageLocationModalComponent 
-      : FoodCategoryModalComponent;
+  // Modal Methoden
+async openAddModal(
+  type: 'storage' | 'category',
+  modalController: ModalController
+): Promise<{ success: boolean }> {
+  const component = type === 'storage' 
+    ? StorageLocationModalComponent 
+    : FoodCategoryModalComponent;
 
-    const modal = await modalController.create({
-      component: component,
-      componentProps: {
-        isEdit: false,
-      },
-    });
+  const modal = await modalController.create({
+    component: component,
+    componentProps: { isEdit: false },
+  });
 
-    await modal.present();
-    const result = await modal.onDidDismiss();
-    
-    if (result.data) {
-      try {
-        if (type === 'storage') {
-          await this.addStorageLocation(result.data);
-        } else {
-          await this.addCategory(result.data);
-        }
-        return true;
-      } catch (error) {
-        console.error('Fehler beim Hinzufügen:', error);
-        throw error;
+  await modal.present();
+  const result = await modal.onDidDismiss();
+
+  if (result.data) {
+    try {
+      if (type === 'storage') {
+        await this.addStorageLocation(result.data);
+      } else {
+        await this.addCategory(result.data);
       }
+      return { success: true };
+    } catch (error) {
+      console.error('Fehler beim Hinzufügen:', error);
+      throw error;
     }
-    
-    return false;
   }
+
+  return { success: false }; // Modal geschlossen ohne Hinzufügen
+}
 
   async openEditModal(
     item: StorageLocationInterface | FoodCategoryInterface,
     type: 'storage' | 'category',
     modalController: ModalController
-  ): Promise<boolean> {
+  ): Promise<{ success: boolean }> {
     const component = type === 'storage' 
       ? StorageLocationModalComponent 
       : FoodCategoryModalComponent;
@@ -327,22 +315,22 @@ export class InventoryService {
         } else {
           await this.updateCategory(item.id, updatedItem as FoodCategoryInterface);
         }
-        return true;
+        return {success: true};
       } catch (error) {
         console.error('Fehler beim Aktualisieren:', error);
         throw error;
       }
     }
     
-    return false;
+    return { success: false };
   }
 
   async openDeleteConfirmation(
     item: StorageLocationInterface | FoodCategoryInterface,
     type: 'storage' | 'category',
     alertController: AlertController
-  ): Promise<boolean> {
-    return new Promise<boolean>(async (resolve, reject) => {
+  ): Promise<{success: boolean}> {
+    return new Promise<{success: boolean}>(async (resolve, reject) => {
       const itemTypeName = type === 'storage' ? 'Lagerort' : 'Kategorie';
       
       const alert = await alertController.create({
@@ -352,7 +340,7 @@ export class InventoryService {
           {
             text: 'Abbrechen',
             role: 'cancel',
-            handler: () => resolve(false)
+            handler: () => resolve({success: false}),
           },
           {
             text: 'Löschen',
@@ -364,7 +352,7 @@ export class InventoryService {
                 } else {
                   await this.deleteCategory(item.id);
                 }
-                resolve(true);
+                resolve({success: true});
               } catch (error) {
                 console.error('Fehler beim Löschen:', error);
                 reject(error);
@@ -378,7 +366,7 @@ export class InventoryService {
     });
   }
 
-  // Helper Methoden (bleiben unverändert)
+  // Helper Methoden
   private updateFoodItemsStorageLocation(locationId: string, updatedLocation: StorageLocationInterface): void {
     const currentFoodItems = this.foodItemsSubject.value;
     const updatedFoodItems = currentFoodItems.map(item => 
@@ -399,7 +387,7 @@ export class InventoryService {
     this.foodItemsSubject.next(updatedFoodItems);
   }
 
-  // Stat Methoden (bleiben unverändert)
+  // Stat Methoden
   getExpiringSoonItems(daysThreshold: number = 7): Observable<FoodItemInterface[]> {
     const threshold = new Date();
     threshold.setDate(threshold.getDate() + daysThreshold);
