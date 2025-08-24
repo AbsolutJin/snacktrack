@@ -6,6 +6,6 @@ export interface InventoryStatsInterface {
   expiringSoonCount: number;
   itemsByLocation: { [locationId: string]: number };
   itemsByCategory: { [categoryId: string]: number };
-  mostUsedLocation: StorageLocationInterface | null;
-  mostUsedCategory: FoodCategoryInterface | null;
+  mostUsedLocation: StorageLocationInterface;
+  mostUsedCategory: FoodCategoryInterface;
 }
