@@ -1,4 +1,5 @@
-<div class="stats-grid" *ngIf="inventoryStats$ | async as stats">
+@if(inventoryStats$ | async; as stats){
+<div class="stats-grid">
   <!-- Gesamt-Statistiken -->
   <ion-card class="stat-card">
     <ion-card-content>
@@ -65,11 +66,8 @@
     </ion-card-header>
     <ion-card-content>
       <div class="location-distribution">
+        @for(location of getStorageLocations(); track location.id){
         <div
-          *ngFor="
-            let location of getStorageLocations();
-            trackBy: trackByLocationId
-          "
           class="location-item"
         >
           <div class="location-info">
@@ -81,6 +79,7 @@
             </ion-badge>
           </div>
         </div>
+      }
       </div>
     </ion-card-content>
   </ion-card>
@@ -92,8 +91,8 @@
     </ion-card-header>
     <ion-card-content>
       <div class="category-distribution">
+        @for(category of getCategories(); track category.id){
         <div
-          *ngFor="let category of getCategories(); trackBy: trackByCategoryId"
           class="category-item"
         >
           <div class="category-info">
@@ -105,7 +104,9 @@
             </ion-badge>
           </div>
         </div>
+      }
       </div>
     </ion-card-content>
   </ion-card>
 </div>
+}

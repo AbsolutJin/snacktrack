@@ -25,11 +25,12 @@
     </ion-item>
 
     <!-- Icon auswahl -->
-    <div class="icon-suggestions" *ngIf="!isEdit">
+     @if(!isEdit){    
+      <div class="icon-suggestions">
       <ion-label class="suggestions-label">Icon:</ion-label>
       <div class="icon-grid">
+        @for(suggestion of suggestedIcons; track suggestion.icon){
         <ion-button
-          *ngFor="let suggestion of suggestedIcons"
           fill="outline"
           size="small"
           (click)="selectIcon(suggestion.icon)"
@@ -38,8 +39,10 @@
           <ion-icon [name]="suggestion.icon" slot="start"></ion-icon>
           {{ suggestion.name }}
         </ion-button>
+      }
       </div>
     </div>
+  }
 
     <ion-item>
       <ion-label position="stacked">Farbe</ion-label>
@@ -61,7 +64,8 @@
     </ion-item>
 
     <!-- Preview -->
-    <div class="preview-section" *ngIf="formData.name && formData.icon">
+     @if(formData.name && formData.icon){
+    <div class="preview-section">
       <ion-label class="preview-label">Vorschau:</ion-label>
       <ion-item class="preview-item">
         <ion-icon [name]="formData.icon" [color]="formData.color" slot="start">
@@ -69,6 +73,7 @@
         <ion-label>{{ formData.name }}</ion-label>
       </ion-item>
     </div>
+     }
   </form>
 </ion-content>
 
