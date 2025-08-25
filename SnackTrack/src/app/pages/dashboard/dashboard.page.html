@@ -26,13 +26,16 @@
   </ion-header>
 
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-container">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p>Lade Dashboard...</p>
-  </div>
+   @if(isLoading){
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Lade Dashboard...</p>
+    </div>
+   }
 
   <!-- Dashboard Content -->
-  <div *ngIf="!isLoading" class="dashboard-grid">
+   @if(!isLoading){  
+  <div class="dashboard-grid">
     <!-- Welcome Section -->
     <div class="welcome-section">
       <ion-card color="primary">
@@ -122,7 +125,8 @@
         </ion-card-header>
         <ion-card-content>
           <div class="tips-container">
-            <div class="tip-item" *ngFor="let tip of dailyTips">
+            @for(tip of dailyTips; track tip.title){
+            <div class="tip-item">
               <ion-icon
                 [name]="tip.icon"
                 [color]="tip.color"
@@ -133,9 +137,11 @@
                 <p>{{ tip.description }}</p>
               </div>
             </div>
+          }
           </div>
         </ion-card-content>
       </ion-card>
     </div>
   </div>
+}
 </ion-content>

@@ -22,16 +22,15 @@
       </ion-segment-button>
     </ion-segment>
 
-    <div class="chart-container" *ngIf="inventoryStats$ | async as stats">
+    @if(inventoryStats$ | async; as stats){
+    <div class="chart-container">
       <!-- Lagerplätze Chart -->
-      <div *ngIf="selectedSegment === 'locations'" class="chart-section">
+       @if(selectedSegment === 'locations'){
+              <div class="chart-section">
         <h3>Verteilung nach Lagerplätzen</h3>
         <div class="progress-chart">
+          @for(location of getStorageLocations(); track location.id){
           <div
-            *ngFor="
-              let location of getStorageLocations();
-              trackBy: trackByLocationId
-            "
             class="progress-item"
           >
             <div class="progress-header">
@@ -62,15 +61,20 @@
             >
             </ion-progress-bar>
           </div>
+          }
+
         </div>
       </div>
+       }
+
 
       <!-- Kategorien Chart -->
-      <div *ngIf="selectedSegment === 'categories'" class="chart-section">
+       @if(selectedSegment === 'categories'){
+      <div class="chart-section">
         <h3>Verteilung nach Kategorien</h3>
         <div class="progress-chart">
+          @for(category of getCategories(); track category.id){
           <div
-            *ngFor="let category of getCategories(); trackBy: trackByCategoryId"
             class="progress-item"
           >
             <div class="progress-header">
@@ -101,8 +105,12 @@
             >
             </ion-progress-bar>
           </div>
+          }
+
         </div>
       </div>
+       }
+
 
       <!-- Zusammenfassung -->
       <div class="chart-summary">
@@ -111,15 +119,18 @@
           <ion-label>Gesamt: {{ stats.totalItems }} Artikel</ion-label>
         </ion-chip>
 
+        @if(stats.expiringSoonCount > 0){
         <ion-chip
           color="warning"
           outline="true"
-          *ngIf="stats.expiringSoonCount > 0"
         >
           <ion-icon name="warning-outline"></ion-icon>
           <ion-label>{{ stats.expiringSoonCount }} bald ablaufend</ion-label>
         </ion-chip>
+        }
       </div>
     </div>
+    }
+
   </ion-card-content>
 </ion-card>

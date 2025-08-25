@@ -44,12 +44,14 @@
     </ion-item>
 
     <!-- Preview -->
-    <div class="preview-section" *ngIf="formData.name">
+     @if(formData.name){
+    <div class="preview-section">
       <ion-label class="preview-label">Vorschau:</ion-label>
       <ion-item class="preview-item">
         <ion-label>{{ formData.name }}</ion-label>
       </ion-item>
     </div>
+     }
   </form>
 </ion-content>
 

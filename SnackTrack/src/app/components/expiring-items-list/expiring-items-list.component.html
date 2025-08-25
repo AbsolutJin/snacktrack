@@ -8,8 +8,10 @@
   </ion-card-header>
 
   <ion-card-content>
-    <ion-list *ngIf="expiringSoonItems$ | async as items">
-      <div *ngIf="items.length === 0" class="no-items">
+    @if(expiringSoonItems$ | async; as items){
+          <ion-list>
+            @if(items.length === 0){
+      <div class="no-items">
         <ion-icon
           name="checkmark-circle-outline"
           color="success"
@@ -17,8 +19,10 @@
         ></ion-icon>
         <p>Keine bald ablaufenden Lebensmittel!</p>
       </div>
+            }
 
-      <ion-item *ngFor="let item of items" [color]="getItemColor(item)">
+      @for(item of items; track item.id){
+      <ion-item [color]="getItemColor(item)">
         <ion-label>
           <h2>{{ item.name }}</h2>
           <p>{{ item.quantity }} {{ item.unit }} - {{ item.category.name }}</p>
@@ -33,6 +37,10 @@
           {{ getDaysLeft(item.expiryDate) }}
         </ion-badge>
       </ion-item>
+      }
+
     </ion-list>
+    }
+
   </ion-card-content>
 </ion-card>
