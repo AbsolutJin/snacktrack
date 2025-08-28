@@ -15,10 +15,12 @@
 }
 
 .avatar {
+	margin-top: 10px;
+	margin-left: 10px;
 	width: 64px;
 	height: 64px;
 	border-radius: 50%;
-	background: #ffffff;
+	background: #36568F;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -31,7 +33,7 @@
 	font-size: 18px;
 }
 .muted {
-	color: rgba(0,0,0,0.45);
+	color: rgba(255, 255, 255, 0.726);
 	margin: 0;
 }
 
