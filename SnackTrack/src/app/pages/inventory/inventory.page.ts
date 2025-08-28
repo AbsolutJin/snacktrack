@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 
 interface InventoryItem {
   name: string;
@@ -12,6 +13,7 @@ interface InventoryItem {
   selector: 'app-inventory',
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss'],
+  imports: [IonicModule]
 })
 export class InventoryPage {
   showSearch = false;
