@@ -1,178 +1,84 @@
-<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Küche – Inventar</title>
-  <link rel="stylesheet" href="C:\Users\Michael\Documents\vs projects\snacktrack\SnackTrack\src\app\pages\inventory\inventory.page.css" />
-</head>
-<body>
+# inventory.page.html
 
-  <!-- Obere Leiste -->
-  <header class="topbar">
-    <button class="icon-btn" id="filterBtn" aria-label="Filter">
-      <!-- Filter-Icon -->
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v2l-7 7v5l-4 2v-7L3 6V4z"/></svg>
-    </button>
+```html
+<ion-header>
+  <ion-toolbar class="topbar" color="success">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="openFilters()" aria-label="Filter">
+        <ion-icon name="filter-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
 
-    <h1 class="topbar__title">Küche</h1>
+    <ion-title>Küche</ion-title>
 
-    <div class="topbar__actions">
-      <button class="icon-btn" id="addBtn" aria-label="Item hinzufügen">
-        <!-- Plus-Icon -->
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
-      </button>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="addDemoItem()" aria-label="Item hinzufügen">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="toggleSearch()" aria-label="Suche">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 
-      <button class="icon-btn" id="searchToggle" aria-label="Suche">
-        <!-- Lupe -->
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 14 15.5l.27.28v.79L20 21.5 21.5 20l-6-6zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
-      </button>
-    </div>
-  </header>
+  <ion-toolbar *ngIf="showSearch" class="searchbar ion-no-border">
+    <ion-searchbar
+      [(ngModel)]="query"
+      (ionInput)="filter()"
+      placeholder="Suche im Inventar…"
+      [debounce]="0"
+      showClearButton="never"
+    ></ion-searchbar>
+    <ion-buttons slot="end" class="searchbar__actions">
+      <ion-button (click)="clearSearch()">Löschen</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
-  <!-- Ausklappbare Suche -->
-  <section class="searchbar" id="searchbar" hidden>
-    <input type="search" id="searchInput" placeholder="Suche im Inventar…" autocomplete="off" />
-    <button class="btn" id="clearSearch">Löschen</button>
-  </section>
+<ion-content [fullscreen]="true" class="content">
+  <!-- Optional: aktive Filterchips -->
+  <div class="filter-chip-row" *ngIf="activeFilters.length">
+    <ion-chip *ngFor="let f of activeFilters" outline>{{ f }}</ion-chip>
+  </div>
 
-  <!-- Inhalt -->
-  <main class="content">
-    <!-- Optional: Filter-Hinweis -->
-    <div class="filter-chip-row" id="activeFilters" hidden></div>
-
-    <!-- Inventar-Grid -->
-    <section class="inventory" id="inventory">
-      <!-- Beispiel-Item -->
-      <article class="card" data-name="spaghetti">
-        <div class="card__imgwrap">
-          <img src="spaghetti.jpg" alt="spaghetti" loading="lazy" />
-          <span class="card__badge" title="Vorrat">🍝</span>
-        </div>
-
-        <h2 class="card__title">spaghetti</h2>
-
-        <div class="card__controls">
-          <button class="icon-btn danger" data-action="delete" aria-label="Löschen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 14H7L6 7zm3-3h6l1 2H8l1-2z"/></svg>
-          </button>
-
-          <div class="qty" aria-live="polite" aria-atomic="true">
-            <span class="qty__value" data-role="count">1</span>
-            <span class="qty__unit" data-role="unit">250g</span>
+  <!-- Inventar-Grid -->
+  <ion-grid class="inventory">
+    <ion-row>
+      <ion-col
+        size="6"
+        sizeMd="4"
+        sizeLg="3"
+        sizeXl="2"
+        *ngFor="let item of filteredItems; trackBy: trackByName"
+      >
+        <ion-card class="card">
+          <div class="card__imgwrap">
+            <img [src]="item.img" [alt]="item.name" loading="lazy" />
+            <ion-badge class="card__badge" *ngIf="item.badge" color="light">{{ item.badge }}</ion-badge>
           </div>
 
-          <button class="icon-btn" data-action="add" aria-label="Hinzufügen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
-          </button>
-        </div>
-      </article>
+          <ion-card-header>
+            <ion-card-title class="card__title">{{ item.name }}</ion-card-title>
+          </ion-card-header>
 
-      <!-- Dupliziere/erstelle weitere Items nach Bedarf -->
-      <article class="card" data-name="reis">
-        <div class="card__imgwrap">
-          <img src="reis.jpg" alt="reis" loading="lazy" />
-        </div>
-        <h2 class="card__title">reis</h2>
-        <div class="card__controls">
-          <button class="icon-btn danger" data-action="delete" aria-label="Löschen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 14H7L6 7zm3-3h6l1 2H8l1-2z"/></svg>
-          </button>
-          <div class="qty">
-            <span class="qty__value" data-role="count">2</span>
-            <span class="qty__unit" data-role="unit">500g</span>
-          </div>
-          <button class="icon-btn" data-action="add" aria-label="Hinzufügen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
-          </button>
-        </div>
-      </article>
-    </section>
-  </main>
+          <ion-card-content>
+            <div class="card__controls">
+              <ion-button fill="clear" color="danger" (click)="decrement(item)" aria-label="Löschen">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
 
-  <script>
-    // Suche ein-/ausblenden
-    const searchToggle = document.getElementById('searchToggle');
-    const searchbar = document.getElementById('searchbar');
-    const searchInput = document.getElementById('searchInput');
-    const clearSearch = document.getElementById('clearSearch');
-    const inventory = document.getElementById('inventory');
+              <div class="qty" aria-live="polite" aria-atomic="true">
+                <span class="qty__value">{{ item.count }}</span>
+                <span class="qty__unit">{{ item.unit }}</span>
+              </div>
 
-    searchToggle.addEventListener('click', () => {
-      const willShow = searchbar.hasAttribute('hidden');
-      if (willShow) {
-        searchbar.removeAttribute('hidden');
-        searchInput.focus();
-      } else {
-        searchbar.setAttribute('hidden', '');
-        searchInput.value = '';
-        filterCards('');
-      }
-    });
-
-    clearSearch.addEventListener('click', () => {
-      searchInput.value = '';
-      filterCards('');
-      searchInput.focus();
-    });
-
-    searchInput.addEventListener('input', (e) => {
-      filterCards(e.target.value);
-    });
-
-    function filterCards(query) {
-      const q = query.trim().toLowerCase();
-      [...inventory.querySelectorAll('.card')].forEach(card => {
-        const name = (card.dataset.name || '').toLowerCase();
-        card.style.display = name.includes(q) ? '' : 'none';
-      });
-    }
-
-    // Add / Delete Logik (Demo)
-    inventory.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action]');
-      if (!btn) return;
-      const card = e.target.closest('.card');
-      const countEl = card.querySelector('[data-role="count"]');
-
-      if (btn.dataset.action === 'add') {
-        countEl.textContent = String(parseInt(countEl.textContent, 10) + 1);
-      }
-      if (btn.dataset.action === 'delete') {
-        const current = parseInt(countEl.textContent, 10);
-        if (current > 1) {
-          countEl.textContent = String(current - 1);
-        } else {
-          // Wenn auf 0, Item entfernen (kannst du anpassen)
-          card.remove();
-        }
-      }
-    });
-
-    // Plus in der Topbar fügt ein Demo-Item hinzu
-    document.getElementById('addBtn').addEventListener('click', () => {
-      const el = document.createElement('article');
-      el.className = 'card';
-      el.dataset.name = 'neu';
-      el.innerHTML = `
-        <div class="card__imgwrap">
-          <img src="placeholder.jpg" alt="neu" loading="lazy" />
-        </div>
-        <h2 class="card__title">neu</h2>
-        <div class="card__controls">
-          <button class="icon-btn danger" data-action="delete" aria-label="Löschen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 14H7L6 7zm3-3h6l1 2H8l1-2z"/></svg>
-          </button>
-          <div class="qty">
-            <span class="qty__value" data-role="count">1</span>
-            <span class="qty__unit" data-role="unit">100g</span>
-          </div>
-          <button class="icon-btn" data-action="add" aria-label="Hinzufügen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
-          </button>
-        </div>`;
-      inventory.prepend(el);
-    });
-  </script>
-</body>
-</html>
+              <ion-button fill="clear" (click)="increment(item)" aria-label="Hinzufügen">
+                <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

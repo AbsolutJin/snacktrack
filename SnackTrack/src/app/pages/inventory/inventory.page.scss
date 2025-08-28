@@ -1,0 +1,131 @@
+:host {
+  --green: #77d57a; // obere Leiste
+  --text: #1b1b1b;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --card-border: #e5e7eb;
+  --danger: #ef4444;
+  --radius: 14px;
+
+  color: var(--text);
+}
+
+ion-content {
+  --background: #f8fafc;
+}
+
+.topbar {
+  // nutzt Ionic Toolbar; Farbe kommt über color="success" oder überschreibe hier
+  --background: var(--green);
+}
+
+.searchbar {
+  background: #eef8ef;
+  border-bottom: 1px solid #dde9de;
+
+  .searchbar-input-container {
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+
+  &__actions {
+    margin-right: .5rem;
+  }
+}
+
+.content {
+  padding: .75rem;
+}
+
+.inventory {
+  // Grid wird von IonGrid/IonCol gesteuert
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .06);
+
+  ion-card-content {
+    padding-top: .25rem;
+  }
+
+  &__imgwrap {
+    position: relative;
+    height: 110px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: .4rem;
+    right: .4rem;
+    font-size: 1rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: .1rem .35rem;
+    border-radius: 999px;
+  }
+
+  &__title {
+    margin: .5rem .25rem .25rem;
+    font-size: .95rem;
+    text-transform: lowercase;
+    font-weight: 500;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .25rem;
+    padding: .25rem;
+
+    ion-button[fill="clear"] {
+      --padding-start: .5rem;
+      --padding-end: .5rem;
+      border-radius: 999px;
+    }
+  }
+}
+
+.qty {
+  display: flex;
+  align-items: baseline;
+  gap: .4rem;
+  font-variant-numeric: tabular-nums;
+
+  &__value {
+    font-weight: 600;
+  }
+  &__unit {
+    font-size: .8rem;
+    color: var(--muted);
+  }
+}
+
+.filter-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: .5rem 0;
+
+  ion-chip {
+    --background: #e5f5e6;
+    --border-color: #cae6cb;
+    border: 1px solid var(--border-color);
+  }
+}
