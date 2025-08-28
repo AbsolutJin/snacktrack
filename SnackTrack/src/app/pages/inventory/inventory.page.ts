@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';   // für ngModel
 import { IonicModule } from '@ionic/angular';
 
 interface InventoryItem {
@@ -11,10 +13,12 @@ interface InventoryItem {
 
 @Component({
   selector: 'app-inventory',
+  standalone: true,
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss'],
-  imports: [IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule],
 })
+
 export class InventoryPage {
   showSearch = false;
   query = '';
