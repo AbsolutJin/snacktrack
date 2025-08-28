@@ -19,9 +19,20 @@ export class AccountPage implements OnInit {
     phone: '+49 123 456789'
   };
 
+  // Data URL for avatar image (stored in localStorage)
+  avatarDataUrl: string | null = null;
+
   constructor(private modalCtrl: ModalController) { }
 
   ngOnInit() {
+    // Lade gespeichertes Avatar (falls vorhanden)
+    try {
+      const saved = localStorage.getItem('profileAvatar');
+      if (saved) this.avatarDataUrl = saved;
+    } catch (e) {
+      // localStorage kann in manchen Umgebungen fehlschlagen
+      console.warn('Could not read profileAvatar from localStorage', e);
+    }
   }
 
   saveProfile() {
@@ -39,6 +50,43 @@ export class AccountPage implements OnInit {
     if (res && res.data && res.data.changed) {
       // optionally show toast
       console.log('Password changed');
+    }
+  }
+
+  onAvatarClick(fileInput: HTMLInputElement) {
+    // Öffnet den versteckten Datei-Dialog
+    fileInput.click();
+  }
+
+  async onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) return;
+
+    // Nur Bilder zulassen
+    if (!file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.avatarDataUrl = reader.result as string;
+      try {
+        localStorage.setItem('profileAvatar', this.avatarDataUrl!);
+      } catch (e) {
+        console.warn('Could not save profileAvatar to localStorage', e);
+      }
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input value so derselbe Datei-Name wieder ausgelöst werden kann
+    input.value = '';
+  }
+
+  removeAvatar() {
+    this.avatarDataUrl = null;
+    try {
+      localStorage.removeItem('profileAvatar');
+    } catch (e) {
+      console.warn('Could not remove profileAvatar from localStorage', e);
     }
   }
 

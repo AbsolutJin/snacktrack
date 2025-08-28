@@ -15,7 +15,33 @@
   </ion-header>
 
   <div class="profile-top">
-    <div class="avatar">A</div>
+    <div class="avatar" (click)="onAvatarClick(fileInput)" role="button" tabindex="0">
+      <ng-container *ngIf="avatarDataUrl; else initials">
+        <img [src]="avatarDataUrl" alt="Profilbild" />
+      </ng-container>
+      <ng-template #initials>
+        <div class="initial">{{ user.name?.charAt(0) || 'A' }}</div>
+      </ng-template>
+
+      <!-- overlay shown on hover; full-button covers avatar when image exists, otherwise small camera button -->
+      <div class="overlay" aria-hidden="true">
+        <ng-container *ngIf="avatarDataUrl; else smallBtn">
+          <!-- full-size delete button covers entire avatar to prevent accidental replace -->
+          <button type="button" class="overlay-btn overlay-full" (click)="$event.stopPropagation(); removeAvatar()" aria-label="Profilbild entfernen">
+            <!-- trash icon centered -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </ng-container>
+        <ng-template #smallBtn>
+          <button type="button" class="overlay-btn" (click)="$event.stopPropagation(); onAvatarClick(fileInput)" aria-label="Profilbild ändern">
+            <!-- camera icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+    <!-- hidden file input -->
+    <input #fileInput type="file" accept="image/*" style="display:none" (change)="onFileSelected($event)" />
     <div class="user-info">
       <h2>{{ user.name }}</h2>
       <p class="muted">{{ user.email }}</p>
