@@ -12,7 +12,7 @@ $RECYCLE.BIN/
 *.log
 log.txt
 
-
+SnackTrack/src/environments/environment.ts
 /.sourcemaps
 /.versions
 /coverage
