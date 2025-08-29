@@ -92,11 +92,6 @@ export class DashboardPage implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  openSettings() {
-    // Route zu Inventory List
-    console.log('Öffne Einstellungen');
-  }
-
   navigateToAddItem() {
     // Route zu Inventory List
     console.log('Navigation zu Add Item');

@@ -6,14 +6,6 @@
         Dashboard
       </div>
     </ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="refreshData()">
-        <ion-icon name="refresh-outline" [class.spin]="isRefreshing"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" (click)="openSettings()">
-        <ion-icon name="settings-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -26,15 +18,15 @@
   </ion-header>
 
   <!-- Loading State -->
-   @if(isLoading){
-    <div class="loading-container">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p>Lade Dashboard...</p>
-    </div>
-   }
+  @if(isLoading){
+  <div class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Lade Dashboard...</p>
+  </div>
+  }
 
   <!-- Dashboard Content -->
-   @if(!isLoading){  
+  @if(!isLoading){
   <div class="dashboard-grid">
     <!-- Welcome Section -->
     <div class="welcome-section">
@@ -137,11 +129,11 @@
                 <p>{{ tip.description }}</p>
               </div>
             </div>
-          }
+            }
           </div>
         </ion-card-content>
       </ion-card>
     </div>
   </div>
-}
+  }
 </ion-content>
