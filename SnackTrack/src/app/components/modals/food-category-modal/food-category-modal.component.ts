@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import {
   appsOutline,
+  close,
   flowerOutline,
   heartOutline,
   leafOutline,
@@ -53,6 +54,7 @@ export class FoodCategoryModalComponent implements OnInit {
       heartOutline,
       wineOutline,
       flowerOutline,
+      close,
     });
   }
 

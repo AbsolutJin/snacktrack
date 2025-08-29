@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, IonicModule } from '@ionic/angular';
 import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
 import { addIcons } from 'ionicons';
-import { snowOutline, cubeOutline } from 'ionicons/icons';
+import { snowOutline, cubeOutline, close } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -22,7 +22,7 @@ export class StorageLocationModalComponent implements OnInit {
   };
 
   constructor(private modalController: ModalController) {
-    addIcons({ snowOutline, cubeOutline });
+    addIcons({ snowOutline, cubeOutline, close });
   }
 
   ngOnInit() {
