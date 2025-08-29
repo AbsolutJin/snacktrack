@@ -6,6 +6,19 @@ import { ExpiringItemsListComponent } from '../../components/expiring-items-list
 import { InventoryStatsComponent } from '../../components/inventory-stats/inventory-stats.component';
 import { InventoryChartComponent } from '../../components/inventory-chart/inventory-chart.component';
 import { InventoryService } from '../../services/inventory.service';
+import { addIcons } from 'ionicons';
+import {
+  addCircleOutline,
+  calendarOutline,
+  flashOutline,
+  informationCircleOutline,
+  leafOutline,
+  listOutline,
+  scanOutline,
+  speedometerOutline,
+  thermometerOutline,
+  timeOutline,
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-dashboard',
@@ -50,7 +63,20 @@ export class DashboardPage implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private inventoryService: InventoryService) {}
+  constructor(private inventoryService: InventoryService) {
+    addIcons({
+      leafOutline,
+      timeOutline,
+      thermometerOutline,
+      listOutline,
+      calendarOutline,
+      addCircleOutline,
+      scanOutline,
+      informationCircleOutline,
+      speedometerOutline,
+      flashOutline,
+    });
+  }
 
   ngOnInit() {
     this.loadDashboardData();
