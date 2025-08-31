@@ -26,11 +26,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'list',
-        loadComponent: () =>
-          import('./pages/add-item/add-item.page').then((m) => m.AddItemPage),
-      },
-      {
         path: 'recipes',
         loadComponent: () =>
           import('./pages/item-detail/item-detail.page').then(
