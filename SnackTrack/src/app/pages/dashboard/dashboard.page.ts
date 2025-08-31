@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { ExpiringItemsListComponent } from '../../components/expiring-items-list/expiring-items-list.component';
-import { InventoryStatsComponent } from '../../components/inventory-stats/inventory-stats.component';
 import { InventoryChartComponent } from '../../components/inventory-chart/inventory-chart.component';
+import { AddItemModalComponent } from '../../components/modals/add-item-modal/add-item-modal.component';
 import { InventoryService } from '../../services/inventory.service';
 import { addIcons } from 'ionicons';
 import {
@@ -29,7 +29,6 @@ import {
     CommonModule,
     IonicModule,
     ExpiringItemsListComponent,
-    InventoryStatsComponent,
     InventoryChartComponent,
   ],
 })
@@ -63,7 +62,10 @@ export class DashboardPage implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private inventoryService: InventoryService) {
+  constructor(
+    private inventoryService: InventoryService,
+    private modalController: ModalController
+  ) {
     addIcons({
       leafOutline,
       timeOutline,
@@ -118,9 +120,33 @@ export class DashboardPage implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  navigateToAddItem() {
-    // Route zu Inventory List
-    console.log('Navigation zu Add Item');
+  async navigateToAddItem() {
+    console.log('Opening add item modal...');
+    try {
+      const modal = await this.modalController.create({
+        component: AddItemModalComponent,
+        componentProps: {
+          isEdit: false,
+          categories: this.inventoryService.getCategories(),
+          storageLocations: this.inventoryService.getStorageLocations(),
+        },
+      });
+
+      await modal.present();
+      const result = await modal.onDidDismiss();
+
+      if (result.data) {
+        try {
+          // Add the new item using the inventory service
+          // TODO: Add addFoodItem method to InventoryService
+          console.log('New food item to add:', result.data);
+        } catch (error) {
+          console.error('Fehler beim Hinzufügen des Artikels:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error opening modal:', error);
+    }
   }
 
   navigateToInventory() {

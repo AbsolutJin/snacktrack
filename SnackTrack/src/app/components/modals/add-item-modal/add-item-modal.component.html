@@ -1,0 +1,137 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{
+      isEdit ? "Artikel bearbeiten" : "Neuer Artikel"
+    }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #form="ngForm">
+    <ion-item>
+      <ion-label position="stacked">Name des Artikels</ion-label>
+      <ion-input
+        [(ngModel)]="formData.name"
+        name="name"
+        required
+        placeholder="z.B. Milch, Äpfel, Brot..."
+      >
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Kategorie</ion-label>
+      <ion-select
+        [(ngModel)]="formData.categoryId"
+        name="categoryId"
+        required
+        interface="popover"
+        placeholder="Kategorie auswählen"
+      >
+        @for (category of categories; track category.id) {
+          <ion-select-option [value]="category.id">
+            {{ category.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Menge</ion-label>
+      <ion-input
+        [(ngModel)]="formData.quantity"
+        name="quantity"
+        type="number"
+        required
+        min="0.01"
+        step="0.01"
+        placeholder="1"
+      >
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Einheit</ion-label>
+      <ion-select
+        [(ngModel)]="formData.unit"
+        name="unit"
+        required
+        interface="popover"
+      >
+        @for (unit of foodUnits; track unit) {
+          <ion-select-option [value]="unit">
+            {{ getUnitLabel(unit) }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Lagerort</ion-label>
+      <ion-select
+        [(ngModel)]="formData.storageLocationId"
+        name="storageLocationId"
+        required
+        interface="popover"
+        placeholder="Lagerort auswählen"
+      >
+        @for (location of storageLocations; track location.id) {
+          <ion-select-option [value]="location.id">
+            {{ location.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Ablaufdatum</ion-label>
+      <ion-grid>
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto">
+            <ion-datetime
+              [(ngModel)]="formData.expiryDate"
+              name="expiryDate"
+              required
+              presentation="date"
+              [min]="minDate"
+            >
+            </ion-datetime>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+
+    <!-- Preview -->
+    @if(formData.name && formData.categoryId && formData.storageLocationId) {
+      <div class="preview-section">
+        <ion-label class="preview-label">Vorschau:</ion-label>
+        <ion-item class="preview-item">
+          <ion-label>
+            <h3>{{ formData.name }}</h3>
+            <p>{{ formData.quantity }} {{ getUnitLabel(formData.unit) }}</p>
+            <p>{{ getCategoryName() }} • {{ getStorageLocationName() }}</p>
+            <p>Läuft ab: {{ formatExpiryDate() }}</p>
+          </ion-label>
+        </ion-item>
+      </div>
+    }
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button
+      expand="block"
+      (click)="save()"
+      [disabled]="!form.valid"
+      class="ion-margin"
+    >
+      {{ isEdit ? "Aktualisieren" : "Hinzufügen" }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
