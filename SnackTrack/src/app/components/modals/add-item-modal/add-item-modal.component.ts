@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController, IonicModule } from '@ionic/angular';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ModalController, IonicModule, IonContent } from '@ionic/angular';
 import { FoodItemInterface, FoodUnit } from 'src/app/models/food-item.interface';
 import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
 import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
+import { ToastService } from 'src/app/services/toast.service';
 import { addIcons } from 'ionicons';
-import { close, calendarOutline } from 'ionicons/icons';
+import { close, calendarOutline, alertCircleOutline, closeCircle } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -15,6 +16,8 @@ import { CommonModule } from '@angular/common';
   imports: [IonicModule, FormsModule, CommonModule],
 })
 export class AddItemModalComponent implements OnInit {
+  @ViewChild('content', { static: false }) content!: IonContent;
+  
   isEdit: boolean = false;
   item?: FoodItemInterface;
   categories: FoodCategoryInterface[] = [];
@@ -30,11 +33,16 @@ export class AddItemModalComponent implements OnInit {
   };
 
   minDate = new Date().toISOString();
-
   foodUnits = Object.values(FoodUnit);
+  
+  // Validation state
+  showValidationErrors = false;
 
-  constructor(private modalController: ModalController) {
-    addIcons({ close, calendarOutline });
+  constructor(
+    private modalController: ModalController,
+    private toastService: ToastService
+  ) {
+    addIcons({ close, calendarOutline, alertCircleOutline, closeCircle });
   }
 
   ngOnInit() {
@@ -54,25 +62,56 @@ export class AddItemModalComponent implements OnInit {
     this.modalController.dismiss();
   }
 
-  save() {
-    const selectedCategory = this.categories.find(c => c.id === this.formData.categoryId);
-    const selectedLocation = this.storageLocations.find(l => l.id === this.formData.storageLocationId);
+  async save() {
+    try {
+      // Zeige Validierungsfehler an der Spitze wenn Formular nicht valid ist
+      if (!this.isFormValid()) {
+        this.showValidationErrors = true;
+        this.scrollToTop();
+        return;
+      }
 
-    if (!selectedCategory || !selectedLocation) {
-      return;
+      const selectedCategory = this.categories.find(c => c.id === this.formData.categoryId);
+      const selectedLocation = this.storageLocations.find(l => l.id === this.formData.storageLocationId);
+
+      if (!selectedCategory) {
+        await this.toastService.error('Die ausgewählte Kategorie konnte nicht gefunden werden.');
+        return;
+      }
+
+      if (!selectedLocation) {
+        await this.toastService.error('Der ausgewählte Lagerort konnte nicht gefunden werden.');
+        return;
+      }
+
+      // Prüfung ob Ablaufdatum in der Vergangenheit liegt
+      const expiryDate = new Date(this.formData.expiryDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (expiryDate < today) {
+        await this.toastService.warning('Das Ablaufdatum liegt in der Vergangenheit. Möchten Sie trotzdem fortfahren?');
+        // Hier könnte man eine Bestätigung einbauen, erstmal weiter
+      }
+
+      const itemData: Partial<FoodItemInterface> = {
+        name: this.formData.name.trim(),
+        category: selectedCategory,
+        quantity: this.formData.quantity,
+        unit: this.formData.unit,
+        storageLocation: selectedLocation,
+        expiryDate: expiryDate,
+        addedDate: new Date(),
+      };
+
+      // Erfolgreiche Validierung
+      await this.toastService.success(this.isEdit ? 'Artikel erfolgreich aktualisiert!' : 'Artikel erfolgreich hinzugefügt!');
+      this.modalController.dismiss(itemData);
+      
+    } catch (error) {
+      console.error('Fehler beim Speichern des Artikels:', error);
+      await this.toastService.error('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
     }
-
-    const itemData: Partial<FoodItemInterface> = {
-      name: this.formData.name,
-      category: selectedCategory,
-      quantity: this.formData.quantity,
-      unit: this.formData.unit,
-      storageLocation: selectedLocation,
-      expiryDate: new Date(this.formData.expiryDate),
-      addedDate: new Date(),
-    };
-
-    this.modalController.dismiss(itemData);
   }
 
   getUnitLabel(unit: FoodUnit): string {
@@ -102,5 +141,45 @@ export class AddItemModalComponent implements OnInit {
 
   formatExpiryDate(): string {
     return new Date(this.formData.expiryDate).toLocaleDateString('de-DE');
+  }
+
+  // Validation methods
+  getValidationErrors(): string[] {
+    const errors: string[] = [];
+    
+    if (!this.formData.name.trim()) {
+      errors.push('Name des Artikels fehlt');
+    }
+    
+    if (!this.formData.categoryId) {
+      errors.push('Kategorie nicht ausgewählt');
+    }
+    
+    if (!this.formData.storageLocationId) {
+      errors.push('Lagerort nicht ausgewählt');
+    }
+    
+    if (this.formData.quantity <= 0) {
+      errors.push('Menge muss größer als 0 sein');
+    }
+    
+    if (!this.formData.expiryDate) {
+      errors.push('Ablaufdatum nicht ausgewählt');
+    }
+    
+    return errors;
+  }
+
+  isFormValid(): boolean {
+    return this.getValidationErrors().length === 0;
+  }
+
+  scrollToTop(): void {
+    // Scroll to top of modal content using ViewChild
+    setTimeout(() => {
+      if (this.content) {
+        this.content.scrollToTop(300);
+      }
+    }, 150);
   }
 }

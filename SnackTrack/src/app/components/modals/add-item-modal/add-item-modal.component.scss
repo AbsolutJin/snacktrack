@@ -1,3 +1,28 @@
+// Validation Error Card
+.validation-error-card {
+  margin-bottom: 16px;
+  border-left: 4px solid var(--ion-color-danger);
+  
+  ion-list {
+    background: transparent;
+  }
+  
+  .close-errors-btn {
+    margin-top: 12px;
+    --border-width: 2px;
+    --border-style: solid;
+    --border-color: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    
+    &:hover {
+      --background: rgba(255, 255, 255, 0.1);
+      --border-color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+
+// Preview Section
 .preview-section {
   margin-top: 20px;
   border-radius: 8px;

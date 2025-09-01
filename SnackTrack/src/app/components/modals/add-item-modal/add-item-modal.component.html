@@ -11,7 +11,39 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content #content class="ion-padding">
+  <!-- Validation Errors Summary -->
+  @if(showValidationErrors && !isFormValid()) {
+    <ion-card color="danger" class="validation-error-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+          Fehlende Angaben
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          @for (error of getValidationErrors(); track error) {
+            <ion-item color="danger" lines="none">
+              <ion-icon name="close-circle" slot="start" color="light"></ion-icon>
+              <ion-label color="light">{{ error }}</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+        <ion-button 
+          fill="outline" 
+          color="light" 
+          size="small" 
+          (click)="showValidationErrors = false"
+          class="close-errors-btn"
+        >
+          <ion-icon name="close" slot="start"></ion-icon>
+          Schließen
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  }
+
   <form #form="ngForm">
     <ion-item>
       <ion-label position="stacked">Name des Artikels</ion-label>
@@ -128,7 +160,7 @@
     <ion-button
       expand="block"
       (click)="save()"
-      [disabled]="!form.valid"
+      [color]="isFormValid() ? 'primary' : 'medium'"
       class="ion-margin"
     >
       {{ isEdit ? "Aktualisieren" : "Hinzufügen" }}
