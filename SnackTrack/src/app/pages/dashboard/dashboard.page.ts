@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { ExpiringItemsListComponent } from '../../components/expiring-items-list/expiring-items-list.component';
 import { InventoryChartComponent } from '../../components/inventory-chart/inventory-chart.component';
@@ -64,7 +65,8 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   constructor(
     private inventoryService: InventoryService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private router: Router
   ) {
     addIcons({
       leafOutline,
@@ -150,8 +152,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   navigateToInventory() {
-    // Route zu Inventory List
-    console.log('Navigation zu Inventar');
+    this.router.navigate(['/tabs/kitchen']);
   }
 
   scanBarcode() {
