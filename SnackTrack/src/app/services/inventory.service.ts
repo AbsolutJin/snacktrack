@@ -7,7 +7,7 @@ import { FoodCategoryInterface } from '../models/food-category.interface';
 import { InventoryStatsInterface } from '../models/inventory-stats.interface';
 import { StorageLocationModalComponent } from '../components/modals/storage-location-modal/storage-location-modal.component';
 import { FoodCategoryModalComponent } from '../components/modals/food-category-modal/food-category-modal.component';
-import { SupabaseDummyService } from './supa-base-dummy-data.service'; // Zu ersetzen durch den richtigen Backend-Service
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +28,7 @@ export class InventoryService {
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   public isLoading$ = this.isLoadingSubject.asObservable();
 
-  constructor(private supabaseService: SupabaseDummyService) {
+  constructor(private supabaseService: SupabaseService) {
     this.initializeData();
   }
 
