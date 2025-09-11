@@ -1,93 +1,107 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ModalController, IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonCard, IonCardContent, IonItem, IonLabel, IonInput, IonButtons, IonBackButton } from '@ionic/angular/standalone';
+import { FormsModule, NgForm } from '@angular/forms';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+
+import { AccountService, UserProfile } from '../../services/account.service';
 import { ChangePasswordModal } from './change-password.modal';
+
+// Ionicons registration (ensure icons display reliably)
+import { addIcons } from 'ionicons';
+import { cameraOutline, trashOutline, saveOutline, closeOutline, mailOutline, callOutline, personOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-account',
+  standalone: true,
   templateUrl: './account.page.html',
   styleUrls: ['./account.page.scss'],
-  standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonCard, IonCardContent, IonItem, IonLabel, IonInput, IonButtons, IonBackButton]
+  imports: [CommonModule, FormsModule, IonicModule],
 })
-export class AccountPage implements OnInit {
+export class AccountPage implements OnInit, OnDestroy {
+  user: UserProfile = { id: '', name: '', email: '', phone: '' };
+  avatarDataUrl: string | null = null; // local preview or service value
 
-  user: { name: string; email: string; phone?: string } = {
-    name: 'Max Mustermann',
-    email: 'max.mustermann@example.com',
-    phone: '+49 123 456789'
-  };
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('profileForm') profileForm!: NgForm;
 
-  // Data URL for avatar image (stored in localStorage)
-  avatarDataUrl: string | null = null;
+  private sub?: Subscription;
 
-  constructor(private modalCtrl: ModalController) { }
+  constructor(
+    private account: AccountService,
+    private modalCtrl: ModalController,
+    private toastCtrl: ToastController,
+  ) {
+    addIcons({ cameraOutline, trashOutline, saveOutline, closeOutline, mailOutline, callOutline, personOutline });
+  }
 
-  ngOnInit() {
-    // Lade gespeichertes Avatar (falls vorhanden)
+  ngOnInit(): void {
+    this.sub = this.account.profile$.subscribe((p) => {
+      if (!p) return;
+      this.user = { ...p };
+      this.avatarDataUrl = p.avatar_url || null;
+    });
+  }
+
+  ngOnDestroy(): void { this.sub?.unsubscribe(); }
+
+  // Avatar interactions
+  onAvatarClick(input: HTMLInputElement) {
+    input.click();
+  }
+
+  async onFileSelected(evt: Event) {
+    const input = evt.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    // local preview
+    const reader = new FileReader();
+    reader.onload = () => { this.avatarDataUrl = reader.result as string; };
+    reader.readAsDataURL(file);
+
     try {
-      const saved = localStorage.getItem('profileAvatar');
-      if (saved) this.avatarDataUrl = saved;
+      const publicUrl = await this.account.uploadAvatar(file);
+      this.avatarDataUrl = publicUrl;
+      await this.presentToast('Profilbild aktualisiert');
     } catch (e) {
-      // localStorage kann in manchen Umgebungen fehlschlagen
-      console.warn('Could not read profileAvatar from localStorage', e);
+      console.error(e);
+      await this.presentToast('Fehler beim Hochladen des Profilbilds');
+    } finally {
+      input.value = '';
     }
   }
 
-  saveProfile() {
-    // Hier würde man das Profil an einen Service senden. Für jetzt nur console.log
-    console.log('Profil speichern', this.user);
+  async removeAvatar() {
+    try {
+      await this.account.removeAvatar();
+      this.avatarDataUrl = null;
+      await this.presentToast('Profilbild entfernt');
+    } catch (e) {
+      console.error(e);
+      await this.presentToast('Fehler beim Entfernen des Profilbilds');
+    }
+  }
+
+  // Profile save
+  async saveProfile() {
+    try {
+      const { id, ...payload } = this.user; // never update id
+      await this.account.updateProfile(payload);
+      await this.presentToast('Profil gespeichert');
+    } catch (e) {
+      console.error(e);
+      await this.presentToast('Speichern fehlgeschlagen');
+    }
   }
 
   async openChangePassword() {
-    const modal = await this.modalCtrl.create({
-      component: ChangePasswordModal,
-      componentProps: {}
-    });
+    const modal = await this.modalCtrl.create({ component: ChangePasswordModal });
     await modal.present();
-    const res = await modal.onDidDismiss();
-    if (res && res.data && res.data.changed) {
-      // optionally show toast
-      console.log('Password changed');
-    }
   }
 
-  onAvatarClick(fileInput: HTMLInputElement) {
-    // Öffnet den versteckten Datei-Dialog
-    fileInput.click();
+  private async presentToast(message: string) {
+    const toast = await this.toastCtrl.create({ message, duration: 1700, position: 'bottom' });
+    await toast.present();
   }
-
-  async onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input?.files?.[0];
-    if (!file) return;
-
-    // Nur Bilder zulassen
-    if (!file.type.startsWith('image/')) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.avatarDataUrl = reader.result as string;
-      try {
-        localStorage.setItem('profileAvatar', this.avatarDataUrl!);
-      } catch (e) {
-        console.warn('Could not save profileAvatar to localStorage', e);
-      }
-    };
-    reader.readAsDataURL(file);
-
-    // Reset input value so derselbe Datei-Name wieder ausgelöst werden kann
-    input.value = '';
-  }
-
-  removeAvatar() {
-    this.avatarDataUrl = null;
-    try {
-      localStorage.removeItem('profileAvatar');
-    } catch (e) {
-      console.warn('Could not remove profileAvatar from localStorage', e);
-    }
-  }
-
 }

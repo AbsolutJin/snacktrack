@@ -1,65 +1,62 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonList, IonButtons, IonBackButton } from '@ionic/angular/standalone';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { AccountService } from '../../services/account.service';
 
 @Component({
-  selector: 'change-password-modal',
+  selector: 'app-change-password-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule],
   template: `
   <ion-header>
-    <ion-toolbar class="toolbar-brand">
-      <ion-buttons slot="start">
-        <ion-back-button text="" (click)="dismiss()"></ion-back-button>
-      </ion-buttons>
+    <ion-toolbar>
       <ion-title>Passwort ändern</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="dismiss()" aria-label="Schließen">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
-
-  <ion-content class="modal-content">
-    <form (ngSubmit)="changePassword()" #pwForm="ngForm">
-      <ion-list>
-        <ion-item>
-          <ion-label position="stacked">Altes Passwort</ion-label>
-          <ion-input type="password" name="oldPw" [(ngModel)]="oldPw" required></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked">Neues Passwort</ion-label>
-          <ion-input type="password" name="newPw" [(ngModel)]="newPw" minlength="6" required></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked">Neues Passwort bestätigen</ion-label>
-          <ion-input type="password" name="confirmPw" [(ngModel)]="confirmPw" required></ion-input>
-        </ion-item>
-      </ion-list>
-
-      <div class="modal-actions">
-        <ion-button expand="block" type="submit" [disabled]="pwForm.invalid || newPw !== confirmPw">Ändern</ion-button>
-        <ion-button expand="block" fill="clear" (click)="dismiss()">Abbrechen</ion-button>
+  <ion-content class="ion-padding">
+    <form (ngSubmit)="submit()" #form="ngForm">
+      <ion-item>
+        <ion-label position="stacked">Neues Passwort</ion-label>
+        <ion-input type="password" required [(ngModel)]="password" name="password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Bestätigen</ion-label>
+        <ion-input type="password" required [(ngModel)]="confirm" name="confirm"></ion-input>
+      </ion-item>
+      <div class="ion-padding-top">
+        <ion-button expand="block" type="submit" [disabled]="!password || password !== confirm">Speichern</ion-button>
       </div>
     </form>
   </ion-content>
   `,
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonList, IonButtons, IonBackButton]
 })
 export class ChangePasswordModal {
-  oldPw = '';
-  newPw = '';
-  confirmPw = '';
+  password = '';
+  confirm = '';
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController, private account: AccountService, private toast: ToastController) {}
 
-  dismiss(data: any = null) {
-    this.modalCtrl.dismiss(data);
+  dismiss() { this.modalCtrl.dismiss(); }
+
+  async submit() {
+    try {
+      await this.account.changePassword(this.password);
+      await this.presentToast('Passwort aktualisiert');
+      this.dismiss();
+    } catch (e) {
+      console.error(e);
+      await this.presentToast('Aktualisierung fehlgeschlagen');
+    }
   }
 
-  changePassword() {
-    // Minimaler Client-side check; echte Änderung via Service
-    if (!this.oldPw || !this.newPw) return;
-    if (this.newPw !== this.confirmPw) return;
-    // Simuliere erfolgreichen Wechsel
-    this.modalCtrl.dismiss({ changed: true });
+  private async presentToast(message: string) {
+    const t = await this.toast.create({ message, duration: 1700, position: 'bottom' });
+    await t.present();
   }
 }

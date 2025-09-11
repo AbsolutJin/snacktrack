@@ -10,12 +10,15 @@ import { environment } from '../../environments/environment';
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
+  /** Public access to the underlying Supabase client for other services */
+  public readonly client: SupabaseClient;
 
   constructor() {
     this.supabase = createClient(
       environment.supabaseUrl,
       environment.supabaseKey
     );
+  this.client = this.supabase;
   }
 
   // Storage Locations CRUD
