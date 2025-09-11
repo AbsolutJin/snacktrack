@@ -1,6 +1,3 @@
-# inventory.page.html
-
-```html
 <ion-header>
   <ion-toolbar class="topbar" color="success">
     <ion-buttons slot="start">
@@ -12,9 +9,6 @@
     <ion-title>Küche</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="addDemoItem()" aria-label="Item hinzufügen">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-button>
       <ion-button fill="clear" (click)="toggleSearch()" aria-label="Suche">
         <ion-icon name="search-outline"></ion-icon>
       </ion-button>
@@ -49,21 +43,55 @@
         sizeMd="4"
         sizeLg="3"
         sizeXl="2"
-        *ngFor="let item of filteredItems; trackBy: trackByName"
+        *ngFor="let item of filteredItems; trackBy: trackById"
       >
         <ion-card class="card">
           <div class="card__imgwrap">
-            <img [src]="item.img" [alt]="item.name" loading="lazy" />
+            <ng-container *ngIf="item.img; else iconThumb">
+              <img [src]="item.img" [alt]="item.name" loading="lazy" />
+            </ng-container>
+            <ng-template #iconThumb>
+              <div class="thumb-fallback">
+                <ion-icon name="image-outline"></ion-icon>
+              </div>
+            </ng-template>
             <ion-badge class="card__badge" *ngIf="item.badge" color="light">{{ item.badge }}</ion-badge>
           </div>
 
           <ion-card-header>
-            <ion-card-title class="card__title">{{ item.name }}</ion-card-title>
+            <ng-container *ngIf="editingId !== item.id; else editTitle">
+              <ion-card-title class="card__title">
+                <ion-icon class="card__title-icon" [name]="item.categoryIcon || 'cube-outline'"></ion-icon>
+                <span>{{ item.name }}</span>
+              </ion-card-title>
+            </ng-container>
+            <ng-template #editTitle>
+              <ion-item lines="none" class="card__rename">
+                <ion-input
+                  autofocus
+                  [(ngModel)]="editName"
+                  placeholder="Neuer Name"
+                  aria-label="Produktname bearbeiten"
+                ></ion-input>
+                <ion-buttons slot="end">
+                  <ion-button (click)="saveRename(item)" aria-label="Speichern">
+                    <ion-icon name="save-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="cancelRename()" aria-label="Abbrechen">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-item>
+            </ng-template>
           </ion-card-header>
 
           <ion-card-content>
             <div class="card__controls">
-              <ion-button fill="clear" color="danger" (click)="decrement(item)" aria-label="Löschen">
+              <ion-button fill="clear" color="medium" (click)="startRename(item)" [disabled]="editingId === item.id" aria-label="Umbenennen">
+                <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+
+              <ion-button fill="clear" color="danger" (click)="decrement(item)" aria-label="Entfernen oder Anzahl verringern">
                 <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
               </ion-button>
 

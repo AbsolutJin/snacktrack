@@ -52,6 +52,64 @@ export class InventoryService {
     }
   }
 
+  /** Update only the quantity of a Food Item */
+  async updateFoodItemQuantity(id: string, quantity: number): Promise<void> {
+    try {
+      // Backend update
+      const current = this.foodItemsSubject.value;
+      const foodItem = current.find((fi) => fi.id === id);
+      if (!foodItem) throw new Error('Food item not found');
+
+      const updatedFoodItem: FoodItemInterface = {
+        ...foodItem,
+        quantity
+      };
+
+      await this.supabaseService.updateFoodItem(id, updatedFoodItem);
+
+      // Local state update
+      const updated = current.map((fi) => (fi.id === id ? updatedFoodItem : fi));
+      this.foodItemsSubject.next(updated);
+    } catch (error) {
+      console.error('Fehler beim Aktualisieren der Menge:', error);
+      throw error;
+    }
+  }
+
+  /** Rename a Food Item (update its name) */
+  async renameFoodItem(id: string, name: string): Promise<void> {
+    try {
+      const current = this.foodItemsSubject.value;
+      const foodItem = current.find((fi) => fi.id === id);
+      if (!foodItem) throw new Error('Food item not found');
+
+      const updatedFoodItem: FoodItemInterface = {
+        ...foodItem,
+        name
+      };
+
+      await this.supabaseService.updateFoodItem(id, updatedFoodItem);
+
+      const updated = current.map((fi) => (fi.id === id ? updatedFoodItem : fi));
+      this.foodItemsSubject.next(updated);
+    } catch (error) {
+      console.error('Fehler beim Umbenennen des Artikels:', error);
+      throw error;
+    }
+  }
+
+  /** Delete a Food Item completely */
+  async deleteFoodItem(id: string): Promise<void> {
+    try {
+      await this.supabaseService.deleteFoodItem(id);
+      const current = this.foodItemsSubject.value;
+      this.foodItemsSubject.next(current.filter((fi) => fi.id !== id));
+    } catch (error) {
+      console.error('Fehler beim Löschen des Artikels:', error);
+      throw error;
+    }
+  }
+
   //Lädt Lagerorte vom Backend
   private async loadStorageLocations(): Promise<void> {
     try {

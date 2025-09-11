@@ -19,6 +19,25 @@ ion-content {
   --background: var(--green);
 }
 
+.card__imgwrap {
+  position: relative;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+}
+.thumb-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  background: var(--ion-color-light-shade);
+  font-size: 42px;
+  color: var(--ion-color-medium);
+}
+.card__title { display: flex; align-items: center; gap: 8px; }
+.card__title-icon { font-size: 18px; opacity: .8; }
+.card__rename ion-input { --padding-start: 0; }
+.card__controls { display: flex; align-items: center; justify-content: space-between; }
+.qty { display: flex; align-items: baseline; gap: 4px; font-weight: 600; }
+
 .searchbar {
   background: #eef8ef;
   border-bottom: 1px solid #dde9de;
