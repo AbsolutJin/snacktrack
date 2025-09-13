@@ -40,11 +40,7 @@
     "@angular-eslint/eslint-plugin-template": "^20.0.0",
     "@angular-eslint/schematics": "^20.0.0",
     "@angular-eslint/template-parser": "^20.0.0",
-<<<<<<< HEAD
-    "@angular/cli": "^20.3.1",
-=======
     "@angular/cli": "20.3.1",
->>>>>>> 6699d3d90c080cdddef018e8648a7ebd81d92bb6
     "@angular/compiler-cli": "^20.0.0",
     "@angular/language-service": "^20.0.0",
     "@capacitor/cli": "7.4.2",
