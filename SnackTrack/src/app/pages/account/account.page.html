@@ -20,7 +20,7 @@
         <img [src]="avatarDataUrl" alt="Profilbild" />
       </ng-container>
       <ng-template #initials>
-        <div class="initial">{{ user.name?.charAt(0) || 'A' }}</div>
+  <div class="initial">{{ user.username.charAt(0) || 'A' }}</div>
       </ng-template>
 
       <div class="overlay" aria-hidden="true">
@@ -38,7 +38,7 @@
     </div>
     <input #fileInput type="file" accept="image/*" style="display:none" (change)="onFileSelected($event)" />
     <div class="user-info">
-      <h2>{{ user.name }}</h2>
+      <h2>{{ user.username }}</h2>
       <p class="muted">{{ user.email }}</p>
     </div>
   </div>
@@ -47,8 +47,8 @@
     <ion-card>
       <ion-card-content>
         <ion-item>
-          <ion-label position="stacked">Name</ion-label>
-          <ion-input name="name" [(ngModel)]="user.name" required></ion-input>
+          <ion-label position="stacked">Benutzername</ion-label>
+          <ion-input name="username" [(ngModel)]="user.username" required></ion-input>
         </ion-item>
 
         <ion-item>
@@ -56,10 +56,6 @@
           <ion-input type="email" name="email" [(ngModel)]="user.email" required></ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Telefon</ion-label>
-          <ion-input type="tel" name="phone" [(ngModel)]="user.phone"></ion-input>
-        </ion-item>
 
         <div class="actions">
           <ion-button expand="block" color="primary" type="submit" [disabled]="profileForm.invalid">Speichern</ion-button>

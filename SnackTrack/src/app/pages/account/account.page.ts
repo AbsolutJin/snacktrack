@@ -19,7 +19,7 @@ import { cameraOutline, trashOutline, saveOutline, closeOutline, mailOutline, ca
   imports: [CommonModule, FormsModule, IonicModule],
 })
 export class AccountPage implements OnInit, OnDestroy {
-  user: UserProfile = { id: '', name: '', email: '', phone: '' };
+  user: UserProfile = { id: '', username: '', email: '' };
   avatarDataUrl: string | null = null; // local preview or service value
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -38,8 +38,8 @@ export class AccountPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sub = this.account.profile$.subscribe((p) => {
       if (!p) return;
-      this.user = { ...p };
-      this.avatarDataUrl = p.avatar_url || null;
+  this.user = { ...p };
+  this.avatarDataUrl = p.avatar_url || null;
     });
   }
 

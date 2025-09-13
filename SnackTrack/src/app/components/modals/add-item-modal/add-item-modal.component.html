@@ -112,8 +112,8 @@
         interface="popover"
         placeholder="Lagerort auswählen"
       >
-        @for (location of storageLocations; track location.id) {
-          <ion-select-option [value]="location.id">
+         @for (location of storageLocations; track location.location_id) {
+           <ion-select-option [value]="location.location_id">
             {{ location.name }}
           </ion-select-option>
         }

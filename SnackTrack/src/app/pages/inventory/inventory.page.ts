@@ -6,6 +6,9 @@ import { Subscription } from 'rxjs';
 
 import { InventoryService } from '../../services/inventory.service';
 import { FoodItemInterface } from '../../models/food-item.interface';
+import { Inventory } from '../../models/inventory.interface';
+import { Item } from '../../models/item.interface';
+import { StorageLocation } from '../../models/storage-location.interface';
 
 // Ionicons: ensure icons render even without CDN
 import { addIcons } from 'ionicons';
@@ -43,8 +46,10 @@ export class InventoryPage implements OnInit, OnDestroy {
   query = '';
   activeFilters: string[] = [];
 
-  items: InventoryCardItem[] = [];
-  filteredItems: InventoryCardItem[] = [];
+  inventoryCards: InventoryCardItem[] = [];
+  filteredCards: InventoryCardItem[] = [];
+  items: Item[] = [];
+  locations: StorageLocation[] = [];
 
   // rename state
   editingId: string | null = null;
@@ -67,9 +72,17 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sub = this.inventory.foodItems$.subscribe((items) => {
-      this.items = items.map((it) => this.toCard(it));
-      this.filter();
+    this.sub = this.inventory.inventory$.subscribe((inventory) => {
+      this.inventory.inventory$.subscribe((invList) => {
+        this.inventory.items$.subscribe((itemList) => {
+          this.items = itemList;
+          this.inventory.storageLocations$.subscribe((locList: import('../../models/storage-location.interface').StorageLocation[]) => {
+            this.locations = locList;
+            this.inventoryCards = invList.map((inv) => this.toCard(inv));
+            this.filter();
+          });
+        });
+      });
     });
   }
 
@@ -78,16 +91,20 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   // map backend model → UI card model
-  private toCard(it: FoodItemInterface): InventoryCardItem {
-    const anyIt: any = it as any; // tolerate slightly different field names
+  private toCard(inv: Inventory): InventoryCardItem {
+    const item = this.items.find(i => i.barcode === inv.barcode);
+    const location = this.locations.find(l => l.location_id === inv.location_id);
+    // Find the matching food item by barcode or inventory id
+    // Try to find food item by barcode
+    const foodItem = this.inventory.getFoodItems().find(fi => fi.id === inv.barcode);
     return {
-      id: (anyIt.id ?? anyIt.uuid ?? anyIt._id) as string,
-      name: anyIt.name ?? '',
-      unit: anyIt.unit ?? anyIt.packageUnit ?? '',
-      count: anyIt.quantity ?? anyIt.count ?? 1,
-      img: anyIt.imageUrl ?? anyIt.img ?? null,
-      badge: anyIt.isExpiringSoon ? '⚠️' : undefined,
-      categoryIcon: anyIt.category?.icon ?? 'cube-outline',
+      id: foodItem?.id ?? inv.inventory_id,
+      name: item?.product_name ?? inv.barcode,
+      unit: item?.brand ?? '',
+      count: inv.quantity,
+      img: item?.image_url ?? null,
+      badge: inv.expiration_date ? `Ablauf: ${inv.expiration_date}` : undefined,
+      categoryIcon: 'cube-outline',
     };
   }
 
@@ -109,13 +126,15 @@ export class InventoryPage implements OnInit, OnDestroy {
   // Datenlogik
   filter() {
     const q = this.query.trim().toLowerCase();
-    this.filteredItems = !q
-      ? [...this.items]
-      : this.items.filter((i) => (i.name || '').toLowerCase().includes(q));
+    this.filteredCards = !q
+      ? [...this.inventoryCards]
+      : this.inventoryCards.filter((i) => (i.name || '').toLowerCase().includes(q));
   }
 
   async increment(item: InventoryCardItem) {
     await this.inventory.updateFoodItemQuantity(item.id, item.count + 1);
+    await this.inventory.loadInventory();
+    this.filter();
   }
 
   async decrement(item: InventoryCardItem) {
@@ -124,6 +143,8 @@ export class InventoryPage implements OnInit, OnDestroy {
     } else {
       await this.inventory.deleteFoodItem(item.id);
     }
+    await this.inventory.loadInventory();
+    this.filter();
   }
 
   startRename(item: InventoryCardItem) {

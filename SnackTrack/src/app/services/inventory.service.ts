@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map, firstValueFrom, catchError, of } from 'rxjs';
 import { ModalController, AlertController } from '@ionic/angular';
 import { FoodItemInterface } from '../models/food-item.interface';
-import { StorageLocationInterface } from '../models/storage-location.interface';
+import { Inventory } from '../models/inventory.interface';
+import { StorageLocation } from '../models/storage-location.interface';
+import { Item } from '../models/item.interface';
 import { FoodCategoryInterface } from '../models/food-category.interface';
 import { InventoryStatsInterface } from '../models/inventory-stats.interface';
 import { StorageLocationModalComponent } from '../components/modals/storage-location-modal/storage-location-modal.component';
@@ -13,11 +15,19 @@ import { SupabaseService } from './supabase.service';
   providedIn: 'root',
 })
 export class InventoryService {
+  public getFoodItems(): FoodItemInterface[] {
+    return this.foodItemsSubject.value;
+  }
+  private inventorySubject = new BehaviorSubject<Inventory[]>([]);
+  public inventory$ = this.inventorySubject.asObservable();
+
+  private itemsSubject = new BehaviorSubject<Item[]>([]);
+  public items$ = this.itemsSubject.asObservable();
   private foodItemsSubject = new BehaviorSubject<FoodItemInterface[]>([]);
   public foodItems$ = this.foodItemsSubject.asObservable();
 
   // BehaviorSubjects für reactive Updates
-  private storageLocationsSubject = new BehaviorSubject<StorageLocationInterface[]>([]);
+  private storageLocationsSubject = new BehaviorSubject<StorageLocation[]>([]);
   private categoriesSubject = new BehaviorSubject<FoodCategoryInterface[]>([]);
 
   // Observables für reactive Updates
@@ -29,10 +39,43 @@ export class InventoryService {
   public isLoading$ = this.isLoadingSubject.asObservable();
 
   constructor(private supabaseService: SupabaseService) {
-    this.initializeData();
+  this.loadInventory();
+  this.loadItems();
+  this.loadStorageLocations();
+  this.initializeData();
   }
 
   //Initialisiert alle Daten beim Service-Start
+  /** Lädt alle Inventar-Einträge aus der Tabelle 'inventory' */
+  async loadInventory(): Promise<void> {
+    try {
+      const { data, error } = await this.supabaseService.client
+        .from('inventory')
+        .select('*');
+      if (error) throw error;
+      this.inventorySubject.next(data || []);
+    } catch (err) {
+      console.error('Fehler beim Laden des Inventars:', err);
+      this.inventorySubject.next([]);
+    }
+  }
+
+  /** Lädt alle Lagerorte aus der Tabelle 'storage_locations' */
+  // Entfernt: loadLocations(). Nur noch loadStorageLocations() verwenden.
+
+  /** Lädt alle Items aus der Tabelle 'items' */
+  async loadItems(): Promise<void> {
+    try {
+      const { data, error } = await this.supabaseService.client
+        .from('items')
+        .select('*');
+      if (error) throw error;
+      this.itemsSubject.next(data || []);
+    } catch (err) {
+      console.error('Fehler beim Laden der Items:', err);
+      this.itemsSubject.next([]);
+    }
+  }
   private async initializeData(): Promise<void> {
     this.isLoadingSubject.next(true);
     
@@ -52,24 +95,25 @@ export class InventoryService {
     }
   }
 
-  /** Update only the quantity of a Food Item */
+  /** Update only the quantity of an Inventory Item */
   async updateFoodItemQuantity(id: string, quantity: number): Promise<void> {
     try {
-      // Backend update
-      const current = this.foodItemsSubject.value;
-      const foodItem = current.find((fi) => fi.id === id);
-      if (!foodItem) throw new Error('Food item not found');
+      // Find inventory item by inventory_id
+      const current = this.inventorySubject.value;
+      const inventoryItem = current.find((inv) => inv.inventory_id === id);
+      if (!inventoryItem) throw new Error('Inventory item not found');
 
-      const updatedFoodItem: FoodItemInterface = {
-        ...foodItem,
+      const updatedInventoryItem: Inventory = {
+        ...inventoryItem,
+        inventory_id: String(inventoryItem.inventory_id),
         quantity
       };
 
-      await this.supabaseService.updateFoodItem(id, updatedFoodItem);
+      await this.supabaseService.updateInventoryItem(id, updatedInventoryItem);
 
       // Local state update
-      const updated = current.map((fi) => (fi.id === id ? updatedFoodItem : fi));
-      this.foodItemsSubject.next(updated);
+      const updated = current.map((inv) => (inv.inventory_id === id ? updatedInventoryItem : inv));
+      this.inventorySubject.next(updated);
     } catch (error) {
       console.error('Fehler beim Aktualisieren der Menge:', error);
       throw error;
@@ -145,20 +189,20 @@ export class InventoryService {
 
 //Fallback-Daten bei Backend-Fehlern für Demo-Zwecke
   private loadFallbackData(): void {
-    const fallbackLocations: StorageLocationInterface[] = [
-      { id: '1', name: 'Kühlschrank', color: 'primary' },
-      { id: '2', name: 'Gefrierschrank', color: 'secondary' },
-      { id: '3', name: 'Vorratskammer', color: 'tertiary' },
-      { id: '4', name: 'Gewürzregal', color: 'success' },
+  const fallbackLocations: StorageLocation[] = [
+  { location_id: '1', name: 'Khlschrank', user_id: 'demo', created_at: new Date().toISOString() },
+  { location_id: '2', name: 'Gefrierschrank', user_id: 'demo', created_at: new Date().toISOString() },
+  { location_id: '3', name: 'Vorratskammer', user_id: 'demo', created_at: new Date().toISOString() },
+  { location_id: '4', name: 'Gewrzregal', user_id: 'demo', created_at: new Date().toISOString() },
     ];
 
     const fallbackCategories: FoodCategoryInterface[] = [
-      { id: '1', name: 'Gemüse', icon: 'nutrition-outline', color: 'success' },
-      { id: '2', name: 'Fleisch', icon: 'restaurant-outline', color: 'danger' },
-      { id: '3', name: 'Milchprodukte', icon: 'water-outline', color: 'warning' },
-      { id: '4', name: 'Getränke', icon: 'wine-outline', color: 'primary' },
-      { id: '5', name: 'Backwaren', icon: 'leaf-outline', color: 'medium' },
-      { id: '6', name: 'Konserven', icon: 'apps-outline', color: 'dark' },
+      { id: '1', name: 'Gemüse', icon: 'nutrition-outline' },
+      { id: '2', name: 'Fleisch', icon: 'restaurant-outline' },
+      { id: '3', name: 'Milchprodukte', icon: 'water-outline' },
+      { id: '4', name: 'Getränke', icon: 'wine-outline' },
+      { id: '5', name: 'Backwaren', icon: 'leaf-outline' },
+      { id: '6', name: 'Konserven', icon: 'apps-outline' },
     ];
 
     this.storageLocationsSubject.next(fallbackLocations);
@@ -167,14 +211,14 @@ export class InventoryService {
   }
 
   // CRUD Lagerort mit Backend-Integration
-  getStorageLocations(): StorageLocationInterface[] {
+  getStorageLocations(): StorageLocation[] {
     return [...this.storageLocationsSubject.value];
   }
 
-  async addStorageLocation(location: Omit<StorageLocationInterface, 'id'>): Promise<StorageLocationInterface> {
+  async addStorageLocation(location: Omit<StorageLocation, 'location_id'>): Promise<StorageLocation> {
     try {
       // Backend-Aufruf
-      const newLocation = await this.supabaseService.createStorageLocation(location);
+    const newLocation = await this.supabaseService.createStorageLocation(location as Omit<StorageLocation, 'location_id'>);
       
       // Lokalen State aktualisieren
       const currentLocations = this.storageLocationsSubject.value;
@@ -188,14 +232,14 @@ export class InventoryService {
     }
   }
 
-  async updateStorageLocation(id: string, location: StorageLocationInterface): Promise<void> {
+  async updateStorageLocation(id: string, location: StorageLocation): Promise<void> {
     try {
       // Backend-Aufruf
       const updatedLocation = await this.supabaseService.updateStorageLocation(id, location);
       
       // Lokalen State aktualisieren
       const currentLocations = this.storageLocationsSubject.value;
-      const index = currentLocations.findIndex(s => s.id === id);
+  const index = currentLocations.findIndex(s => s.location_id === id);
       
       if (index !== -1) {
         const updatedLocations = [...currentLocations];
@@ -215,7 +259,7 @@ export class InventoryService {
     try {
       // Prüfen ob Items in diesem Lagerort existieren
       const currentFoodItems = this.foodItemsSubject.value;
-      const hasItemsInLocation = currentFoodItems.some(item => item.storageLocation.id === id);
+    const hasItemsInLocation = currentFoodItems.some(item => item.storageLocation.location_id === id);
       
       if (hasItemsInLocation) {
         throw new Error('Dieser Lagerort kann nicht gelöscht werden, da noch Artikel darin gespeichert sind.');
@@ -226,7 +270,7 @@ export class InventoryService {
       
       // Lokalen State aktualisieren
       const currentLocations = this.storageLocationsSubject.value;
-      const updatedLocations = currentLocations.filter(s => s.id !== id);
+  const updatedLocations = currentLocations.filter(s => s.location_id !== id);
       this.storageLocationsSubject.next(updatedLocations);
       
     } catch (error) {
@@ -345,7 +389,7 @@ async openAddModal(
 }
 
   async openEditModal(
-    item: StorageLocationInterface | FoodCategoryInterface,
+  item: StorageLocation | FoodCategoryInterface,
     type: 'storage' | 'category',
     modalController: ModalController
   ): Promise<{ success: boolean }> {
@@ -369,9 +413,11 @@ async openAddModal(
         const updatedItem = { ...item, ...result.data };
         
         if (type === 'storage') {
-          await this.updateStorageLocation(item.id, updatedItem);
+          if ('location_id' in item) {
+            await this.updateStorageLocation(item.location_id, updatedItem);
+          }
         } else {
-          await this.updateCategory(item.id, updatedItem as FoodCategoryInterface);
+          await this.updateCategory((item as FoodCategoryInterface).id, updatedItem as FoodCategoryInterface);
         }
         return {success: true};
       } catch (error) {
@@ -384,7 +430,7 @@ async openAddModal(
   }
 
   async openDeleteConfirmation(
-    item: StorageLocationInterface | FoodCategoryInterface,
+  item: StorageLocation | FoodCategoryInterface,
     type: 'storage' | 'category',
     alertController: AlertController
   ): Promise<{success: boolean}> {
@@ -406,9 +452,11 @@ async openAddModal(
             handler: async () => {
               try {
                 if (type === 'storage') {
-                  await this.deleteStorageLocation(item.id);
+                  if ('location_id' in item) {
+                    await this.deleteStorageLocation(item.location_id);
+                  }
                 } else {
-                  await this.deleteCategory(item.id);
+                  await this.deleteCategory((item as FoodCategoryInterface).id);
                 }
                 resolve({success: true});
               } catch (error) {
@@ -425,10 +473,10 @@ async openAddModal(
   }
 
   // Helper Methoden
-  private updateFoodItemsStorageLocation(locationId: string, updatedLocation: StorageLocationInterface): void {
+  private updateFoodItemsStorageLocation(locationId: string, updatedLocation: StorageLocation): void {
     const currentFoodItems = this.foodItemsSubject.value;
     const updatedFoodItems = currentFoodItems.map(item => 
-      item.storageLocation.id === locationId 
+  item.storageLocation.location_id === locationId
         ? { ...item, storageLocation: updatedLocation }
         : item
     );
@@ -471,8 +519,8 @@ async openAddModal(
         threshold.setDate(threshold.getDate() + 7);
 
         items.forEach((item) => {
-          itemsByLocation[item.storageLocation.id] =
-            (itemsByLocation[item.storageLocation.id] || 0) + 1;
+          itemsByLocation[item.storageLocation.location_id] =
+            (itemsByLocation[item.storageLocation.location_id] || 0) + 1;
 
           itemsByCategory[item.category.id] =
             (itemsByCategory[item.category.id] || 0) + 1;
@@ -498,7 +546,7 @@ async openAddModal(
 
       const mostUsedLocationId = Object.keys(itemsByLocation).reduce(
         (a, b) => (itemsByLocation[a] > itemsByLocation[b] ? a : b),
-        currentStorageLocations[0].id
+  currentStorageLocations[0].location_id
       );
       const mostUsedCategoryId = Object.keys(itemsByCategory).reduce(
         (a, b) => (itemsByCategory[a] > itemsByCategory[b] ? a : b),
@@ -511,7 +559,7 @@ async openAddModal(
           itemsByLocation,
           itemsByCategory,
         mostUsedLocation:
-          currentStorageLocations.find((loc) => loc.id === mostUsedLocationId) ||
+          currentStorageLocations.find((loc) => loc.location_id === mostUsedLocationId) ||
           currentStorageLocations[0],
         mostUsedCategory:
           currentCategories.find((cat) => cat.id === mostUsedCategoryId) ||

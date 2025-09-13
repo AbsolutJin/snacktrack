@@ -1,22 +1,60 @@
+// Dashboard-like neutral styling
 :host {
-  --green: #77d57a; // obere Leiste
   --text: #1b1b1b;
   --muted: #6b7280;
-  --card: #ffffff;
+  --card: #fff;
   --card-border: #e5e7eb;
-  --danger: #ef4444;
-  --radius: 14px;
-
+  --radius: 12px;
   color: var(--text);
 }
 
 ion-content {
-  --background: #f8fafc;
+  --background: var(--ion-color-light-tint);
 }
 
-.topbar {
-  // nutzt Ionic Toolbar; Farbe kommt über color="success" oder überschreibe hier
-  --background: var(--green);
+.inventory-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.inventory-title {
+  color: #222;
+  font-weight: 500;
+  font-size: 1.2em;
+  margin-bottom: 8px;
+}
+
+.inventory-details {
+  color: #555;
+  font-size: 1em;
+}
+
+
+.card {
+  background: #ececec; /* slightly darker gray */
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+  padding: 16px;
+  color: #111; /* strong readable black */
+}
+
+
+.card__title {
+  margin: .5rem .25rem .25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.card__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .25rem;
+  padding: .25rem;
 }
 
 .card__imgwrap {
@@ -143,8 +181,8 @@ ion-content {
   margin: .5rem 0;
 
   ion-chip {
-    --background: #e5f5e6;
-    --border-color: #cae6cb;
+    --background: #f5f5f5;
+    --border-color: #e5e7eb;
     border: 1px solid var(--border-color);
   }
 }

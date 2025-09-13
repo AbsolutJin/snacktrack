@@ -26,8 +26,8 @@
 
     <ion-item>
       <ion-label position="stacked">Farbe</ion-label>
-      <ion-select
-        [(ngModel)]="formData.color"
+  <ion-select />
+         <!-- Removed color binding, not part of StorageLocation -->
         name="color"
         required
         interface="popover"
@@ -40,7 +40,7 @@
         <ion-select-option value="success">Grün (Success)</ion-select-option>
         <ion-select-option value="warning">Orange (Warning)</ion-select-option>
         <ion-select-option value="danger">Rot (Danger)</ion-select-option>
-      </ion-select>
+  />
     </ion-item>
 
     <!-- Preview -->

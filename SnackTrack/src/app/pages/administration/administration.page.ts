@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AlertController, ModalController, IonicModule, ToastController } from '@ionic/angular';
-import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
+import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
 import { TitleCasePipe, CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -34,7 +34,7 @@ export class AdministrationPage implements OnInit, OnDestroy {
   selectedSegment: string = 'storage';
 
   // Observables für reactive Daten
-  storageLocations$: Observable<StorageLocationInterface[]>;
+  storageLocations$: Observable<StorageLocation[]>;
   categories$: Observable<FoodCategoryInterface[]>;
 
   // Für Unsubscribe
@@ -101,7 +101,7 @@ async addItem(type: 'storage' | 'category') {
 
   // Edit item
   async editItem(
-    item: StorageLocationInterface | FoodCategoryInterface,
+  item: StorageLocation | FoodCategoryInterface,
     type: 'storage' | 'category'
   ) {
     try {
@@ -120,7 +120,7 @@ async addItem(type: 'storage' | 'category') {
 
   // Delete item
 async deleteItem(
-  item: StorageLocationInterface | FoodCategoryInterface,
+  item: StorageLocation | FoodCategoryInterface,
   type: 'storage' | 'category'
 ) {
   try {

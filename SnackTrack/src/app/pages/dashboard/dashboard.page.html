@@ -1,3 +1,17 @@
+<!-- Verteilung nach Lagerplätzen -->
+<section class="distribution-section">
+  <h2>Verteilung nach Lagerplätzen</h2>
+  <div *ngFor="let location of storageLocations">
+    <div class="location-row">
+      <span>{{ location.name }}</span>
+      <span>
+        {{ stats.itemsByLocation[location.location_id] || 0 }} / {{ stats.totalItems }}
+        ({{ getProgress(stats.itemsByLocation[location.location_id] || 0, stats.totalItems) * 100 | number:'1.0-0' }}%)
+      </span>
+    </div>
+    <ion-progress-bar [value]="getProgress(stats.itemsByLocation[location.location_id] || 0, stats.totalItems)" />
+  </div>
+</section>
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-title>
