@@ -63,7 +63,7 @@ export class FoodCategoryModalComponent implements OnInit {
       this.formData = {
         name: this.item.name,
         icon: this.item.icon,
-        color: this.item.color,
+  color: this.item.color ?? 'success',
       };
     }
   }

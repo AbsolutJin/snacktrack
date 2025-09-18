@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { InventoryStatsInterface } from 'src/app/models/inventory-stats.interface';
-import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
+import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
 import { InventoryService } from '../../services/inventory.service';
 import { addIcons } from 'ionicons';
@@ -48,7 +48,7 @@ export class InventoryChartComponent implements OnInit {
     this.selectedSegment = event.detail.value;
   }
 
-  getStorageLocations(): StorageLocationInterface[] {
+  getStorageLocations(): StorageLocation[] {
     return this.inventoryService.getStorageLocations();
   }
 
@@ -64,8 +64,8 @@ export class InventoryChartComponent implements OnInit {
     return total > 0 ? Math.round((current / total) * 100) : 0;
   }
 
-  trackByLocationId(index: number, location: StorageLocationInterface): string {
-    return location.id;
+  trackByLocationId(index: number, location: StorageLocation): string {
+  return location.location_id;
   }
 
   trackByCategoryId(index: number, category: FoodCategoryInterface): string {

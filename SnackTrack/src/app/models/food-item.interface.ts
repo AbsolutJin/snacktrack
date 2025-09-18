@@ -1,5 +1,5 @@
 import { FoodCategoryInterface } from './food-category.interface';
-import { StorageLocationInterface } from './storage-location.interface';
+import { StorageLocation } from './storage-location.interface';
 
 export enum FoodUnit {
   Gram = "g",
@@ -14,7 +14,7 @@ export interface FoodItemInterface {
   category: FoodCategoryInterface;
   quantity: number;
   unit: FoodUnit;
-  storageLocation: StorageLocationInterface;
+  storageLocation: StorageLocation;
   expiryDate: Date;
   addedDate: Date;
   isExpiringSoon?: boolean;

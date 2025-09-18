@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController, IonicModule } from '@ionic/angular';
-import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
+import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { addIcons } from 'ionicons';
 import { snowOutline, cubeOutline, close } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
@@ -14,12 +14,12 @@ import { CommonModule } from '@angular/common';
 })
 export class StorageLocationModalComponent implements OnInit {
   isEdit: boolean = false;
-  item?: StorageLocationInterface;
+  item?: StorageLocation;
 
   formData = {
     name: '',
-    color: 'primary',
-  };
+  // Removed color property, not needed for StorageLocation
+    };
 
   constructor(private modalController: ModalController) {
     addIcons({ snowOutline, cubeOutline, close });
@@ -29,7 +29,7 @@ export class StorageLocationModalComponent implements OnInit {
     if (this.isEdit && this.item) {
       this.formData = {
         name: this.item.name,
-        color: this.item.color,
+   // Removed, not part of StorageLocation
       };
     }
   }

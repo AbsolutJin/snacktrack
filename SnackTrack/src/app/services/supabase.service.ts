@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { StorageLocationInterface } from '../models/storage-location.interface';
+import { StorageLocation } from '../models/storage-location.interface';
 import { FoodCategoryInterface } from '../models/food-category.interface';
 import { FoodItemInterface } from '../models/food-item.interface';
 import { environment } from '../../environments/environment';
@@ -9,6 +9,20 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class SupabaseService {
+  async updateInventoryItem(id: string, updatedInventory: any): Promise<void> {
+    const inventoryId = String(id);
+    console.log('[DEBUG] updateInventoryItem payload:', { inventoryId, updatedInventory });
+    const { data, error } = await this.supabase
+      .from('inventory')
+      .update(updatedInventory)
+      .eq('inventory_id', inventoryId)
+      .select();
+    console.log('[DEBUG] updateInventoryItem response:', { data, error });
+    if (error) {
+      console.error('Fehler beim Aktualisieren des Inventars:', error);
+      throw error;
+    }
+  }
   private supabase: SupabaseClient;
   /** Public access to the underlying Supabase client for other services */
   public readonly client: SupabaseClient;
@@ -21,8 +35,16 @@ export class SupabaseService {
   this.client = this.supabase;
   }
 
+    /**
+     * Authentifiziert einen Benutzer mit E-Mail und Passwort über Supabase Auth
+     */
+    async signIn(email: string, password: string): Promise<{ error: any }> {
+      const { error } = await this.supabase.auth.signInWithPassword({ email, password });
+      return { error };
+    }
+
   // Storage Locations CRUD
-  async getStorageLocations(): Promise<StorageLocationInterface[]> {
+  async getStorageLocations(): Promise<StorageLocation[]> {
     const { data, error } = await this.supabase
       .from('storage_locations')
       .select('*')
@@ -36,7 +58,7 @@ export class SupabaseService {
     return data || [];
   }
 
-  async createStorageLocation(location: Omit<StorageLocationInterface, 'id'>): Promise<StorageLocationInterface> {
+  async createStorageLocation(location: Omit<StorageLocation, 'location_id'>): Promise<StorageLocation> {
     const { data, error } = await this.supabase
       .from('storage_locations')
       .insert([location])
@@ -51,12 +73,11 @@ export class SupabaseService {
     return data;
   }
 
-  async updateStorageLocation(id: string, location: StorageLocationInterface): Promise<StorageLocationInterface> {
+  async updateStorageLocation(id: string, location: StorageLocation): Promise<StorageLocation> {
     const { data, error } = await this.supabase
       .from('storage_locations')
       .update({
         name: location.name,
-        color: location.color,
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
@@ -180,7 +201,7 @@ export class SupabaseService {
         unit: item.unit,
         expiry_date: item.expiryDate.toISOString(),
         added_date: item.addedDate.toISOString(),
-        storage_location_id: item.storageLocation.id,
+  storage_location_id: item.storageLocation.location_id,
         category_id: item.category.id
       }])
       .select(`
@@ -212,7 +233,7 @@ export class SupabaseService {
         quantity: item.quantity,
         unit: item.unit,
         expiry_date: item.expiryDate.toISOString(),
-        storage_location_id: item.storageLocation.id,
+  storage_location_id: item.storageLocation.location_id,
         category_id: item.category.id,
         updated_at: new Date().toISOString()
       })

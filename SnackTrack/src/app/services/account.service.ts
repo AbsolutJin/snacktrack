@@ -8,11 +8,9 @@ import { SupabaseService } from '../services/supabase.service';
 
 export interface UserProfile {
   id: string;
-  name: string;
+  username: string;
   email: string;
-  phone?: string | null;
   avatar_url?: string | null;   // public URL for display
-  avatar_path?: string | null;  // storage path for deletion
 }
 
 @Injectable({ providedIn: 'root' })
@@ -43,7 +41,7 @@ export class AccountService {
     // Read from your `profiles` table — adapt column names if needed
     const { data, error } = await this.client
       .from('profiles')
-      .select('id, name, email, phone, avatar_url, avatar_path')
+      .select('id, username, phone, avatar_url')
       .eq('id', user.id)
       .single();
 
@@ -52,11 +50,9 @@ export class AccountService {
       // Create initial row on first run
       const initial: UserProfile = {
         id: user.id,
-        name: user.user_metadata?.['name'] || user.email?.split('@')[0] || 'User',
+        username: user.user_metadata?.['username'] || user.email?.split('@')[0] || 'User',
         email: user.email || '',
-        phone: null,
         avatar_url: null,
-        avatar_path: null,
       };
       await this.upsertProfile(initial);
       this.profileSubject.next(initial);
@@ -64,12 +60,10 @@ export class AccountService {
     }
 
     const profile: UserProfile = {
-      id: data.id,
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      avatar_url: data.avatar_url,
-      avatar_path: data.avatar_path,
+  id: data.id,
+  username: data.username,
+  email: user.email || '',
+  avatar_url: data.avatar_url,
     };
     this.profileSubject.next(profile);
     return profile;
@@ -77,7 +71,10 @@ export class AccountService {
 
   /** Create/update profile row */
   private async upsertProfile(p: Partial<UserProfile>): Promise<void> {
-    const { error } = await this.client.from('profiles').upsert(p, { onConflict: 'id' });
+  // Entferne 'email' aus dem Profil, da es nicht in 'profiles' existiert
+  const { email, ...profileData } = p;
+  const { error } = await this.client.from('profiles').upsert(profileData, { onConflict: 'id' });
+  if (error) throw error;
     if (error) throw error;
   }
 
@@ -92,7 +89,9 @@ export class AccountService {
       if (e) throw e;
     }
 
-    await this.upsertProfile({ id: current.id, ...update });
+    // Entferne 'email' aus dem Update für die Tabelle 'profiles'
+    const { email, ...profileUpdate } = update;
+    await this.upsertProfile({ id: current.id, ...profileUpdate });
 
     // Emit local update
     const next: UserProfile = { ...current, ...update } as UserProfile;
@@ -111,17 +110,13 @@ export class AccountService {
     const { error: upErr } = await this.client.storage.from(bucket).upload(path, file, { upsert: true });
     if (upErr) throw upErr;
 
-    // Optional: remove previous avatar file if we tracked its path
-    if (current.avatar_path) {
-      await this.client.storage.from(bucket).remove([current.avatar_path]);
-    }
 
     const { data: pub } = this.client.storage.from(bucket).getPublicUrl(path);
     const publicUrl = pub.publicUrl;
 
-    await this.upsertProfile({ id: current.id, avatar_url: publicUrl, avatar_path: path });
+    await this.upsertProfile({ id: current.id, avatar_url: publicUrl });
 
-    const next: UserProfile = { ...current, avatar_url: publicUrl, avatar_path: path };
+    const next: UserProfile = { ...current, avatar_url: publicUrl };
     this.profileSubject.next(next);
 
     return publicUrl;
@@ -132,11 +127,8 @@ export class AccountService {
     const current = this.profileSubject.value;
     if (!current) return;
 
-    if (current.avatar_path) {
-      await this.client.storage.from('avatars').remove([current.avatar_path]);
-    }
-    await this.upsertProfile({ id: current.id, avatar_url: null, avatar_path: null });
-    this.profileSubject.next({ ...current, avatar_url: null, avatar_path: null });
+    await this.upsertProfile({ id: current.id, avatar_url: null });
+    this.profileSubject.next({ ...current, avatar_url: null });
   }
 
   /** Change password (user must be logged in) */

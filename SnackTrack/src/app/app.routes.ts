@@ -1,15 +1,17 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './services/auth.guard';
 import { TabsPage } from './pages/tabs/tabs.page';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'tabs/dashboard',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
     path: 'tabs',
-    component: TabsPage, // TabsPage ist das Container-Layout
+    component: TabsPage,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'dashboard',
@@ -17,6 +19,7 @@ export const routes: Routes = [
           import('./pages/dashboard/dashboard.page').then(
             (m) => m.DashboardPage
           ),
+        canActivate: [AuthGuard],
       },
       {
         path: 'kitchen',
@@ -24,6 +27,7 @@ export const routes: Routes = [
           import('./pages/inventory/inventory.page').then(
             (m) => m.InventoryPage
           ),
+        canActivate: [AuthGuard],
       },
       {
         path: 'administration',
@@ -31,11 +35,13 @@ export const routes: Routes = [
           import('./pages/administration/administration.page').then(
             (m) => m.AdministrationPage
           ),
+        canActivate: [AuthGuard],
       },
       {
         path: 'profile',
         loadComponent: () =>
           import('./pages/account/account.page').then((m) => m.AccountPage),
+        canActivate: [AuthGuard],
       },
       {
         path: '',

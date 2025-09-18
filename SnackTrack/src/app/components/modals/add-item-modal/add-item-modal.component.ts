@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ModalController, IonicModule, IonContent } from '@ionic/angular';
 import { FoodItemInterface, FoodUnit } from 'src/app/models/food-item.interface';
 import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
-import { StorageLocationInterface } from 'src/app/models/storage-location.interface';
+import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { ToastService } from 'src/app/services/toast.service';
 import { addIcons } from 'ionicons';
 import { close, calendarOutline, alertCircleOutline, closeCircle } from 'ionicons/icons';
@@ -21,7 +21,7 @@ export class AddItemModalComponent implements OnInit {
   isEdit: boolean = false;
   item?: FoodItemInterface;
   categories: FoodCategoryInterface[] = [];
-  storageLocations: StorageLocationInterface[] = [];
+  storageLocations: StorageLocation[] = [];
 
   formData = {
     name: '',
@@ -52,7 +52,7 @@ export class AddItemModalComponent implements OnInit {
         categoryId: this.item.category.id,
         quantity: this.item.quantity,
         unit: this.item.unit,
-        storageLocationId: this.item.storageLocation.id,
+  storageLocationId: this.item.storageLocation.location_id,
         expiryDate: this.item.expiryDate.toISOString(),
       };
     }
@@ -72,7 +72,7 @@ export class AddItemModalComponent implements OnInit {
       }
 
       const selectedCategory = this.categories.find(c => c.id === this.formData.categoryId);
-      const selectedLocation = this.storageLocations.find(l => l.id === this.formData.storageLocationId);
+  const selectedLocation = this.storageLocations.find(l => l.location_id === this.formData.storageLocationId);
 
       if (!selectedCategory) {
         await this.toastService.error('Die ausgewählte Kategorie konnte nicht gefunden werden.');
@@ -135,7 +135,7 @@ export class AddItemModalComponent implements OnInit {
   }
 
   getStorageLocationName(): string {
-    const location = this.storageLocations.find(l => l.id === this.formData.storageLocationId);
+  const location = this.storageLocations.find(l => l.location_id === this.formData.storageLocationId);
     return location?.name || '';
   }
 

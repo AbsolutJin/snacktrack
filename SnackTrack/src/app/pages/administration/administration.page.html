@@ -25,11 +25,11 @@
     @if (storageLocations$ | async; as storageLocations) {
       @if (storageLocations.length > 0) {
         <ion-list>
-          @for (location of storageLocations; track location.id) {
+          @for (location of storageLocations; track location.location_id) {
             <ion-item>
               <ion-label>
                 <h2>{{ location.name }}</h2>
-                <p>{{ location.color | titlecase }}</p>
+                <!-- Removed color display, not part of StorageLocation -->
               </ion-label>
               
               <ion-button

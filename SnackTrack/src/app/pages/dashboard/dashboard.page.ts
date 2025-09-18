@@ -1,3 +1,4 @@
+import { StorageLocation } from '../../models/storage-location.interface';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
@@ -34,6 +35,12 @@ import {
   ],
 })
 export class DashboardPage implements OnInit, OnDestroy {
+  storageLocations: StorageLocation[] = [];
+  stats: { itemsByLocation: { [key: string]: number }, totalItems: number } = { itemsByLocation: {}, totalItems: 0 };
+
+  getProgress(count: number, total: number): number {
+    return total > 0 ? count / total : 0;
+  }
   private destroy$ = new Subject<void>();
 
   isLoading = true;
@@ -84,6 +91,10 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadDashboardData();
+    // Subscribe to storageLocations$ from InventoryService
+    this.inventoryService.storageLocations$.subscribe(locations => {
+      this.storageLocations = locations;
+    });
   }
 
   ngOnDestroy() {
