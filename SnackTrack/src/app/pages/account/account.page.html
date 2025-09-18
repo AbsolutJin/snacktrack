@@ -20,7 +20,7 @@
         <img [src]="avatarDataUrl" alt="Profilbild" />
       </ng-container>
       <ng-template #initials>
-        <div class="initial">{{ user.name?.charAt(0) || 'A' }}</div>
+        <div class="initial">{{ user.name.charAt(0) || 'A' }}</div>
       </ng-template>
 
       <div class="overlay" aria-hidden="true">
