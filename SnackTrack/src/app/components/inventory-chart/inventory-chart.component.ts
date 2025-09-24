@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { InventoryStatsInterface } from 'src/app/models/inventory-stats.interface';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
-import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
 import { InventoryService } from '../../services/inventory.service';
 import { addIcons } from 'ionicons';
 import {
@@ -27,7 +26,7 @@ import {
 })
 export class InventoryChartComponent implements OnInit {
   inventoryStats$!: Observable<InventoryStatsInterface>;
-  selectedSegment: string = 'locations';
+  // Categories entfernt - nur noch Locations verfügbar
 
   constructor(private inventoryService: InventoryService) {
     addIcons({
@@ -44,17 +43,11 @@ export class InventoryChartComponent implements OnInit {
     this.inventoryStats$ = this.inventoryService.getInventoryStats();
   }
 
-  onSegmentChange(event: any) {
-    this.selectedSegment = event.detail.value;
-  }
 
   getStorageLocations(): StorageLocation[] {
     return this.inventoryService.getStorageLocations();
   }
 
-  getCategories(): FoodCategoryInterface[] {
-    return this.inventoryService.getCategories();
-  }
 
   getProgress(current: number, total: number): number {
     return total > 0 ? current / total : 0;
@@ -68,7 +61,4 @@ export class InventoryChartComponent implements OnInit {
   return location.location_id;
   }
 
-  trackByCategoryId(index: number, category: FoodCategoryInterface): string {
-    return category.id;
-  }
 }

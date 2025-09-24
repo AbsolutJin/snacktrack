@@ -56,22 +56,6 @@
       </ion-input>
     </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Kategorie</ion-label>
-      <ion-select
-        [(ngModel)]="formData.categoryId"
-        name="categoryId"
-        required
-        interface="popover"
-        placeholder="Kategorie auswählen"
-      >
-        @for (category of categories; track category.id) {
-          <ion-select-option [value]="category.id">
-            {{ category.name }}
-          </ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Menge</ion-label>
@@ -139,14 +123,14 @@
     </ion-item>
 
     <!-- Preview -->
-    @if(formData.name && formData.categoryId && formData.storageLocationId) {
+    @if(formData.name && formData.storageLocationId) {
       <div class="preview-section">
         <ion-label class="preview-label">Vorschau:</ion-label>
         <ion-item class="preview-item">
           <ion-label>
             <h3>{{ formData.name }}</h3>
             <p>{{ formData.quantity }} {{ getUnitLabel(formData.unit) }}</p>
-            <p>{{ getCategoryName() }} • {{ getStorageLocationName() }}</p>
+            <p>{{ getStorageLocationName() }}</p>
             <p>Läuft ab: {{ formatExpiryDate() }}</p>
           </ion-label>
         </ion-item>

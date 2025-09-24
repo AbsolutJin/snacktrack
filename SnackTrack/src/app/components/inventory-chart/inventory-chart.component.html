@@ -7,32 +7,16 @@
   </ion-card-header>
 
   <ion-card-content>
-    <!-- Segment zur Auswahl -->
-    <ion-segment
-      [(ngModel)]="selectedSegment"
-      (ionChange)="onSegmentChange($event)"
-    >
-      <ion-segment-button value="locations">
-        <ion-label>Lagerplätze</ion-label>
-        <ion-icon name="home-outline"></ion-icon>
-      </ion-segment-button>
-      <ion-segment-button value="categories">
-        <ion-label>Kategorien</ion-label>
-        <ion-icon name="albums-outline"></ion-icon>
-      </ion-segment-button>
-    </ion-segment>
+    <!-- Nur noch Lagerplätze verfügbar -->
+    <h3>Verteilung nach Lagerplätzen</h3>
 
     @if(inventoryStats$ | async; as stats){
     <div class="chart-container">
       <!-- Lagerplätze Chart -->
-       @if(selectedSegment === 'locations'){
-              <div class="chart-section">
-        <h3>Verteilung nach Lagerplätzen</h3>
+      <div class="chart-section">
         <div class="progress-chart">
           @for(location of getStorageLocations(); track location.location_id){
-          <div
-            class="progress-item"
-          >
+          <div class="progress-item">
             <div class="progress-header">
               <div class="progress-label">
                 <span>{{ location.name }}</span>
@@ -50,66 +34,20 @@
                 >
               </div>
             </div>
-            <ion-progress-bar />
+            <ion-progress-bar 
               [value]="
                 getProgress(
                    stats.itemsByLocation[location.location_id] || 0,
                   stats.totalItems
                 )
-              "
-              <!-- Removed color binding, not part of StorageLocation -->
-            >
-            />
-          </div>
-          }
-
-        </div>
-      </div>
-       }
-
-
-      <!-- Kategorien Chart -->
-       @if(selectedSegment === 'categories'){
-      <div class="chart-section">
-        <h3>Verteilung nach Kategorien</h3>
-        <div class="progress-chart">
-          @for(category of getCategories(); track category.id){
-          <div
-            class="progress-item"
-          >
-            <div class="progress-header">
-              <div class="progress-label">
-                <span>{{ category.name }}</span>
-              </div>
-              <div class="progress-value">
-                {{ stats.itemsByCategory[category.id] || 0 }} /
-                {{ stats.totalItems }}
-                <small
-                  >({{
-                    getPercentage(
-                      stats.itemsByCategory[category.id] || 0,
-                      stats.totalItems
-                    )
-                  }}%)</small
-                >
-              </div>
-            </div>
-            <ion-progress-bar
-              [value]="
-                getProgress(
-                  stats.itemsByCategory[category.id] || 0,
-                  stats.totalItems
-                )
-              "
-              [color]="category.color"
-            >
+              ">
             </ion-progress-bar>
           </div>
           }
-
         </div>
       </div>
-       }
+
+
 
 
       <!-- Zusammenfassung -->
