@@ -61,7 +61,7 @@
           <ion-card-header>
             <ng-container *ngIf="editingId !== item.id; else editTitle">
               <ion-card-title class="card__title">
-                <ion-icon class="card__title-icon" [name]="item.categoryIcon || 'cube-outline'"></ion-icon>
+                <ion-icon class="card__title-icon" name="cube-outline"></ion-icon>
                 <span>{{ item.name }}</span>
               </ion-card-title>
             </ng-container>

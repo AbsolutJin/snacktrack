@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AlertController, ModalController, IonicModule, ToastController } from '@ionic/angular';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
-import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
-import { TitleCasePipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import {
   archiveOutline,
@@ -28,14 +27,13 @@ import { ToastService } from 'src/app/services/toast.service';
   selector: 'app-admin',
   templateUrl: './administration.page.html',
   styleUrls: ['./administration.page.scss'],
-  imports: [IonicModule, TitleCasePipe, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule],
 })
 export class AdministrationPage implements OnInit, OnDestroy {
-  selectedSegment: string = 'storage';
+  // Categories entfernt - nur noch Storage Locations
 
   // Observables für reactive Daten
   storageLocations$: Observable<StorageLocation[]>;
-  categories$: Observable<FoodCategoryInterface[]>;
 
   // Für Unsubscribe
   private destroy$ = new Subject<void>();
@@ -48,7 +46,6 @@ export class AdministrationPage implements OnInit, OnDestroy {
   ) {
 
     this.storageLocations$ = this.inventoryService.storageLocations$;
-    this.categories$ = this.inventoryService.categories$;
 
     addIcons({
       archiveOutline,
@@ -70,7 +67,24 @@ export class AdministrationPage implements OnInit, OnDestroy {
   ngOnInit() {
     // Observables vom Service abonnieren
     this.storageLocations$ = this.inventoryService.storageLocations$;
-    this.categories$ = this.inventoryService.categories$;
+    
+    // Debug: Prüfen ob Daten geladen werden
+    this.storageLocations$.subscribe(locations => {
+      console.log('[Administration] Storage Locations:', locations);
+    });
+    
+    // Manuell refreshen um sicherzustellen dass Daten geladen werden
+    this.refreshData();
+  }
+
+  async refreshData() {
+    try {
+      console.log('[Administration] Refreshing data...');
+      await this.inventoryService.refreshData();
+      console.log('[Administration] Data refreshed');
+    } catch (error) {
+      console.error('[Administration] Error refreshing data:', error);
+    }
   }
 
   ngOnDestroy() {
@@ -78,38 +92,31 @@ export class AdministrationPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // Tab change handler
-  onSegmentChange(event: any) {
-    this.selectedSegment = event.detail.value;
-  }
 
-  // Add new item
-async addItem(type: 'storage' | 'category') {
-  try {
-    const result = await this.inventoryService.openAddModal(type, this.modalController);
-    
-    // Bei erfolgreichem Hinzufügen
-    if (result && result.success) {
-      await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich hinzugefügt.`);
-    }
-    // Bei Abbruch
-  } catch (error) {
-    console.error('Fehler beim Hinzufügen:', error);
-    await this.toastService.error('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.');
-  }
-}
-
-  // Edit item
-  async editItem(
-  item: StorageLocation | FoodCategoryInterface,
-    type: 'storage' | 'category'
-  ) {
+  // Add new storage location
+  async addStorageLocation() {
     try {
-      const result = await this.inventoryService.openEditModal(item, type, this.modalController);
+      const result = await this.inventoryService.openAddModal(this.modalController);
+      
+      // Bei erfolgreichem Hinzufügen
+      if (result && result.success) {
+        await this.toastService.success('Lagerort wurde erfolgreich hinzugefügt.');
+      }
+      // Bei Abbruch
+    } catch (error) {
+      console.error('Fehler beim Hinzufügen:', error);
+      await this.toastService.error('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.');
+    }
+  }
+
+  // Edit storage location
+  async editStorageLocation(item: StorageLocation) {
+    try {
+      const result = await this.inventoryService.openEditModal(item, this.modalController);
 
       // Bei erfolgreichem editieren
       if (result && result.success) {
-        await this.toastService.success(`${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich aktualisiert.`);
+        await this.toastService.success('Lagerort wurde erfolgreich aktualisiert.');
       }
        // Bei Abbruch
        }catch (error) {
@@ -118,26 +125,21 @@ async addItem(type: 'storage' | 'category') {
     }
   }
 
-  // Delete item
-async deleteItem(
-  item: StorageLocation | FoodCategoryInterface,
-  type: 'storage' | 'category'
-) {
-  try {
-    const result = await this.inventoryService.openDeleteConfirmation(item, type, this.alertController);
+  // Delete storage location
+  async deleteStorageLocation(item: StorageLocation) {
+    try {
+      const result = await this.inventoryService.openDeleteConfirmation(item, this.alertController);
 
-    if (result.success) {
-      await this.toastService.success(
-        `${type === 'storage' ? 'Lagerort' : 'Kategorie'} wurde erfolgreich gelöscht.`
+      if (result.success) {
+        await this.toastService.success('Lagerort wurde erfolgreich gelöscht.');
+      }
+      // Abbruch
+    } catch (error) {
+      console.error('Fehler beim Löschen:', error);
+      await this.toastService.error(
+        error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.'
       );
     }
-    // Abbruch
-  } catch (error) {
-    console.error('Fehler beim Löschen:', error);
-    await this.toastService.error(
-      error instanceof Error ? error.message : 'Unbekannter Fehler beim Löschen.'
-    );
   }
-}
 
 }

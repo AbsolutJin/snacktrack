@@ -1,4 +1,3 @@
-import { FoodCategoryInterface } from './food-category.interface';
 import { StorageLocation } from './storage-location.interface';
 
 export enum FoodUnit {
@@ -11,7 +10,6 @@ export enum FoodUnit {
 export interface FoodItemInterface {
   id: string;
   name: string;
-  category: FoodCategoryInterface;
   quantity: number;
   unit: FoodUnit;
   storageLocation: StorageLocation;

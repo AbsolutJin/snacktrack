@@ -140,7 +140,6 @@ export class DashboardPage implements OnInit, OnDestroy {
         component: AddItemModalComponent,
         componentProps: {
           isEdit: false,
-          categories: this.inventoryService.getCategories(),
           storageLocations: this.inventoryService.getStorageLocations(),
         },
       });

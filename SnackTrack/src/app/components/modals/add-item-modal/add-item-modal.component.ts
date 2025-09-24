@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ModalController, IonicModule, IonContent } from '@ionic/angular';
 import { FoodItemInterface, FoodUnit } from 'src/app/models/food-item.interface';
-import { FoodCategoryInterface } from 'src/app/models/food-category.interface';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { ToastService } from 'src/app/services/toast.service';
 import { addIcons } from 'ionicons';
@@ -20,12 +19,10 @@ export class AddItemModalComponent implements OnInit {
   
   isEdit: boolean = false;
   item?: FoodItemInterface;
-  categories: FoodCategoryInterface[] = [];
   storageLocations: StorageLocation[] = [];
 
   formData = {
     name: '',
-    categoryId: '',
     quantity: 1,
     unit: FoodUnit.Piece,
     storageLocationId: '',
@@ -49,10 +46,9 @@ export class AddItemModalComponent implements OnInit {
     if (this.isEdit && this.item) {
       this.formData = {
         name: this.item.name,
-        categoryId: this.item.category.id,
         quantity: this.item.quantity,
         unit: this.item.unit,
-  storageLocationId: this.item.storageLocation.location_id,
+        storageLocationId: this.item.storageLocation.location_id,
         expiryDate: this.item.expiryDate.toISOString(),
       };
     }
@@ -71,13 +67,7 @@ export class AddItemModalComponent implements OnInit {
         return;
       }
 
-      const selectedCategory = this.categories.find(c => c.id === this.formData.categoryId);
-  const selectedLocation = this.storageLocations.find(l => l.location_id === this.formData.storageLocationId);
-
-      if (!selectedCategory) {
-        await this.toastService.error('Die ausgewählte Kategorie konnte nicht gefunden werden.');
-        return;
-      }
+      const selectedLocation = this.storageLocations.find(l => l.location_id === this.formData.storageLocationId);
 
       if (!selectedLocation) {
         await this.toastService.error('Der ausgewählte Lagerort konnte nicht gefunden werden.');
@@ -96,7 +86,6 @@ export class AddItemModalComponent implements OnInit {
 
       const itemData: Partial<FoodItemInterface> = {
         name: this.formData.name.trim(),
-        category: selectedCategory,
         quantity: this.formData.quantity,
         unit: this.formData.unit,
         storageLocation: selectedLocation,
@@ -129,10 +118,6 @@ export class AddItemModalComponent implements OnInit {
     }
   }
 
-  getCategoryName(): string {
-    const category = this.categories.find(c => c.id === this.formData.categoryId);
-    return category?.name || '';
-  }
 
   getStorageLocationName(): string {
   const location = this.storageLocations.find(l => l.location_id === this.formData.storageLocationId);
@@ -151,9 +136,6 @@ export class AddItemModalComponent implements OnInit {
       errors.push('Name des Artikels fehlt');
     }
     
-    if (!this.formData.categoryId) {
-      errors.push('Kategorie nicht ausgewählt');
-    }
     
     if (!this.formData.storageLocationId) {
       errors.push('Lagerort nicht ausgewählt');

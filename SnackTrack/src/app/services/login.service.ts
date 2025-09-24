@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { SupabaseService } from './supabase.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  constructor(private supabase: SupabaseService) {}
+  constructor(private authService: AuthService) {}
 
   async login(email: string, password: string): Promise<void> {
-    const { error } = await this.supabase.signIn(email, password);
+    const { error } = await this.authService.signIn(email, password);
     if (error) {
       throw new Error(error.message);
     }

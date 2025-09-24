@@ -1,26 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Stammdaten verwalten</ion-title>
-  </ion-toolbar>
-  <!-- Segment-Bar im Header -->
-  <ion-toolbar>
-    <ion-segment [(ngModel)]="selectedSegment" (ionChange)="onSegmentChange($event)">
-      <ion-segment-button value="storage">
-        <ion-icon name="archive-outline"></ion-icon>
-        <ion-label>Lagerorte</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="categories">
-        <ion-icon name="grid-outline"></ion-icon>
-        <ion-label>Essenskategorien</ion-label>
-      </ion-segment-button>
-    </ion-segment>
+    <ion-title>Lagerorte verwalten</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   
-  <!-- Lager -->
-@if (selectedSegment === 'storage') {
+  <!-- Lagerorte -->
   <div class="segment-content">
     @if (storageLocations$ | async; as storageLocations) {
       @if (storageLocations.length > 0) {
@@ -29,13 +15,12 @@
             <ion-item>
               <ion-label>
                 <h2>{{ location.name }}</h2>
-                <!-- Removed color display, not part of StorageLocation -->
               </ion-label>
               
               <ion-button
                 fill="clear"
                 color="medium"
-                (click)="editItem(location, 'storage')"
+                (click)="editStorageLocation(location)"
                 slot="end"
               >
                 <ion-icon name="create-outline"></ion-icon>
@@ -44,7 +29,7 @@
               <ion-button
                 fill="clear"
                 color="danger"
-                (click)="deleteItem(location, 'storage')"
+                (click)="deleteStorageLocation(location)"
                 slot="end"
               >
                 <ion-icon name="trash-outline"></ion-icon>
@@ -60,61 +45,11 @@
       }
     }
   </div>
-}
 
-  <!-- Kategorien -->
-@if (selectedSegment === 'categories') {
-  <div class="segment-content">
-    @if (categories$ | async; as categories) {
-      @if (categories.length > 0) {
-        <ion-list>
-          @for (category of categories; track category.id) {
-            <ion-item>
-              <ion-icon
-                [name]="category.icon"
-                [color]="category.color"
-                slot="start"
-              >
-              </ion-icon>
-              
-              <ion-label>
-                <h2>{{ category.name }}</h2>
-                <p>{{ category.color | titlecase }}</p>
-              </ion-label>
-              
-              <ion-button
-                fill="clear"
-                color="medium"
-                (click)="editItem(category, 'category')"
-                slot="end"
-              >
-                <ion-icon name="create-outline"></ion-icon>
-              </ion-button>
-              
-              <ion-button
-                fill="clear"
-                color="danger"
-                (click)="deleteItem(category, 'category')"
-                slot="end"
-              >
-                <ion-icon name="trash-outline"></ion-icon>
-              </ion-button>
-            </ion-item>
-          }
-        </ion-list>
-      } @else {
-        <div class="empty-state">
-          <ion-icon name="grid-outline" color="medium"></ion-icon>
-          <p>Keine Essenskategorien vorhanden</p>
-        </div>
-      }
-    }
-  </div>
-}
 
-  <!-- Fixed FAB Button außerhalb der scrollbaren Bereiche -->
+  <!-- Fixed FAB Button für neue Lagerorte -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-with-tabs">
-    <ion-fab-button (click)="addItem(selectedSegment === 'storage' ? 'storage' : 'category')" color="primary">
+    <ion-fab-button (click)="addStorageLocation()" color="primary">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>

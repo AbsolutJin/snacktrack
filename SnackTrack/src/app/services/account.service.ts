@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-// If you already have a SupabaseService that exposes a `client: SupabaseClient`,
-// import it and inject below.
-import { SupabaseService } from '../services/supabase.service';
+import { SupabaseClientService } from './supabase-client.service';
 
 export interface UserProfile {
   id: string;
@@ -21,9 +19,8 @@ export class AccountService {
   /** Live profile for UI */
   profile$ = this.profileSubject.asObservable();
 
-  constructor(private supa: SupabaseService) {
-    // Assume your existing wrapper exposes the Supabase client
-    this.client = this.supa.client as SupabaseClient;
+  constructor(private supabaseClient: SupabaseClientService) {
+    this.client = this.supabaseClient.client;
     // Auto-load once
     void this.reload();
   }
@@ -41,7 +38,7 @@ export class AccountService {
     // Read from your `profiles` table — adapt column names if needed
     const { data, error } = await this.client
       .from('profiles')
-      .select('id, username, phone, avatar_url')
+      .select('id, username, avatar_url')
       .eq('id', user.id)
       .single();
 
@@ -75,7 +72,6 @@ export class AccountService {
   const { email, ...profileData } = p;
   const { error } = await this.client.from('profiles').upsert(profileData, { onConflict: 'id' });
   if (error) throw error;
-    if (error) throw error;
   }
 
   /** Update profile fields (and email in auth if changed) */

@@ -31,7 +31,6 @@ interface InventoryCardItem {
   count: number;
   img?: string | null;
   badge?: string;
-  categoryIcon?: string;
 }
 
 @Component({
@@ -104,7 +103,6 @@ export class InventoryPage implements OnInit, OnDestroy {
       count: inv.quantity,
       img: item?.image_url ?? null,
       badge: inv.expiration_date ? `Ablauf: ${inv.expiration_date}` : undefined,
-      categoryIcon: 'cube-outline',
     };
   }
 
