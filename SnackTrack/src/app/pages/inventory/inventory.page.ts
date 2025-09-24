@@ -22,6 +22,7 @@ import {
   closeOutline,
   cubeOutline,
   imageOutline,
+  removeOutline,
 } from 'ionicons/icons';
 
 interface InventoryCardItem {
@@ -68,6 +69,7 @@ export class InventoryPage implements OnInit, OnDestroy {
       closeOutline,
       cubeOutline,
       imageOutline,
+      removeOutline,
     });
   }
 
