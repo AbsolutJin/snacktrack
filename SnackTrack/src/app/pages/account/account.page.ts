@@ -28,6 +28,8 @@ export class AccountPage implements OnInit, OnDestroy {
   @ViewChild('profileForm') profileForm!: NgForm;
 
   private sub?: Subscription;
+  private originalUsername = '';
+  private originalEmail = '';
 
   constructor(
     private account: AccountService,
@@ -44,6 +46,9 @@ export class AccountPage implements OnInit, OnDestroy {
       if (!p) return;
   this.user = { ...p };
   this.avatarDataUrl = p.avatar_url || null;
+      // save originals for change-detection
+      this.originalUsername = this.user.username || '';
+      this.originalEmail = this.user.email || '';
     });
   }
 
@@ -93,10 +98,20 @@ export class AccountPage implements OnInit, OnDestroy {
       const { id, ...payload } = this.user; // never update id
       await this.account.updateProfile(payload);
       await this.presentToast('Profil gespeichert');
+      // update originals so Save button disables again
+      this.originalUsername = this.user.username || '';
+      this.originalEmail = this.user.email || '';
+      try {
+        this.profileForm.form.markAsPristine();
+      } catch {}
     } catch (e) {
       console.error(e);
       await this.presentToast('Speichern fehlgeschlagen');
     }
+  }
+
+  get hasChanges(): boolean {
+    return (this.user.username || '') !== (this.originalUsername || '') || (this.user.email || '') !== (this.originalEmail || '');
   }
 
   async openChangePassword() {

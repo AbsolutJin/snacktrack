@@ -58,7 +58,7 @@
 
 
         <div class="actions">
-          <ion-button expand="block" color="primary" type="submit" [disabled]="profileForm.invalid">Speichern</ion-button>
+          <ion-button expand="block" color="primary" type="submit" [disabled]="profileForm.invalid || !hasChanges">Speichern</ion-button>
           <ion-button expand="block" fill="clear" (click)="openChangePassword()">Passwort ändern</ion-button>
           <ion-button expand="block" color="danger" fill="outline" (click)="logout()">Abmelden</ion-button>
         </div>
