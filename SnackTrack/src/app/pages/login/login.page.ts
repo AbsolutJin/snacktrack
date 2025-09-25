@@ -9,13 +9,14 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { IonItem, IonLabel, IonButton, IonInput } from '@ionic/angular/standalone';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonButton, IonInput, CommonModule, FormsModule, ReactiveFormsModule]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonButton, IonInput, CommonModule, FormsModule, ReactiveFormsModule, RouterModule]
 })
 export class LoginPage implements OnInit {
 
@@ -48,9 +49,11 @@ export class LoginPage implements OnInit {
   await this.accountService.reload();
   this.router.navigate(['/tabs/dashboard']);
       } catch (error: any) {
-        this.errorMessage = error.message || 'Login fehlgeschlagen.';
-        this.toast.error(this.errorMessage);
-        console.error('Login Fehler:', error);
+        // For security do not reveal whether email or password was incorrect.
+        const generic = 'E-Mail oder Passwort ist ungültig.';
+        this.errorMessage = generic;
+        this.toast.error(generic);
+        console.error('Login Fehler (intern):', error);
       }
     } else {
       this.errorMessage = 'Bitte alle Felder ausfüllen.';

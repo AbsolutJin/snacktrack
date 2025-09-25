@@ -1,20 +1,28 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>login</ion-title>
+  <ion-toolbar class="toolbar-brand">
+    <ion-title>Login</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <form [formGroup]="loginForm" (ngSubmit)="onLogin()" style="margin: 32px;">
-    <ion-item>
-      <ion-label position="floating">E-Mail</ion-label>
-      <ion-input type="email" formControlName="email"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Passwort</ion-label>
-      <ion-input type="password" formControlName="password"></ion-input>
-    </ion-item>
-    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
-    <ion-button expand="block" type="submit" [disabled]="!loginForm.valid">Login</ion-button>
-  </form>
+<ion-content [fullscreen]="true" class="page-content">
+  <div style="padding: 16px;">
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <ion-item>
+        <ion-label position="stacked">E-Mail</ion-label>
+        <ion-input type="email" formControlName="email"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Passwort</ion-label>
+        <ion-input type="password" formControlName="password"></ion-input>
+      </ion-item>
+
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+      <div style="margin-top: 16px; display:flex; gap:8px; flex-direction:column;">
+        <ion-button expand="block" type="submit" [disabled]="!loginForm.valid">Login</ion-button>
+        <ion-button expand="block" fill="clear" routerLink="/register">Registrieren</ion-button>
+      </div>
+    </form>
+  </div>
 </ion-content>

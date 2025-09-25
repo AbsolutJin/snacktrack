@@ -5,6 +5,8 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { AccountService, UserProfile } from '../../services/account.service';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 import { ChangePasswordModal } from './change-password.modal';
 
 // Ionicons registration (ensure icons display reliably)
@@ -31,6 +33,8 @@ export class AccountPage implements OnInit, OnDestroy {
     private account: AccountService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
+    private auth: AuthService,
+    private router: Router,
   ) {
     addIcons({ cameraOutline, trashOutline, saveOutline, closeOutline, mailOutline, callOutline, personOutline });
   }
@@ -98,6 +102,17 @@ export class AccountPage implements OnInit, OnDestroy {
   async openChangePassword() {
     const modal = await this.modalCtrl.create({ component: ChangePasswordModal });
     await modal.present();
+  }
+
+  async logout() {
+    try {
+      const { error } = await this.auth.signOut();
+      if (error) throw error;
+      await this.router.navigate(['/login']);
+    } catch (e) {
+      console.error('Logout failed', e);
+      await this.presentToast('Abmelden fehlgeschlagen');
+    }
   }
 
   private async presentToast(message: string) {

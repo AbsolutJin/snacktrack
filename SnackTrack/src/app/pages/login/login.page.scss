@@ -1,3 +1,8 @@
+.toolbar-brand { --background: #6ED37F; --color: #0b0b0b; }
+.page-content { padding: 16px; }
+
+.error-message { color: #c0392b; margin-top: 8px; }
+
 .error-message {
   color: var(--ion-color-danger);
   margin: 12px 0;

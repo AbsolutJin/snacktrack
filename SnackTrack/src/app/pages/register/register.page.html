@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="toolbar-brand">
+    <ion-title>Registrieren</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="page-content">
+  <div style="padding: 16px;">
+    <form (ngSubmit)="onRegister()">
+      <ion-item>
+        <ion-label position="stacked">Benutzername</ion-label>
+        <ion-input [(ngModel)]="username" name="username" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">E-Mail</ion-label>
+        <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Passwort</ion-label>
+        <ion-input [(ngModel)]="password" name="password" type="password" required minlength="6"></ion-input>
+      </ion-item>
+
+      <div style="margin-top: 16px; display:flex; gap:8px; flex-direction:column;">
+        <ion-button expand="block" type="submit">Registrieren</ion-button>
+        <ion-button expand="block" fill="clear" routerLink="/login">Zurück zum Login</ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>
