@@ -1,11 +1,9 @@
 // src/app/components/expiring-items-list/expiring-items-list.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { Observable } from 'rxjs';
-import { FoodItemInterface } from '../../models/food-item.interface';
-import { InventoryService } from '../../services/inventory.service';
-import { checkmarkCircleOutline } from 'ionicons/icons';
+import { InventoryStatsService } from '../../services/inventory-stats.service';
+import { checkmarkCircleOutline, warningOutline, calendarOutline, chevronUp, chevronDown, warning, time, locationOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 @Component({
@@ -16,16 +14,57 @@ import { addIcons } from 'ionicons';
   imports: [CommonModule, IonicModule],
 })
 export class ExpiringItemsListComponent implements OnInit {
-  expiringSoonItems$!: Observable<FoodItemInterface[]>;
+  expiringItems: any[] = [];
+  displayItems: any[] = [];
+  showMore = false;
+  isLoading = true;
+  readonly itemLimit = 5;
 
-  constructor(private inventoryService: InventoryService) {
+  constructor(private inventoryStatsService: InventoryStatsService) {
     addIcons({
       checkmarkCircleOutline,
+      warningOutline,
+      calendarOutline,
+      chevronUp,
+      chevronDown,
+      warning,
+      time,
+      locationOutline,
     });
   }
 
-  ngOnInit() {
-    this.expiringSoonItems$ = this.inventoryService.getExpiringSoonItems(7);
+  async ngOnInit() {
+    await this.loadExpiringItems();
+  }
+
+  async loadExpiringItems() {
+    try {
+      this.isLoading = true;
+      this.expiringItems = await this.inventoryStatsService.getExpiringItems(7);
+      this.updateDisplayItems();
+    } catch (error) {
+      console.error('Error loading expiring items:', error);
+      this.expiringItems = [];
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  updateDisplayItems() {
+    if (this.showMore) {
+      this.displayItems = this.expiringItems;
+    } else {
+      this.displayItems = this.expiringItems.slice(0, this.itemLimit);
+    }
+  }
+
+  toggleShowMore() {
+    this.showMore = !this.showMore;
+    this.updateDisplayItems();
+  }
+
+  get hasMoreItems(): boolean {
+    return this.expiringItems.length > this.itemLimit;
   }
 
   getDaysLeft(expiryDate: Date): string {
@@ -48,7 +87,7 @@ export class ExpiringItemsListComponent implements OnInit {
     }
   }
 
-  getBadgeColor(item: FoodItemInterface): string {
+  getBadgeColor(item: any): string {
     const daysLeft = this.getDaysLeftNumber(item.expiryDate);
 
     if (daysLeft <= 0) return 'danger';
@@ -57,16 +96,16 @@ export class ExpiringItemsListComponent implements OnInit {
     return 'medium';
   }
 
-  getItemColor(item: FoodItemInterface): string {
+  getItemCssClass(item: any): string {
     const daysLeft = this.getDaysLeftNumber(item.expiryDate);
 
-    if (daysLeft <= 0) return 'danger';
-    if (daysLeft <= 2) return 'danger';
-    if (daysLeft <= 5) return 'warning';
-    return '';
+    if (daysLeft <= 0) return 'expiring-item critical';
+    if (daysLeft <= 2) return 'expiring-item urgent';
+    if (daysLeft <= 5) return 'expiring-item warning';
+    return 'expiring-item';
   }
 
-  private getDaysLeftNumber(expiryDate: Date): number {
+  getDaysLeftNumber(expiryDate: Date): number {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const expiry = new Date(expiryDate);

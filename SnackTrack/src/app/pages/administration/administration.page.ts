@@ -20,6 +20,7 @@ import {
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { InventoryService } from 'src/app/services/inventory.service';
+import { StorageLocationService } from 'src/app/services/storage-location.service';
 import { Observable, Subject } from 'rxjs';
 import { ToastService } from 'src/app/services/toast.service';
 
@@ -30,22 +31,20 @@ import { ToastService } from 'src/app/services/toast.service';
   imports: [IonicModule, CommonModule, FormsModule],
 })
 export class AdministrationPage implements OnInit, OnDestroy {
-  // Categories entfernt - nur noch Storage Locations
 
-  // Observables für reactive Daten
   storageLocations$: Observable<StorageLocation[]>;
 
-  // Für Unsubscribe
   private destroy$ = new Subject<void>();
 
   constructor(
     private alertController: AlertController,
     private modalController: ModalController,
     private inventoryService: InventoryService,
+    private storageLocationService: StorageLocationService,
     private toastService: ToastService
   ) {
 
-    this.storageLocations$ = this.inventoryService.storageLocations$;
+    this.storageLocations$ = this.storageLocationService.storageLocations$;
 
     addIcons({
       archiveOutline,
@@ -65,21 +64,19 @@ export class AdministrationPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Observables vom Service abonnieren
-    this.storageLocations$ = this.inventoryService.storageLocations$;
+    this.storageLocations$ = this.storageLocationService.storageLocations$;
     
-    // Debug: Prüfen ob Daten geladen werden
     this.storageLocations$.subscribe(locations => {
       console.log('[Administration] Storage Locations:', locations);
     });
     
-    // Manuell refreshen um sicherzustellen dass Daten geladen werden
     this.refreshData();
   }
 
   async refreshData() {
     try {
       console.log('[Administration] Refreshing data...');
+      await this.storageLocationService.loadStorageLocations();
       await this.inventoryService.refreshData();
       console.log('[Administration] Data refreshed');
     } catch (error) {
@@ -93,47 +90,84 @@ export class AdministrationPage implements OnInit, OnDestroy {
   }
 
 
-  // Add new storage location
   async addStorageLocation() {
     try {
-      const result = await this.inventoryService.openAddModal(this.modalController);
-      
-      // Bei erfolgreichem Hinzufügen
-      if (result && result.success) {
+      const modal = await this.modalController.create({
+        component: (await import('../../components/modals/storage-location-modal/storage-location-modal.component')).StorageLocationModalComponent,
+        componentProps: { isEdit: false },
+      });
+
+      await modal.present();
+      const result = await modal.onDidDismiss();
+
+      if (result.data) {
+        await this.storageLocationService.createStorageLocation(result.data);
         await this.toastService.success('Lagerort wurde erfolgreich hinzugefügt.');
       }
-      // Bei Abbruch
     } catch (error) {
       console.error('Fehler beim Hinzufügen:', error);
       await this.toastService.error('Fehler beim Hinzufügen. Bitte versuchen Sie es erneut.');
     }
   }
 
-  // Edit storage location
   async editStorageLocation(item: StorageLocation) {
     try {
-      const result = await this.inventoryService.openEditModal(item, this.modalController);
+      const modal = await this.modalController.create({
+        component: (await import('../../components/modals/storage-location-modal/storage-location-modal.component')).StorageLocationModalComponent,
+        componentProps: {
+          isEdit: true,
+          item: { ...item },
+        },
+      });
 
-      // Bei erfolgreichem editieren
-      if (result && result.success) {
+      await modal.present();
+      const result = await modal.onDidDismiss();
+
+      if (result.data) {
+        const updatedItem = { ...item, ...result.data };
+        await this.storageLocationService.updateStorageLocation(item.location_id, updatedItem);
         await this.toastService.success('Lagerort wurde erfolgreich aktualisiert.');
       }
-       // Bei Abbruch
-       }catch (error) {
+    } catch (error) {
       console.error('Fehler beim Bearbeiten:', error);
       await this.toastService.error('Fehler beim Bearbeiten. Bitte versuchen Sie es erneut.');
     }
   }
 
-  // Delete storage location
   async deleteStorageLocation(item: StorageLocation) {
     try {
-      const result = await this.inventoryService.openDeleteConfirmation(item, this.alertController);
+        const canDelete = await this.inventoryService.canDeleteStorageLocation(item.location_id);
 
-      if (result.success) {
-        await this.toastService.success('Lagerort wurde erfolgreich gelöscht.');
+      if (!canDelete) {
+        await this.toastService.error('Dieser Lagerort kann nicht gelöscht werden, da noch Artikel darin gespeichert sind.');
+        return;
       }
-      // Abbruch
+
+      const alert = await this.alertController.create({
+        header: 'Lagerort löschen',
+        message: `Möchten Sie "${item.name}" wirklich löschen?`,
+        buttons: [
+          {
+            text: 'Abbrechen',
+            role: 'cancel',
+          },
+          {
+            text: 'Löschen',
+            role: 'destructive',
+            handler: async () => {
+              try {
+                await this.storageLocationService.deleteStorageLocation(item.location_id);
+                await this.toastService.success('Lagerort wurde erfolgreich gelöscht.');
+              } catch (error) {
+                console.error('Fehler beim Löschen:', error);
+                await this.toastService.error('Fehler beim Löschen des Lagerorts.');
+              }
+            },
+          },
+        ],
+      });
+
+      await alert.present();
     } catch (error) {
       console.error('Fehler beim Löschen:', error);
       await this.toastService.error(

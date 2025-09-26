@@ -5,12 +5,13 @@ import { IonicModule } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { InventoryService } from '../../services/inventory.service';
+import { StorageLocationService } from '../../services/storage-location.service';
+import { ItemService } from '../../services/item.service';
 import { FoodItemInterface } from '../../models/food-item.interface';
 import { Inventory } from '../../models/inventory.interface';
 import { Item } from '../../models/item.interface';
 import { StorageLocation } from '../../models/storage-location.interface';
 
-// Ionicons: ensure icons render even without CDN
 import { addIcons } from 'ionicons';
 import {
   filterOutline,
@@ -27,6 +28,7 @@ import {
 
 interface InventoryCardItem {
   id: string;
+  inventoryId: string; // Always the inventory_id for database operations
   name: string;
   unit: string;
   count: number;
@@ -51,13 +53,16 @@ export class InventoryPage implements OnInit, OnDestroy {
   items: Item[] = [];
   locations: StorageLocation[] = [];
 
-  // rename state
   editingId: string | null = null;
   editName = '';
 
   private sub?: Subscription;
 
-  constructor(private inventory: InventoryService) {
+  constructor(
+    private inventory: InventoryService,
+    private storageLocationService: StorageLocationService,
+    private itemService: ItemService
+  ) {
     addIcons({
       filterOutline,
       addOutline,
@@ -75,9 +80,9 @@ export class InventoryPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sub = this.inventory.inventory$.subscribe((inventory) => {
       this.inventory.inventory$.subscribe((invList) => {
-        this.inventory.items$.subscribe((itemList) => {
+        this.itemService.items$.subscribe((itemList) => {
           this.items = itemList;
-          this.inventory.storageLocations$.subscribe((locList: import('../../models/storage-location.interface').StorageLocation[]) => {
+          this.storageLocationService.storageLocations$.subscribe((locList: StorageLocation[]) => {
             this.locations = locList;
             this.inventoryCards = invList.map((inv) => this.toCard(inv));
             this.filter();
@@ -91,15 +96,13 @@ export class InventoryPage implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  // map backend model → UI card model
   private toCard(inv: Inventory): InventoryCardItem {
     const item = this.items.find(i => i.barcode === inv.barcode);
     const location = this.locations.find(l => l.location_id === inv.location_id);
-    // Find the matching food item by barcode or inventory id
-    // Try to find food item by barcode
     const foodItem = this.inventory.getFoodItems().find(fi => fi.id === inv.barcode);
     return {
       id: foodItem?.id ?? inv.inventory_id,
+      inventoryId: inv.inventory_id,
       name: item?.product_name ?? inv.barcode,
       unit: item?.brand ?? '',
       count: inv.quantity,
@@ -108,7 +111,6 @@ export class InventoryPage implements OnInit, OnDestroy {
     };
   }
 
-  // UI Aktionen
   toggleSearch() {
     this.showSearch = !this.showSearch;
     if (!this.showSearch) this.clearSearch();
@@ -120,10 +122,8 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   openFilters() {
-    // optional: open modal/sheet for filters
   }
 
-  // Datenlogik
   filter() {
     const q = this.query.trim().toLowerCase();
     this.filteredCards = !q
@@ -132,16 +132,16 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   async increment(item: InventoryCardItem) {
-    await this.inventory.updateFoodItemQuantity(item.id, item.count + 1);
+    await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count + 1);
     await this.inventory.loadInventory();
     this.filter();
   }
 
   async decrement(item: InventoryCardItem) {
     if (item.count > 1) {
-      await this.inventory.updateFoodItemQuantity(item.id, item.count - 1);
+      await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count - 1);
     } else {
-      await this.inventory.deleteFoodItem(item.id);
+      await this.inventory.deleteInventoryItem(item.inventoryId);
     }
     await this.inventory.loadInventory();
     this.filter();
@@ -158,10 +158,7 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   async saveRename(item: InventoryCardItem) {
-    const newName = this.editName.trim();
-    if (newName && newName !== item.name) {
-      await this.inventory.renameFoodItem(item.id, newName);
-    }
+    console.warn('Rename functionality disabled: Item names come from master data');
     this.cancelRename();
   }
 

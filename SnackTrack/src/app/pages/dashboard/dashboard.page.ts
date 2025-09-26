@@ -8,6 +8,8 @@ import { ExpiringItemsListComponent } from '../../components/expiring-items-list
 import { InventoryChartComponent } from '../../components/inventory-chart/inventory-chart.component';
 import { AddItemModalComponent } from '../../components/modals/add-item-modal/add-item-modal.component';
 import { InventoryService } from '../../services/inventory.service';
+import { StorageLocationService } from '../../services/storage-location.service';
+import { AccountService } from '../../services/account.service';
 import { addIcons } from 'ionicons';
 import {
   addCircleOutline,
@@ -37,6 +39,7 @@ import {
 export class DashboardPage implements OnInit, OnDestroy {
   storageLocations: StorageLocation[] = [];
   stats: { itemsByLocation: { [key: string]: number }, totalItems: number } = { itemsByLocation: {}, totalItems: 0 };
+  currentUserName: string = 'Koch';
 
   getProgress(count: number, total: number): number {
     return total > 0 ? count / total : 0;
@@ -72,8 +75,10 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   constructor(
     private inventoryService: InventoryService,
+    private storageLocationService: StorageLocationService,
     private modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private accountService: AccountService
   ) {
     addIcons({
       leafOutline,
@@ -91,9 +96,13 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadDashboardData();
-    // Subscribe to storageLocations$ from InventoryService
-    this.inventoryService.storageLocations$.subscribe(locations => {
+
+    this.storageLocationService.storageLocations$.subscribe(locations => {
       this.storageLocations = locations;
+    });
+
+    this.accountService.profile$.subscribe(profile => {
+      this.currentUserName = profile?.username || 'Koch';
     });
   }
 
@@ -103,7 +112,6 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   private loadDashboardData() {
-    // Ladezeit Simulieren, um sicherzustellen, dass UI Elemente geladen sind kann auch auf echte Funktionalität umgestellt werden
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
@@ -111,24 +119,21 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   getWelcomeMessage(): string {
     const hour = new Date().getHours();
-    const userName = 'Koch'; // Hier muss der Nutzername geladen werden
 
     if (hour < 12) {
-      return `Guten Morgen, ${userName}! Zeit für ein gesundes Frühstück.`;
+      return `Guten Morgen, ${this.currentUserName}! Zeit für ein gesundes Frühstück.`;
     } else if (hour < 18) {
-      return `Guten Tag, ${userName}! Was steht heute auf dem Speiseplan?`;
+      return `Guten Tag, ${this.currentUserName}! Was steht heute auf dem Speiseplan?`;
     } else {
-      return `Guten Abend, ${userName}! Zeit für ein leckeres Abendessen.`;
+      return `Guten Abend, ${this.currentUserName}! Zeit für ein leckeres Abendessen.`;
     }
   }
 
   refreshData() {
     this.isRefreshing = true;
 
-    // Neuladen simulieren
     setTimeout(() => {
       this.isRefreshing = false;
-      //Services neu laden
       console.log('Dashboard Daten wurden aktualisiert');
     }, 2000);
   }
@@ -140,7 +145,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         component: AddItemModalComponent,
         componentProps: {
           isEdit: false,
-          storageLocations: this.inventoryService.getStorageLocations(),
+          storageLocations: this.storageLocationService.getStorageLocations(),
         },
       });
 
@@ -149,9 +154,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
       if (result.data) {
         try {
-          // Add the new item using the inventory service
-          // TODO: Add addFoodItem method to InventoryService
-          console.log('New food item to add:', result.data);
+              console.log('New food item to add:', result.data);
         } catch (error) {
           console.error('Fehler beim Hinzufügen des Artikels:', error);
         }
@@ -163,10 +166,5 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   navigateToInventory() {
     this.router.navigate(['/tabs/kitchen']);
-  }
-
-  scanBarcode() {
-    // Hatten wir BarcodeScanner besprochen? erstmal platzhalter
-    console.log('Öffne Barcode Scanner');
   }
 }
