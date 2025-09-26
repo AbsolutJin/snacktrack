@@ -1,46 +1,98 @@
-<ion-card>
-  <ion-card-header>
+<ion-card class="expiring-items-card">
+  <ion-card-header class="mobile-header">
     <ion-card-title>
       <ion-icon name="warning-outline" color="warning"></ion-icon>
-      Bald ablaufende Lebensmittel
+      <span class="header-text">
+        <span class="title">Bald ablaufende Lebensmittel</span>
+        <span class="subtitle">Innerhalb der nächsten 7 Tage</span>
+      </span>
     </ion-card-title>
-    <ion-card-subtitle>Innerhalb der nächsten 7 Tage</ion-card-subtitle>
   </ion-card-header>
 
-  <ion-card-content>
-    @if(expiringSoonItems$ | async; as items){
-          <ion-list>
-            @if(items.length === 0){
-      <div class="no-items">
-        <ion-icon
-          name="checkmark-circle-outline"
-          color="success"
-          size="large"
-        ></ion-icon>
-        <p>Keine bald ablaufenden Lebensmittel!</p>
+  <ion-card-content class="mobile-content">
+    @if(isLoading) {
+      <div class="loading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Lade ablaufende Artikel...</p>
       </div>
-            }
+    } @else {
+      @if(expiringItems.length === 0) {
+        <div class="no-items">
+          <ion-icon
+            name="checkmark-circle-outline"
+            color="success"
+            size="large"
+          ></ion-icon>
+          <p>Keine bald ablaufenden Lebensmittel!</p>
+        </div>
+      } @else {
+        <div class="mobile-items-container">
+          @for(item of displayItems; track item.id) {
+            <div class="mobile-item-card" [class]="getItemCssClass(item)">
+              <div class="item-left">
+                <div class="warning-indicator">
+                  <ion-icon
+                    *ngIf="getDaysLeftNumber(item.expiryDate) <= 0"
+                    name="warning"
+                    class="warning-icon critical">
+                  </ion-icon>
+                  <ion-icon
+                    *ngIf="getDaysLeftNumber(item.expiryDate) > 0 && getDaysLeftNumber(item.expiryDate) <= 2"
+                    name="time"
+                    class="warning-icon urgent">
+                  </ion-icon>
+                </div>
 
-      @for(item of items; track item.id){
-      <ion-item [color]="getItemColor(item)">
-        <ion-label>
-          <h2>{{ item.name }}</h2>
-          <p>{{ item.quantity }} {{ item.unit }}</p>
-          <p class="expiry-info">
-            <ion-icon name="calendar-outline" size="small"></ion-icon>
-            Läuft ab am: {{ item.expiryDate | date : "dd.MM.yyyy" }}
-            <span class="days-left">({{ getDaysLeft(item.expiryDate) }})</span>
-          </p>
-        </ion-label>
+                <div class="item-image" *ngIf="item.image_url; else fallbackImage">
+                  <img [src]="item.image_url" [alt]="item.name" />
+                </div>
+                <ng-template #fallbackImage>
+                  <div class="item-image fallback">
+                    <ion-icon name="cube-outline"></ion-icon>
+                  </div>
+                </ng-template>
+              </div>
 
-        <ion-badge slot="end" [color]="getBadgeColor(item)">
-          {{ getDaysLeft(item.expiryDate) }}
-        </ion-badge>
-      </ion-item>
+              <div class="item-content">
+                <div class="item-header">
+                  <h3 class="item-name">{{ item.name }}</h3>
+                  <ion-badge [color]="getBadgeColor(item)" class="days-badge">
+                    {{ getDaysLeft(item.expiryDate) }}
+                  </ion-badge>
+                </div>
+
+                <div class="item-details">
+                  <div class="quantity-brand" *ngIf="item.brand || item.quantity">
+                    <span *ngIf="item.brand" class="brand">{{ item.brand }}</span>
+                    <span class="quantity">{{ item.quantity }} {{ item.unit }}</span>
+                  </div>
+
+                  <div class="expiry-info">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <span class="expiry-date">{{ item.expiryDate | date : "dd.MM.yyyy" }}</span>
+                  </div>
+
+                  <div class="location-info" *ngIf="item.storageLocation">
+                    <ion-icon name="location-outline"></ion-icon>
+                    <span class="location">{{ item.storageLocation.name }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if(hasMoreItems) {
+          <ion-button
+            fill="clear"
+            expand="block"
+            (click)="toggleShowMore()"
+            class="show-more-btn">
+            <ion-icon [name]="showMore ? 'chevron-up' : 'chevron-down'" slot="start"></ion-icon>
+            {{ showMore ? 'Weniger anzeigen' : 'Alle anzeigen (' + expiringItems.length + ')' }}
+          </ion-button>
+        }
       }
-
-    </ion-list>
     }
-
   </ion-card-content>
 </ion-card>

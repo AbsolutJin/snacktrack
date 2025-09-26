@@ -1,8 +1,8 @@
 export interface Item {
-  barcode: string;
+  barcode: string; // PK
   product_name: string;
   brand: string;
-  quantity: number;
-  image_url?: string;
-  last_fetched_at: string;
+  quantity: string; // varchar from OpenFoodFacts
+  image_url: string | null;
+  last_fetched: string; // timestamp
 }

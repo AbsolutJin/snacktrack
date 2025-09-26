@@ -1,3 +1,32 @@
+// Scanner Button
+.scanner-button {
+  margin: 0 auto 20px auto;
+  display: block;
+  --border-radius: 12px;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-color: var(--ion-color-tertiary-shade);
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  box-shadow: 0 4px 16px rgba(var(--ion-color-tertiary-rgb), 0.3);
+  transition: all 0.3s ease;
+  font-weight: 500;
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(var(--ion-color-tertiary-rgb), 0.4);
+    --border-color: var(--ion-color-tertiary);
+  }
+
+  ion-icon {
+    font-size: 20px;
+    color: white;
+    margin-right: 8px;
+  }
+}
+
 // Validation Error Card
 .validation-error-card {
   margin-bottom: 16px;

@@ -10,64 +10,70 @@
     <!-- Nur noch Lagerplätze verfügbar -->
     <h3>Verteilung nach Lagerplätzen</h3>
 
-    @if(inventoryStats$ | async; as stats){
-    <div class="chart-container">
-      <!-- Lagerplätze Chart -->
-      <div class="chart-section">
-        <div class="progress-chart">
-          @for(location of getStorageLocations(); track location.location_id){
-          <div class="progress-item">
-            <div class="progress-header">
-              <div class="progress-label">
-                <span>{{ location.name }}</span>
-              </div>
-              <div class="progress-value">
-                {{ stats.itemsByLocation[location.location_id] || 0 }} /
-                {{ stats.totalItems }}
-                <small
-                  >({{
-                    getPercentage(
-                      stats.itemsByLocation[location.location_id] || 0,
-                      stats.totalItems
+    @if(isLoading) {
+      <div class="loading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Lade Inventar-Statistiken...</p>
+      </div>
+    } @else {
+      <div class="chart-container">
+        <!-- Lagerplätze Chart -->
+        <div class="chart-section">
+          <div class="progress-chart">
+            @for(location of getStorageLocations(); track location.location_id) {
+              <div class="progress-item">
+                <div class="progress-header">
+                  <div class="progress-label">
+                    <span>{{ location.name }}</span>
+                  </div>
+                  <div class="progress-value">
+                    {{ inventoryStats.itemsByLocation[location.location_id] || 0 }} /
+                    {{ inventoryStats.totalItems }}
+                    <small
+                      >({{
+                        getPercentage(
+                          inventoryStats.itemsByLocation[location.location_id] || 0,
+                          inventoryStats.totalItems
+                        )
+                      }}%)</small
+                    >
+                  </div>
+                </div>
+                <ion-progress-bar
+                  [value]="
+                    getProgress(
+                       inventoryStats.itemsByLocation[location.location_id] || 0,
+                      inventoryStats.totalItems
                     )
-                  }}%)</small
-                >
+                  ">
+                </ion-progress-bar>
               </div>
-            </div>
-            <ion-progress-bar 
-              [value]="
-                getProgress(
-                   stats.itemsByLocation[location.location_id] || 0,
-                  stats.totalItems
-                )
-              ">
-            </ion-progress-bar>
+            }
           </div>
+        </div>
+
+        <!-- Zusammenfassung -->
+        <div class="chart-summary">
+          <ion-chip color="primary" outline="true">
+            <ion-icon name="pie-chart-outline"></ion-icon>
+            <ion-label>Gesamt: {{ inventoryStats.totalItems }} Artikel</ion-label>
+          </ion-chip>
+
+          @if(inventoryStats.expiringSoonCount > 0) {
+            <ion-chip color="warning" outline="true">
+              <ion-icon name="warning-outline"></ion-icon>
+              <ion-label>{{ inventoryStats.expiringSoonCount }} bald ablaufend</ion-label>
+            </ion-chip>
+          }
+
+          @if(inventoryStats.mostUsedLocation) {
+            <ion-chip color="tertiary" outline="true">
+              <ion-icon name="home-outline"></ion-icon>
+              <ion-label>Meist genutzt: {{ inventoryStats.mostUsedLocation.name }}</ion-label>
+            </ion-chip>
           }
         </div>
       </div>
-
-
-
-
-      <!-- Zusammenfassung -->
-      <div class="chart-summary">
-        <ion-chip color="primary" outline="true">
-          <ion-icon name="pie-chart-outline"></ion-icon>
-          <ion-label>Gesamt: {{ stats.totalItems }} Artikel</ion-label>
-        </ion-chip>
-
-        @if(stats.expiringSoonCount > 0){
-        <ion-chip
-          color="warning"
-          outline="true"
-        >
-          <ion-icon name="warning-outline"></ion-icon>
-          <ion-label>{{ stats.expiringSoonCount }} bald ablaufend</ion-label>
-        </ion-chip>
-        }
-      </div>
-    </div>
     }
 
   </ion-card-content>

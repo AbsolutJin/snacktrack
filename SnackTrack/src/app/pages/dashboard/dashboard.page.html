@@ -1,17 +1,3 @@
-<!-- Verteilung nach Lagerplätzen -->
-<section class="distribution-section">
-  <h2>Verteilung nach Lagerplätzen</h2>
-  <div *ngFor="let location of storageLocations">
-    <div class="location-row">
-      <span>{{ location.name }}</span>
-      <span>
-        {{ stats.itemsByLocation[location.location_id] || 0 }} / {{ stats.totalItems }}
-        ({{ getProgress(stats.itemsByLocation[location.location_id] || 0, stats.totalItems) * 100 | number:'1.0-0' }}%)
-      </span>
-    </div>
-    <ion-progress-bar [value]="getProgress(stats.itemsByLocation[location.location_id] || 0, stats.totalItems)" />
-  </div>
-</section>
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-title>
@@ -86,16 +72,6 @@
             >
               <ion-icon name="list-outline" slot="start"></ion-icon>
               Inventar anzeigen
-            </ion-button>
-
-            <ion-button
-              expand="block"
-              fill="outline"
-              color="tertiary"
-              (click)="scanBarcode()"
-            >
-              <ion-icon name="scan-outline" slot="start"></ion-icon>
-              Barcode scannen
             </ion-button>
           </div>
         </ion-card-content>

@@ -44,7 +44,48 @@
     </ion-card>
   }
 
+  <!-- Barcode Scanner Section -->
+  <ion-button
+    fill="solid"
+    color="tertiary"
+    (click)="openBarcodeScanner()"
+    class="scanner-button">
+    <ion-icon name="barcode-outline" slot="start"></ion-icon>
+    Barcode scannen
+  </ion-button>
+
   <form #form="ngForm">
+    <!-- Barcode Section -->
+    <ion-item>
+      <ion-label position="stacked">Barcode</ion-label>
+      <ion-input
+        type="text"
+        [(ngModel)]="formData.barcode"
+        name="barcode"
+        placeholder="Barcode eingeben oder scannen"
+        required>
+      </ion-input>
+      <ion-button
+        slot="end"
+        fill="clear"
+        (click)="searchByBarcode()"
+        [disabled]="isLoadingProduct || !formData.barcode.trim()">
+        <ion-icon name="search-outline" *ngIf="!isLoadingProduct"></ion-icon>
+        <ion-spinner name="crescent" *ngIf="isLoadingProduct"></ion-spinner>
+      </ion-button>
+    </ion-item>
+
+    <!-- Product Image -->
+    <ion-item *ngIf="formData.image_url">
+      <ion-thumbnail slot="start">
+        <img [src]="formData.image_url" [alt]="formData.name" />
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ formData.name }}</h2>
+        <p *ngIf="formData.brand">{{ formData.brand }}</p>
+      </ion-label>
+    </ion-item>
+
     <ion-item>
       <ion-label position="stacked">Name des Artikels</ion-label>
       <ion-input
@@ -56,6 +97,15 @@
       </ion-input>
     </ion-item>
 
+    <ion-item *ngIf="formData.brand || productFound">
+      <ion-label position="stacked">Marke</ion-label>
+      <ion-input
+        [(ngModel)]="formData.brand"
+        name="brand"
+        placeholder="z.B. Müller, Coca-Cola..."
+      >
+      </ion-input>
+    </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Menge</ion-label>
@@ -120,6 +170,17 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Notizen (optional)</ion-label>
+      <ion-textarea
+        [(ngModel)]="formData.notes"
+        name="notes"
+        placeholder="z.B. geöffnet am..."
+        rows="2"
+      >
+      </ion-textarea>
     </ion-item>
 
     <!-- Preview -->
