@@ -25,22 +25,16 @@
     </ion-item>
 
     <ion-item>
-      <ion-label position="stacked">Farbe</ion-label>
-  <ion-select />
-         <!-- Removed color binding, not part of StorageLocation -->
-        name="color"
-        required
-        interface="popover"
+      <ion-label position="stacked">Beschreibung (optional)</ion-label>
+      <ion-textarea
+        [(ngModel)]="formData.description"
+        name="description"
+        placeholder="Zusätzliche Informationen zum Lagerort..."
+        rows="3"
+        fill="outline"
+        labelPlacement="stacked"
       >
-        <ion-select-option value="primary">Blau (Primary)</ion-select-option>
-        <ion-select-option value="secondary"
-          >Grau (Secondary)</ion-select-option
-        >
-        <ion-select-option value="tertiary">Lila (Tertiary)</ion-select-option>
-        <ion-select-option value="success">Grün (Success)</ion-select-option>
-        <ion-select-option value="warning">Orange (Warning)</ion-select-option>
-        <ion-select-option value="danger">Rot (Danger)</ion-select-option>
-  />
+      </ion-textarea>
     </ion-item>
 
     <!-- Preview -->
@@ -48,7 +42,10 @@
     <div class="preview-section">
       <ion-label class="preview-label">Vorschau:</ion-label>
       <ion-item class="preview-item">
-        <ion-label>{{ formData.name }}</ion-label>
+        <ion-label>
+          <h3>{{ formData.name }}</h3>
+          <p *ngIf="formData.description">{{ formData.description }}</p>
+        </ion-label>
       </ion-item>
     </div>
      }

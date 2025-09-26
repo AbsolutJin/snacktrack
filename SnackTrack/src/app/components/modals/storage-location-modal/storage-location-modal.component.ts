@@ -18,8 +18,8 @@ export class StorageLocationModalComponent implements OnInit {
 
   formData = {
     name: '',
-  // Removed color property, not needed for StorageLocation
-    };
+    description: '',
+  };
 
   constructor(private modalController: ModalController) {
     addIcons({ snowOutline, cubeOutline, close });
@@ -29,7 +29,7 @@ export class StorageLocationModalComponent implements OnInit {
     if (this.isEdit && this.item) {
       this.formData = {
         name: this.item.name,
-   // Removed, not part of StorageLocation
+        description: this.item.description || '',
       };
     }
   }
