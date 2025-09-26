@@ -72,7 +72,7 @@ export class StorageLocationService {
       .from('storage_locations')
       .update({
         name: location.name,
-        updated_at: new Date().toISOString()
+        description: location.description
       })
       .eq('location_id', id)
       .select()
@@ -96,19 +96,30 @@ export class StorageLocationService {
   }
 
   async deleteStorageLocation(id: string): Promise<void> {
-    const { error } = await this.supabaseClient.client
+    console.log('[StorageLocationService] Attempting to delete location with ID:', id);
+
+    const { data, error } = await this.supabaseClient.client
       .from('storage_locations')
       .delete()
-      .eq('location_id', id);
+      .eq('location_id', id)
+      .select(); // Hinzufügen um zu sehen was gelöscht wurde
+
+    console.log('[StorageLocationService] Delete result - data:', data, 'error:', error);
 
     if (error) {
       console.error('Fehler beim Löschen des Lagerorts:', error);
       throw error;
     }
 
+    console.log('[StorageLocationService] Database deletion successful, updating local state...');
     const currentLocations = this.storageLocationsSubject.value;
+    console.log('[StorageLocationService] Current locations before filter:', currentLocations);
+
     const updatedLocations = currentLocations.filter(s => s.location_id !== id);
+    console.log('[StorageLocationService] Updated locations after filter:', updatedLocations);
+
     this.storageLocationsSubject.next(updatedLocations);
+    console.log('[StorageLocationService] Local state updated successfully');
   }
 
   subscribeToChanges(callback: (payload: any) => void) {
