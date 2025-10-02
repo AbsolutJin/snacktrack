@@ -29,7 +29,9 @@ import {
   IonFooter,
   IonFab,
   IonFabButton,
-  IonSearchbar
+  IonSearchbar,
+  IonTabBar,
+  IonTabs
 } from '@ionic/angular/standalone';
 
 export const IONIC_COMPONENTS = [
@@ -63,5 +65,7 @@ export const IONIC_COMPONENTS = [
   IonFooter,
   IonFab,
   IonFabButton,
-  IonSearchbar
+  IonSearchbar,
+  IonTabBar,
+  IonTabs
 ];
