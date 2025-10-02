@@ -34,6 +34,7 @@ interface InventoryCardItem {
   count: number;
   img?: string | null;
   badge?: string;
+  isExpired?: boolean;
 }
 
 @Component({
@@ -100,6 +101,15 @@ export class InventoryPage implements OnInit, OnDestroy {
     const item = this.items.find(i => i.barcode === inv.barcode);
     const location = this.locations.find(l => l.location_id === inv.location_id);
     const foodItem = this.inventory.getFoodItems().find(fi => fi.id === inv.barcode);
+    // determine if expired (expiration_date is expected as YYYY-MM-DD or ISO)
+    let expired = false;
+    if (inv.expiration_date) {
+      const exp = new Date(inv.expiration_date);
+      const today = new Date();
+      exp.setHours(0,0,0,0);
+      today.setHours(0,0,0,0);
+      expired = exp < today;
+    }
     return {
       id: foodItem?.id ?? inv.inventory_id,
       inventoryId: inv.inventory_id,
@@ -108,6 +118,7 @@ export class InventoryPage implements OnInit, OnDestroy {
       count: inv.quantity,
       img: item?.image_url ?? null,
       badge: inv.expiration_date ? `Ablauf: ${inv.expiration_date}` : undefined,
+      isExpired: expired,
     };
   }
 

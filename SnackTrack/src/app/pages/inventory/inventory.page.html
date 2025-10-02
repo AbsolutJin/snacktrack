@@ -1,16 +1,19 @@
 <ion-header>
   <ion-toolbar class="topbar" color="success">
-    <ion-buttons slot="start">
-      <ion-button fill="clear" (click)="openFilters()" aria-label="Filter">
-        <ion-icon name="filter-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <ion-title>
+      <div class="header-content">
+        <ion-icon name="restaurant-outline"></ion-icon>
+        Küche
+      </div>
+    </ion-title>
 
-    <ion-title>Küche</ion-title>
-
-    <ion-buttons slot="end">
+    <!-- Right side: search + filter grouped nicely -->
+    <ion-buttons slot="end" class="right-actions">
       <ion-button fill="clear" (click)="toggleSearch()" aria-label="Suche">
         <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="openFilters()" aria-label="Filter">
+        <ion-icon name="filter-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -25,6 +28,9 @@
     ></ion-searchbar>
     <ion-buttons slot="end" class="searchbar__actions">
       <ion-button (click)="clearSearch()">Löschen</ion-button>
+      <ion-button fill="clear" (click)="openFilters()" aria-label="Filter">
+        <ion-icon name="filter-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -45,7 +51,7 @@
         sizeXl="3"
   *ngFor="let item of filteredCards; trackBy: trackById"
       >
-        <ion-card class="card">
+  <ion-card class="card" [class.expired]="item.isExpired">
           <div class="card__imgwrap">
             <ng-container *ngIf="item.img; else iconThumb">
               <img [src]="item.img" [alt]="item.name" loading="lazy" />
@@ -56,9 +62,9 @@
               </div>
             </ng-template>
           </div>
-          <ion-badge class="card__badge" *ngIf="item.badge" color="dark">
-              {{ item.badge }}
-          </ion-badge>
+      <ion-badge class="card__badge" *ngIf="item.badge" [class.expired]="item.isExpired" color="dark">
+        {{ item.badge }}
+      </ion-badge>
           <ion-card-header>
             <ng-container *ngIf="editingId !== item.id; else editTitle">
               <ion-card-title class="card__title">
@@ -66,6 +72,13 @@
                 <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
               </ion-button>
                 <span>{{ item.name }}</span>
+                <span *ngIf="item.isExpired" class="expired-icon" title="Abgelaufen" aria-hidden="true">
+                  <!-- small warning triangle -->
+                  <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                    <path d="M12 2 2 20h20L12 2z" />
+                    <path d="M11 10h2v5h-2zm0 6h2v2h-2z" fill="#fff" />
+                  </svg>
+                </span>
               </ion-card-title>
             </ng-container>
             <ng-template #editTitle>

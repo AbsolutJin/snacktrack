@@ -119,7 +119,27 @@ ion-content {
     border-radius: 999px;
     text-align: center;
   }
+
+  &.expired, &.expired &__badge {
+    border-color: #f87171;
+  }
 }
+
+/* stronger rule for expired badge text/background */
+.card.expired .card__badge {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.expired-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+.expired-icon svg { fill: #dc2626; /* red-600 */ }
+.expired-icon svg path[fill] { fill: #fff; }
 
 // =====================
 // QTY (Anzahl-Anzeige)
@@ -154,6 +174,25 @@ ion-content {
 
   &__actions {
     margin-right: .5rem;
+    display: flex;
+    align-items: center;
+
+    ion-button {
+      --padding-start: .4rem;
+      --padding-end: .4rem;
+      margin-left: .25rem;
+    }
+  }
+}
+
+.topbar .right-actions {
+  display: flex;
+  align-items: center;
+
+  ion-button {
+    --padding-start: .5rem;
+    --padding-end: .5rem;
+    margin-left: .25rem;
   }
 }
 
@@ -162,10 +201,6 @@ ion-content {
 // =====================
 .content {
   padding: .75rem;
-}
-
-.inventory {
-  // Grid wird von IonGrid/IonCol gesteuert
 }
 
 // =====================
