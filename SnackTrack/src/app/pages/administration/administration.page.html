@@ -20,8 +20,11 @@
             <ion-item>
               <ion-label>
                 <h2>{{ location.name }}</h2>
+                <p class="item-count-text">
+                  Enthält aktuell <span class="count-highlight">{{ getItemCount(location.location_id) }}</span> Produkte
+                </p>
               </ion-label>
-              
+
               <ion-button
                 fill="clear"
                 color="medium"
@@ -30,7 +33,7 @@
               >
                 <ion-icon name="create-outline"></ion-icon>
               </ion-button>
-              
+
               <ion-button
                 fill="clear"
                 color="danger"

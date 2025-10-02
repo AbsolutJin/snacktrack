@@ -22,3 +22,14 @@
   height: 50vh;
   color: var(--ion-color-medium);
 }
+
+.item-count-text {
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  margin-top: 0.25rem;
+}
+
+.count-highlight {
+  font-weight: 600;
+  text-decoration: underline;
+}

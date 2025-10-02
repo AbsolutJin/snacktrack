@@ -22,7 +22,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { InventoryService } from 'src/app/services/inventory.service';
 import { StorageLocationService } from 'src/app/services/storage-location.service';
-import { Observable, Subject } from 'rxjs';
+import { InventoryStatsService } from 'src/app/services/inventory-stats.service';
+import { Observable, Subject, combineLatest, map } from 'rxjs';
 import { ToastService } from 'src/app/services/toast.service';
 import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
@@ -35,6 +36,7 @@ import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 export class AdministrationPage implements OnInit, OnDestroy {
 
   storageLocations$: Observable<StorageLocation[]>;
+  itemCounts: { [locationId: string]: number } = {};
 
   private destroy$ = new Subject<void>();
 
@@ -43,6 +45,7 @@ export class AdministrationPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private inventoryService: InventoryService,
     private storageLocationService: StorageLocationService,
+    private inventoryStatsService: InventoryStatsService,
     private toastService: ToastService
   ) {
 
@@ -66,14 +69,15 @@ export class AdministrationPage implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.storageLocations$ = this.storageLocationService.storageLocations$;
-    
+
     this.storageLocations$.subscribe(locations => {
       console.log('[Administration] Storage Locations:', locations);
     });
-    
-    this.refreshData();
+
+    await this.refreshData();
+    await this.loadItemCounts();
   }
 
   async refreshData() {
@@ -85,6 +89,19 @@ export class AdministrationPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('[Administration] Error refreshing data:', error);
     }
+  }
+
+  async loadItemCounts() {
+    try {
+      const stats = await this.inventoryStatsService.getInventoryStats();
+      this.itemCounts = stats.itemsByLocation;
+    } catch (error) {
+      console.error('[Administration] Error loading item counts:', error);
+    }
+  }
+
+  getItemCount(locationId: string): number {
+    return this.itemCounts[locationId] || 0;
   }
 
   ngOnDestroy() {
