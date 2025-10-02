@@ -7,7 +7,6 @@
       </div>
     </ion-title>
 
-    <!-- Right side: search + filter grouped nicely -->
     <ion-buttons slot="end" class="right-actions">
       <ion-button fill="clear" (click)="toggleSearch()" aria-label="Suche">
         <ion-icon name="search-outline"></ion-icon>
@@ -66,14 +65,10 @@
         {{ item.badge }}
       </ion-badge>
           <ion-card-header>
-            <ng-container *ngIf="editingId !== item.id; else editTitle">
+            <ng-container>
               <ion-card-title class="card__title">
-              <ion-button fill="clear" color="medium" (click)="startRename(item)" [disabled]="editingId === item.id" aria-label="Umbenennen">
-                <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
-              </ion-button>
                 <span>{{ item.name }}</span>
                 <span *ngIf="item.isExpired" class="expired-icon" title="Abgelaufen" aria-hidden="true">
-                  <!-- small warning triangle -->
                   <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false">
                     <path d="M12 2 2 20h20L12 2z" />
                     <path d="M11 10h2v5h-2zm0 6h2v2h-2z" fill="#fff" />
@@ -81,7 +76,7 @@
                 </span>
               </ion-card-title>
             </ng-container>
-            <ng-template #editTitle>
+            <!-- <ng-template #editTitle>
               <ion-item lines="none" class="card__rename">
                 <ion-input
                   autofocus
@@ -98,7 +93,7 @@
                   </ion-button>
                 </ion-buttons>
               </ion-item>
-            </ng-template>
+            </ng-template> -->
           </ion-card-header>
 
           <ion-card-content>

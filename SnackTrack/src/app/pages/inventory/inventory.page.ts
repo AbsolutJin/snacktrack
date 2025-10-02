@@ -10,6 +10,7 @@ import { FoodItemInterface } from '../../models/food-item.interface';
 import { Inventory } from '../../models/inventory.interface';
 import { Item } from '../../models/item.interface';
 import { StorageLocation } from '../../models/storage-location.interface';
+import { combineLatest } from 'rxjs';
 
 import { addIcons } from 'ionicons';
 import {
@@ -79,17 +80,19 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sub = this.inventory.inventory$.subscribe((inventory) => {
-      this.inventory.inventory$.subscribe((invList) => {
-        this.itemService.items$.subscribe((itemList) => {
-          this.items = itemList;
-          this.storageLocationService.storageLocations$.subscribe((locList: StorageLocation[]) => {
-            this.locations = locList;
-            this.inventoryCards = invList.map((inv) => this.toCard(inv));
-            this.filter();
-          });
-        });
-      });
+    this.sub = combineLatest([
+      this.inventory.inventory$,
+      this.itemService.items$,
+      this.storageLocationService.storageLocations$
+    ]).subscribe(([invList, itemList, locList]) => {
+      this.items = itemList;
+      this.locations = locList;
+
+      this.inventoryCards = this.sortInventoryCards(
+        invList.map(inv => this.toCard(inv))
+      );
+
+      this.filter();
     });
   }
 
@@ -142,38 +145,58 @@ export class InventoryPage implements OnInit, OnDestroy {
       : this.inventoryCards.filter((i) => (i.name || '').toLowerCase().includes(q));
   }
 
-  async increment(item: InventoryCardItem) {
-    await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count + 1);
-    await this.inventory.loadInventory();
-    this.filter();
-  }
+ async increment(item: InventoryCardItem) {
+  item.count += 1;
+  await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count);
+  this.filter;
+}
 
   async decrement(item: InventoryCardItem) {
     if (item.count > 1) {
-      await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count - 1);
+      item.count -= 1;
+      await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count);
     } else {
+      this.inventoryCards = this.inventoryCards.filter(i => i.inventoryId !== item.inventoryId);
       await this.inventory.deleteInventoryItem(item.inventoryId);
     }
-    await this.inventory.loadInventory();
-    this.filter();
   }
 
-  startRename(item: InventoryCardItem) {
-    this.editingId = item.id;
-    this.editName = item.name;
-  }
+  // startRename(item: InventoryCardItem) {
+  //   this.editingId = item.id;
+  //   this.editName = item.name;
+  // }
 
-  cancelRename() {
-    this.editingId = null;
-    this.editName = '';
-  }
+  // cancelRename() {
+  //   this.editingId = null;
+  //   this.editName = '';
+  // }
 
-  async saveRename(item: InventoryCardItem) {
-    console.warn('Rename functionality disabled: Item names come from master data');
-    this.cancelRename();
-  }
+  // async saveRename(item: InventoryCardItem) {
+  //   console.warn('Rename functionality disabled: Item names come from master data');
+  //   this.cancelRename();
+  //}
 
   trackById(_index: number, item: InventoryCardItem) {
     return item.id;
+  }
+
+  sortInventoryCards(invCards: any[]): any[] {
+    if (!Array.isArray(invCards)) {
+        console.error('sortInventoryCards erwartet ein Array!');
+        return [];
+    }
+
+    const safeCards = invCards.map(card => ({
+        ...card,
+        inventoryId: card.inventoryId ?? 0
+    }));
+
+    safeCards.sort((a, b) => {
+        const idA = typeof a.inventoryId === 'number' ? a.inventoryId : Number(a.inventoryId);
+        const idB = typeof b.inventoryId === 'number' ? b.inventoryId : Number(b.inventoryId);
+        return idA - idB;
+    });
+
+    return safeCards;
   }
 }
