@@ -31,7 +31,8 @@ import {
   IonFabButton,
   IonSearchbar,
   IonTabBar,
-  IonTabs
+  IonTabs,
+  IonTabButton
 } from '@ionic/angular/standalone';
 
 export const IONIC_COMPONENTS = [
@@ -67,5 +68,7 @@ export const IONIC_COMPONENTS = [
   IonFabButton,
   IonSearchbar,
   IonTabBar,
-  IonTabs
+  IonTabs,
+  IonLabel,
+  IonTabButton, 
 ];
