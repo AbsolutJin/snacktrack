@@ -40,6 +40,7 @@
                 "output": "/"
               }
             ],
+            "serviceWorker": "ngsw-config.json",
             "styles": ["src/global.scss", "src/theme/variables.scss"],
             "scripts": [],
             "browser": "src/main.ts"
