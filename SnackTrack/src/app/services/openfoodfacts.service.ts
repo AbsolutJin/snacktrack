@@ -1,20 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
-export interface OpenFoodFactsProduct {
-  code: string;
-  product: {
-    product_name?: string;
-    brands?: string;
-    quantity?: string;
-    image_url?: string;
-    image_front_url?: string;
-  };
-  status: number;
-  status_verbose: string;
-}
 
 export interface ProductInfo {
   barcode: string;
@@ -28,29 +16,49 @@ export interface ProductInfo {
   providedIn: 'root'
 })
 export class OpenFoodFactsService {
-  private readonly baseUrl = 'https://world.openfoodfacts.org/api/v0/product';
+  private readonly baseUrl = 'https://world.openfoodfacts.org/api/v2/product';
 
   constructor(private http: HttpClient) {}
 
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Accept': 'application/json'
+    });
+  }
+
   getProductByBarcode(barcode: string): Observable<ProductInfo | null> {
-    return this.http.get<OpenFoodFactsProduct>(`${this.baseUrl}/${barcode}.json`).pipe(
+    if (!barcode || barcode.trim().length === 0) {
+      return of(null);
+    }
+
+    const cleanBarcode = barcode.trim();
+    const headers = this.getHeaders();
+
+    return this.http.get<any>(
+      `${this.baseUrl}/${cleanBarcode}`,
+      { headers }
+    ).pipe(
       map(response => {
         if (response.status === 1 && response.product) {
           const product = response.product;
           return {
-            barcode: barcode,
-            product_name: product.product_name || 'Unbekanntes Produkt',
-            brand: product.brands || '',
+            barcode: cleanBarcode,
+            product_name: product.product_name || product.product_name_en || 'Unbekanntes Produkt',
+            brand: product.brands ? product.brands.split(',')[0].trim() : '',
             quantity: product.quantity || '',
-            image_url: product.image_front_url || product.image_url || null
+            image_url: product.image_front_small_url || product.image_front_url || product.image_url || null
           };
         }
         return null;
       }),
       catchError(error => {
-        console.error('Error fetching product from OpenFoodFacts:', error);
-        throw error;
+        console.error('Fehler beim Abrufen des Produkts von OpenFoodFacts:', error);
+        if (error.status === 429) {
+          console.warn('Request Limit erreicht');
+        }
+        return of(null);
       })
     );
   }
+
 }
