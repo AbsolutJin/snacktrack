@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AlertController, ModalController, IonicModule, ToastController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular/standalone';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -16,19 +16,21 @@ import {
   heartOutline,
   wineOutline,
   flowerOutline,
-  addOutline
+  addOutline,
+  optionsOutline
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { InventoryService } from 'src/app/services/inventory.service';
 import { StorageLocationService } from 'src/app/services/storage-location.service';
 import { Observable, Subject } from 'rxjs';
 import { ToastService } from 'src/app/services/toast.service';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './administration.page.html',
   styleUrls: ['./administration.page.scss'],
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ...IONIC_COMPONENTS],
 })
 export class AdministrationPage implements OnInit, OnDestroy {
 
@@ -59,7 +61,8 @@ export class AdministrationPage implements OnInit, OnDestroy {
       heartOutline,
       wineOutline,
       flowerOutline,
-      addOutline
+      addOutline,
+      optionsOutline
     });
   }
 

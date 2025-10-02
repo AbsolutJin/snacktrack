@@ -7,16 +7,15 @@ import { ToastService } from '../../services/toast.service';
 import { AccountService } from '../../services/account.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { IonItem, IonLabel, IonButton, IonInput } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonButton, IonInput, CommonModule, FormsModule, ReactiveFormsModule, RouterModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, ...IONIC_COMPONENTS]
 })
 export class LoginPage implements OnInit {
 

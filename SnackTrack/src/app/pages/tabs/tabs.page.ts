@@ -1,11 +1,4 @@
 import { Component } from '@angular/core';
-import {
-  IonTabs,
-  IonTabBar,
-  IonTabButton,
-  IonIcon,
-  IonLabel,
-} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   homeOutline,
@@ -18,13 +11,14 @@ import {
   optionsOutline
 } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
   standalone: true,
-  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, RouterLink],
+  imports: [RouterLink, ...IONIC_COMPONENTS],
 })
 export class TabsPage {
   constructor() {

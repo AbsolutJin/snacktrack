@@ -1,7 +1,7 @@
 import { StorageLocation } from '../../models/storage-location.interface';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { ExpiringItemsListComponent } from '../../components/expiring-items-list/expiring-items-list.component';
@@ -10,6 +10,7 @@ import { AddItemModalComponent } from '../../components/modals/add-item-modal/ad
 import { InventoryService } from '../../services/inventory.service';
 import { StorageLocationService } from '../../services/storage-location.service';
 import { AccountService } from '../../services/account.service';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 import { addIcons } from 'ionicons';
 import {
   addCircleOutline,
@@ -31,7 +32,7 @@ import {
   styleUrls: ['./dashboard.page.scss'],
   imports: [
     CommonModule,
-    IonicModule,
+    ...IONIC_COMPONENTS,
     ExpiringItemsListComponent,
     InventoryChartComponent,
   ],

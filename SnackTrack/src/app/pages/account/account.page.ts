@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 
 import { AccountService, UserProfile } from '../../services/account.service';
@@ -12,13 +12,14 @@ import { ChangePasswordModal } from './change-password.modal';
 // Ionicons registration (ensure icons display reliably)
 import { addIcons } from 'ionicons';
 import { cameraOutline, trashOutline, saveOutline, closeOutline, mailOutline, callOutline, personOutline } from 'ionicons/icons';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
 @Component({
   selector: 'app-account',
   standalone: true,
   templateUrl: './account.page.html',
   styleUrls: ['./account.page.scss'],
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [CommonModule, FormsModule, ...IONIC_COMPONENTS],
 })
 export class AccountPage implements OnInit, OnDestroy {
   user: UserProfile = { id: '', username: '', email: '' };

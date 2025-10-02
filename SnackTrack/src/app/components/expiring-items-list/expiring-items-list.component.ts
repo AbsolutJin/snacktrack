@@ -1,8 +1,8 @@
 // src/app/components/expiring-items-list/expiring-items-list.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { InventoryStatsService } from '../../services/inventory-stats.service';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 import { checkmarkCircleOutline, warningOutline, calendarOutline, chevronUp, chevronDown, warning, time, locationOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
@@ -11,7 +11,10 @@ import { addIcons } from 'ionicons';
   standalone: true,
   templateUrl: './expiring-items-list.component.html',
   styleUrl: './expiring-items-list.component.scss',
-  imports: [CommonModule, IonicModule],
+  imports: [
+    CommonModule,
+    ...IONIC_COMPONENTS
+  ],
 })
 export class ExpiringItemsListComponent implements OnInit {
   expiringItems: any[] = [];

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
-import { ModalController, IonicModule, IonContent } from '@ionic/angular';
+import { ModalController, IonContent } from '@ionic/angular/standalone';
 import { FoodItemInterface, FoodUnit } from 'src/app/models/food-item.interface';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { Item } from 'src/app/models/item.interface';
@@ -10,6 +10,7 @@ import { InventoryService } from 'src/app/services/inventory.service';
 import { ItemService } from 'src/app/services/item.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BarcodeService } from 'src/app/services/barcode.service';
+import { IONIC_COMPONENTS } from '../../../shared/ionic-components.module';
 import { addIcons } from 'ionicons';
 import { close, calendarOutline, alertCircleOutline, closeCircle, scanOutline, searchOutline, barcodeOutline } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +20,11 @@ import { CommonModule } from '@angular/common';
   selector: 'app-add-item-modal',
   templateUrl: './add-item-modal.component.html',
   styleUrls: ['./add-item-modal.component.scss'],
-  imports: [IonicModule, FormsModule, CommonModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    ...IONIC_COMPONENTS
+  ],
   standalone: true
 })
 export class AddItemModalComponent implements OnInit {

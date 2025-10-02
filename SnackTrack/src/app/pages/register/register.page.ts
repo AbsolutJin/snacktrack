@@ -5,15 +5,15 @@ import { AuthService } from '../../services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { ToastService } from '../../services/toast.service';
 import { Router } from '@angular/router';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, CommonModule, FormsModule, RouterModule]
+  imports: [CommonModule, FormsModule, RouterModule, ...IONIC_COMPONENTS]
 })
 export class RegisterPage {
   email = '';

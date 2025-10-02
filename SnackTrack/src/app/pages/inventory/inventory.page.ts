@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { InventoryService } from '../../services/inventory.service';
@@ -25,6 +24,7 @@ import {
   imageOutline,
   removeOutline,
 } from 'ionicons/icons';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
 interface InventoryCardItem {
   id: string;
@@ -42,7 +42,7 @@ interface InventoryCardItem {
   standalone: true,
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss'],
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [CommonModule, FormsModule, ...IONIC_COMPONENTS],
 })
 export class InventoryPage implements OnInit, OnDestroy {
   showSearch = false;

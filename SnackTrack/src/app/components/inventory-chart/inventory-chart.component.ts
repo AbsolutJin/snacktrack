@@ -1,12 +1,12 @@
 // src/app/components/inventory-chart/inventory-chart.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { InventoryStatsInterface } from 'src/app/models/inventory-stats.interface';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { StorageLocationService } from '../../services/storage-location.service';
 import { InventoryStatsService } from '../../services/inventory-stats.service';
+import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 import { addIcons } from 'ionicons';
 import {
   homeOutline,
@@ -22,7 +22,11 @@ import {
   standalone: true,
   templateUrl: './inventory-chart.component.html',
   styleUrl: './inventory-chart.component.scss',
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ...IONIC_COMPONENTS
+  ],
 })
 export class InventoryChartComponent implements OnInit {
   inventoryStats: InventoryStatsInterface = {
