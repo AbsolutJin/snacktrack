@@ -9,6 +9,7 @@ import { OpenFoodFactsService, ProductInfo } from 'src/app/services/openfoodfact
 import { InventoryService } from 'src/app/services/inventory.service';
 import { ItemService } from 'src/app/services/item.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { BarcodeService } from 'src/app/services/barcode.service';
 import { addIcons } from 'ionicons';
 import { close, calendarOutline, alertCircleOutline, closeCircle, scanOutline, searchOutline, barcodeOutline } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
@@ -54,6 +55,7 @@ export class AddItemModalComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private itemService = inject(ItemService);
   private authService = inject(AuthService);
+  private barcodeService = inject(BarcodeService);
 
   constructor() {
     addIcons({ close, calendarOutline, alertCircleOutline, closeCircle, scanOutline, searchOutline, barcodeOutline });
@@ -85,7 +87,7 @@ export class AddItemModalComponent implements OnInit {
     this.productFound = false;
 
     try {
-      // 1. Erst in lokaler Items-Tabelle suchen
+      //Erst in Items Table suchen
       const existingItem = await this.itemService.getItemByBarcode(this.formData.barcode);
 
       if (existingItem) {
@@ -134,11 +136,49 @@ export class AddItemModalComponent implements OnInit {
 
   async openBarcodeScanner() {
     try {
-      await this.toastService.warning('Barcode-Scanner noch nicht implementiert. Bitte Barcode manuell eingeben.');
+      const hasPermission = await this.barcodeService.requestPermissions();
+      if (!hasPermission) {
+        await this.toastService.error(
+          'Kamera-Zugriff verweigert. Bitte erlauben Sie den Zugriff auf die Kamera in den Browser-Einstellungen.'
+        );
+        return;
+      }
+
+      const result = await this.barcodeService.startScan();
+
+      if (result.cancelled) {
+        //keine Fehlermeldung nötig
+        return;
+      }
+
+      if (result.text) {
+        this.formData.barcode = result.text;
+        await this.searchByBarcode();
+        await this.toastService.success(`Barcode gescannt: ${result.text}`);
+      } else {
+        await this.toastService.warning('Kein Barcode erkannt. Versuchen Sie es erneut oder geben Sie den Code manuell ein.');
+      }
 
     } catch (error) {
       console.error('Error opening barcode scanner:', error);
-      await this.toastService.error('Fehler beim Öffnen des Barcode-Scanners');
+
+      let errorMessage = 'Fehler beim Kamera-Zugriff.';
+
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          errorMessage = 'Kamera-Zugriff verweigert. Bitte erlauben Sie den Kamera-Zugriff in Ihrem Browser.';
+        } else if (error.name === 'NotFoundError') {
+          errorMessage = 'Keine Kamera gefunden. Bitte überprüfen Sie, ob eine Kamera angeschlossen ist.';
+        } else if (error.name === 'NotReadableError') {
+          errorMessage = 'Kamera ist bereits in Verwendung oder nicht verfügbar.';
+        } else if (error.name === 'NotSupportedError') {
+          errorMessage = 'Kamera wird in diesem Browser nicht unterstützt. Verwenden Sie einen modernen Browser.';
+        } else if (error.name === 'SecurityError') {
+          errorMessage = 'Sicherheitsfehler. Bitte verwenden Sie HTTPS für den Kamera-Zugriff.';
+        }
+      }
+
+      await this.toastService.error(errorMessage);
     }
   }
 
@@ -181,7 +221,7 @@ export class AddItemModalComponent implements OnInit {
         location_id: this.formData.storageLocationId,
         barcode: this.formData.barcode,
         quantity: this.formData.quantity,
-        expiration_date: expiryDate.toISOString().split('T')[0], // YYYY-MM-DD format
+        expiration_date: expiryDate.toISOString().split('T')[0],
         notes: this.formData.notes || undefined
       };
 
