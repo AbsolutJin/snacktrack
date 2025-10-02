@@ -7,13 +7,29 @@
   </ion-card-header>
 
   <ion-card-content>
-    <!-- Nur noch Lagerplätze verfügbar -->
     <h3>Verteilung nach Lagerplätzen</h3>
 
     @if(isLoading) {
       <div class="loading">
         <ion-spinner name="crescent"></ion-spinner>
         <p>Lade Inventar-Statistiken...</p>
+      </div>
+    } @else if(hasError) {
+      <div class="empty-state">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <p>Fehler beim Laden der Statistiken</p>
+      </div>
+    } @else if(storageLocations.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="albums-outline" color="medium"></ion-icon>
+        <p>Keine Lagerorte vorhanden</p>
+        <p class="hint">Erstelle zuerst Lagerorte in den Stammdaten</p>
+      </div>
+    } @else if(inventoryStats.totalItems === 0) {
+      <div class="empty-state">
+        <ion-icon name="cube-outline" color="medium"></ion-icon>
+        <p>Noch keine Artikel im Inventar</p>
+        <p class="hint">Füge deinen ersten Artikel hinzu</p>
       </div>
     } @else {
       <div class="chart-container">

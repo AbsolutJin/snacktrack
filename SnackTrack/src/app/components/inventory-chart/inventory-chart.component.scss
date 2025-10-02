@@ -1,3 +1,42 @@
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--ion-color-medium);
+      }
+
+      .empty-state ion-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .empty-state p {
+        margin: 0.5rem 0;
+        font-size: 1rem;
+      }
+
+      .empty-state .hint {
+        font-size: 0.875rem;
+        color: var(--ion-color-medium-shade);
+      }
+
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        text-align: center;
+      }
+
+      .loading p {
+        margin-top: 1rem;
+        color: var(--ion-color-medium);
+      }
+
       .chart-container {
         margin-top: 1rem;
       }

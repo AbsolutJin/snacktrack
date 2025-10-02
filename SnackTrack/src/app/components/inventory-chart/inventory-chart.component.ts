@@ -1,7 +1,7 @@
-// src/app/components/inventory-chart/inventory-chart.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 import { InventoryStatsInterface } from 'src/app/models/inventory-stats.interface';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { StorageLocationService } from '../../services/storage-location.service';
@@ -15,6 +15,7 @@ import {
   cubeOutline,
   albumsOutline,
   pieChartOutline,
+  alertCircleOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -28,7 +29,7 @@ import {
     ...IONIC_COMPONENTS
   ],
 })
-export class InventoryChartComponent implements OnInit {
+export class InventoryChartComponent implements OnInit, OnDestroy {
   inventoryStats: InventoryStatsInterface = {
     totalItems: 0,
     expiringSoonCount: 0,
@@ -37,6 +38,8 @@ export class InventoryChartComponent implements OnInit {
   };
   storageLocations: StorageLocation[] = [];
   isLoading = true;
+  hasError = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private storageLocationService: StorageLocationService,
@@ -49,20 +52,33 @@ export class InventoryChartComponent implements OnInit {
       cubeOutline,
       albumsOutline,
       pieChartOutline,
+      alertCircleOutline,
     });
   }
 
   async ngOnInit() {
+    this.storageLocationService.storageLocations$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(locations => {
+        this.storageLocations = locations;
+      });
+
     await this.loadInventoryStats();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   async loadInventoryStats() {
     try {
       this.isLoading = true;
+      this.hasError = false;
       this.inventoryStats = await this.inventoryStatsService.getInventoryStats();
-      this.storageLocations = this.storageLocationService.getStorageLocations();
     } catch (error) {
       console.error('Error loading inventory stats:', error);
+      this.hasError = true;
     } finally {
       this.isLoading = false;
     }
