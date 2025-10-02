@@ -132,4 +132,8 @@ export class AccountService {
     const { error } = await this.client.auth.updateUser({ password: newPassword });
     if (error) throw error;
   }
+
+  clearData(): void {
+    this.profileSubject.next(null);
+  }
 }

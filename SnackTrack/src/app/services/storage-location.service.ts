@@ -125,10 +125,14 @@ export class StorageLocationService {
   subscribeToChanges(callback: (payload: any) => void) {
     return this.supabaseClient.client
       .channel('storage_locations_changes')
-      .on('postgres_changes', 
-          { event: '*', schema: 'public', table: 'storage_locations' }, 
+      .on('postgres_changes',
+          { event: '*', schema: 'public', table: 'storage_locations' },
           callback
       )
       .subscribe();
+  }
+
+  clearData(): void {
+    this.storageLocationsSubject.next([]);
   }
 }

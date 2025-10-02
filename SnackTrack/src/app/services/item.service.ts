@@ -116,4 +116,9 @@ export class ItemService {
       this.loadFoodItems()
     ]);
   }
+
+  clearData(): void {
+    this.itemsSubject.next([]);
+    this.foodItemsSubject.next([]);
+  }
 }

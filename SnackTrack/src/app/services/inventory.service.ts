@@ -158,4 +158,8 @@ export class InventoryService {
       throw error;
     }
   }
+
+  clearData(): void {
+    this.inventorySubject.next([]);
+  }
 }
