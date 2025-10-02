@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { ModalController, ToastController } from '@ionic/angular/standalone';
+import { ModalController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 
 import { AccountService, UserProfile } from '../../services/account.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { Router } from '@angular/router';
 import { ChangePasswordModal } from './change-password.modal';
 
@@ -35,7 +36,7 @@ export class AccountPage implements OnInit, OnDestroy {
   constructor(
     private account: AccountService,
     private modalCtrl: ModalController,
-    private toastCtrl: ToastController,
+    private toast: ToastService,
     private auth: AuthService,
     private router: Router,
   ) {
@@ -73,10 +74,10 @@ export class AccountPage implements OnInit, OnDestroy {
     try {
       const publicUrl = await this.account.uploadAvatar(file);
       this.avatarDataUrl = publicUrl;
-      await this.presentToast('Profilbild aktualisiert');
+      await this.toast.success('Profilbild aktualisiert');
     } catch (e) {
       console.error(e);
-      await this.presentToast('Fehler beim Hochladen des Profilbilds');
+      await this.toast.error('Fehler beim Hochladen des Profilbilds');
     } finally {
       input.value = '';
     }
@@ -86,10 +87,10 @@ export class AccountPage implements OnInit, OnDestroy {
     try {
       await this.account.removeAvatar();
       this.avatarDataUrl = null;
-      await this.presentToast('Profilbild entfernt');
+      await this.toast.success('Profilbild entfernt');
     } catch (e) {
       console.error(e);
-      await this.presentToast('Fehler beim Entfernen des Profilbilds');
+      await this.toast.error('Fehler beim Entfernen des Profilbilds');
     }
   }
 
@@ -98,7 +99,7 @@ export class AccountPage implements OnInit, OnDestroy {
     try {
       const { id, ...payload } = this.user; // never update id
       await this.account.updateProfile(payload);
-      await this.presentToast('Profil gespeichert');
+      await this.toast.success('Profil gespeichert');
       // update originals so Save button disables again
       this.originalUsername = this.user.username || '';
       this.originalEmail = this.user.email || '';
@@ -107,7 +108,7 @@ export class AccountPage implements OnInit, OnDestroy {
       } catch {}
     } catch (e) {
       console.error(e);
-      await this.presentToast('Speichern fehlgeschlagen');
+      await this.toast.error('Speichern fehlgeschlagen');
     }
   }
 
@@ -127,12 +128,7 @@ export class AccountPage implements OnInit, OnDestroy {
       await this.router.navigate(['/login']);
     } catch (e) {
       console.error('Logout failed', e);
-      await this.presentToast('Abmelden fehlgeschlagen');
+      await this.toast.error('Abmelden fehlgeschlagen');
     }
-  }
-
-  private async presentToast(message: string) {
-    const toast = await this.toastCtrl.create({ message, duration: 1700, position: 'bottom' });
-    await toast.present();
   }
 }
