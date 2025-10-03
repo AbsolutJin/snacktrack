@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef  } from '@angular/core';
 import { ModalController, IonContent } from '@ionic/angular/standalone';
 import { FoodItemInterface, FoodUnit } from 'src/app/models/food-item.interface';
 import { StorageLocation } from 'src/app/models/storage-location.interface';
@@ -29,7 +29,7 @@ import { CommonModule } from '@angular/common';
 })
 export class AddItemModalComponent implements OnInit {
   @ViewChild('content', { static: false }) content!: IonContent;
-  
+
   isEdit: boolean = false;
   item?: FoodItemInterface;
   storageLocations: StorageLocation[] = [];
@@ -51,18 +51,19 @@ export class AddItemModalComponent implements OnInit {
 
   minDate = new Date().toISOString();
   foodUnits = Object.values(FoodUnit);
-  
+
   showValidationErrors = false;
 
-  private modalController = inject(ModalController);
-  private toastService = inject(ToastService);
-  private openFoodFactsService = inject(OpenFoodFactsService);
-  private inventoryService = inject(InventoryService);
-  private itemService = inject(ItemService);
-  private authService = inject(AuthService);
-  private barcodeService = inject(BarcodeService);
-
-  constructor() {
+  constructor(
+    private modalController: ModalController,
+    private toastService: ToastService,
+    private openFoodFactsService: OpenFoodFactsService,
+    private inventoryService: InventoryService,
+    private itemService: ItemService,
+    private authService: AuthService,
+    private barcodeService: BarcodeService,
+    private cdr: ChangeDetectorRef
+  ) {
     addIcons({ close, calendarOutline, alertCircleOutline, closeCircle, scanOutline, searchOutline, barcodeOutline });
   }
 
@@ -141,23 +142,17 @@ export class AddItemModalComponent implements OnInit {
 
   async openBarcodeScanner() {
     try {
-      const hasPermission = await this.barcodeService.requestPermissions();
-      if (!hasPermission) {
-        await this.toastService.error(
-          'Kamera-Zugriff verweigert. Bitte erlauben Sie den Zugriff auf die Kamera in den Browser-Einstellungen.'
-        );
-        return;
-      }
 
       const result = await this.barcodeService.startScan();
 
       if (result.cancelled) {
-        //keine Fehlermeldung nötig
+        console.log('Scan wurde abgebrochen.'); // Log-Nachricht für dich, keine User-Meldung nötig
         return;
       }
 
       if (result.text) {
         this.formData.barcode = result.text;
+        this.cdr.detectChanges();
         await this.searchByBarcode();
         await this.toastService.success(`Barcode gescannt: ${result.text}`);
       } else {
@@ -166,24 +161,10 @@ export class AddItemModalComponent implements OnInit {
 
     } catch (error) {
       console.error('Error opening barcode scanner:', error);
-
-      let errorMessage = 'Fehler beim Kamera-Zugriff.';
-
-      if (error instanceof Error) {
-        if (error.name === 'NotAllowedError') {
-          errorMessage = 'Kamera-Zugriff verweigert. Bitte erlauben Sie den Kamera-Zugriff in Ihrem Browser.';
-        } else if (error.name === 'NotFoundError') {
-          errorMessage = 'Keine Kamera gefunden. Bitte überprüfen Sie, ob eine Kamera angeschlossen ist.';
-        } else if (error.name === 'NotReadableError') {
-          errorMessage = 'Kamera ist bereits in Verwendung oder nicht verfügbar.';
-        } else if (error.name === 'NotSupportedError') {
-          errorMessage = 'Kamera wird in diesem Browser nicht unterstützt. Verwenden Sie einen modernen Browser.';
-        } else if (error.name === 'SecurityError') {
-          errorMessage = 'Sicherheitsfehler. Bitte verwenden Sie HTTPS für den Kamera-Zugriff.';
-        }
-      }
-
-      await this.toastService.error(errorMessage);
+      // Vereinfachte Fehlerbehandlung, da Capacitor die meisten Fehler abfängt
+      await this.toastService.error(
+        'Kamera-Zugriff nicht möglich. Bitte stellen Sie sicher, dass die Berechtigung erteilt wurde.'
+      );
     }
   }
 

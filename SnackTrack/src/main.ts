@@ -8,6 +8,8 @@ import { isDevMode } from '@angular/core';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -20,3 +22,5 @@ bootstrapApplication(AppComponent, {
     }),
   ],
 });
+
+defineCustomElements(window);
