@@ -72,20 +72,14 @@ export class AdministrationPage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.storageLocations$ = this.storageLocationService.storageLocations$;
 
-    this.storageLocations$.subscribe(locations => {
-      console.log('[Administration] Storage Locations:', locations);
-    });
-
     await this.refreshData();
     await this.loadItemCounts();
   }
 
   async refreshData() {
     try {
-      console.log('[Administration] Refreshing data...');
       await this.storageLocationService.loadStorageLocations();
       await this.inventoryService.refreshData();
-      console.log('[Administration] Data refreshed');
     } catch (error) {
       console.error('[Administration] Error refreshing data:', error);
     }
