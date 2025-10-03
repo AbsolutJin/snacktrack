@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BrowserMultiFormatReader } from '@zxing/library';
+import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
 export interface ScanResult {
   text: string;
@@ -14,122 +15,78 @@ export class BarcodeService {
 
   constructor() {}
 
-  async requestPermissions(): Promise<boolean> {
-    // PWA/Web: Basic camera support check
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      console.error('Camera not supported in this browser');
-      return false;
-    }
+  // Die Methode 'requestPermissions' ist nicht mehr nötig.
+  // Capacitor/camera kümmert sich beim Aufruf von getPhoto() selbst darum.
 
-    // Check if permission already granted
-    if ('permissions' in navigator) {
-      try {
-        const permissionStatus = await navigator.permissions.query({ name: 'camera' as PermissionName });
-        if (permissionStatus.state === 'granted') {
-          return true;
-        }
-        if (permissionStatus.state === 'denied') {
-          return false;
-        }
-      } catch (error) {
-        console.log('Permissions API not available');
-      }
-    }
-
-    // Request camera permission with minimal stream
+  /**
+   * Öffnet die Gerätekamera, um ein einzelnes Bild aufzunehmen und einen Barcode darin zu scannen.
+   */
+  public async startScan(): Promise<ScanResult> {
     try {
-      const testStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1 },
-          height: { ideal: 1 }
-        }
+      // 1. Foto mit Capacitor Camera aufnehmen
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false, // Wichtig für Barcodes, um Zuschnitt zu vermeiden
+        resultType: CameraResultType.DataUrl, // Gibt eine Base64-repräsentierte Bild-URL zurück
+        source: CameraSource.Camera, // Öffnet direkt die Kamera
       });
 
-      // Permission granted - stop test stream immediately
-      testStream.getTracks().forEach(track => track.stop());
-      return true;
+      // Wenn der Nutzer ein Bild aufgenommen hat
+      if (image && image.dataUrl) {
+        try {
+          // 2. Barcode aus den Bilddaten dekodieren
+          const result = await this.decodeBarcodeFromImage(image.dataUrl);
+          return { text: result, cancelled: false };
+        } catch (error) {
+          // ZXing konnte keinen Barcode finden
+          console.log('Barcode nicht gefunden im Bild', error);
+          return { text: '', cancelled: false }; // Nicht abgebrochen, aber nichts gefunden
+          
+        }
+      } else {
+        // Sollte nicht passieren, wenn kein Fehler geworfen wird, aber sicher ist sicher
+        return { text: '', cancelled: true };
+      }
 
     } catch (error: any) {
-      console.error('Camera permission denied:', error);
-      return false;
+      // 3. Fehler oder Abbruch durch den Benutzer behandeln
+      // Capacitor wirft einen Fehler mit der Nachricht 'User cancelled photos app', wenn der Nutzer abbricht
+      if (error.message && error.message.includes('cancelled')) {
+        console.log('Scan wurde vom Benutzer abgebrochen.');
+        return { text: '', cancelled: true };
+      } else {
+        console.error('Fehler bei der Kameraaufnahme:', error);
+        // Anderer Kamerafehler (z.B. Berechtigung verweigert)
+        throw error; // Den Fehler weiterwerfen, damit die Komponente ihn fangen kann
+      }
     }
   }
 
-  async startScan(): Promise<ScanResult> {
-    return this.startWebScan();
+  /**
+   * Dekodiert einen Barcode aus einer DataUrl (Base64-String).
+   */
+  private async decodeBarcodeFromImage(dataUrl: string): Promise<string> {
+  // Erstelle ein Image-Element im Speicher
+  const img = document.createElement('img');
+  img.src = dataUrl;
+
+  // Warte, bis das Bild vollständig geladen ist
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = (err) => reject(err);
+  });
+
+  // Jetzt, da das Bild geladen ist, dekodiere es.
+  // Wichtig: 'await' hier, da decodeFromImageElement ein Promise zurückgibt.
+  try {
+    const result = await this.codeReader.decodeFromImageElement(img);
+    return result.getText();
+  } catch (error) {
+    // Fange den Fehler hier und werfe ihn weiter, damit die aufrufende Funktion ihn behandeln kann
+    console.error('ZXing decode error:', error);
+    throw error;
   }
+}
 
-  private async startWebScan(): Promise<ScanResult> {
-    return new Promise(async (resolve) => {
-      try {
-        //tatsächliche Berechtigung
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: 'environment'
-          }
-        });
-
-        const videoElement = document.createElement('video');
-        videoElement.style.position = 'fixed';
-        videoElement.style.top = '0';
-        videoElement.style.left = '0';
-        videoElement.style.width = '100%';
-        videoElement.style.height = '100%';
-        videoElement.style.zIndex = '9999';
-        videoElement.style.backgroundColor = 'black';
-        videoElement.style.objectFit = 'cover';
-
-        const cancelButton = document.createElement('button');
-        cancelButton.innerText = 'Abbrechen';
-        cancelButton.style.position = 'fixed';
-        cancelButton.style.top = '20px';
-        cancelButton.style.right = '20px';
-        cancelButton.style.zIndex = '10000';
-        cancelButton.style.padding = '10px 20px';
-        cancelButton.style.backgroundColor = '#fff';
-        cancelButton.style.border = 'none';
-        cancelButton.style.borderRadius = '5px';
-        cancelButton.style.fontSize = '16px';
-        cancelButton.style.cursor = 'pointer';
-
-        const cleanup = () => {
-          stream.getTracks().forEach(track => track.stop());
-          if (document.body.contains(videoElement)) {
-            document.body.removeChild(videoElement);
-          }
-          if (document.body.contains(cancelButton)) {
-            document.body.removeChild(cancelButton);
-          }
-          this.codeReader.reset();
-        };
-
-        cancelButton.onclick = () => {
-          cleanup();
-          resolve({ text: '', cancelled: true });
-        };
-
-        videoElement.srcObject = stream;
-        document.body.appendChild(videoElement);
-        document.body.appendChild(cancelButton);
-
-        this.codeReader.decodeFromVideoDevice(null, videoElement, (result, error) => {
-          if (result) {
-            cleanup();
-            resolve({ text: result.getText(), cancelled: false });
-          }
-          if (error && error.name !== 'NotFoundException') {
-            console.error('Web barcode scan error:', error);
-          }
-        });
-
-      } catch (error) {
-        console.error('Camera access denied or failed:', error);
-        resolve({ text: '', cancelled: true });
-      }
-    });
-  }
-
-  async stopScan(): Promise<void> {
-    this.codeReader.reset();
-  }
+  // Die Methode 'stopScan' ist ebenfalls nicht mehr nötig, da es keinen dauerhaften Stream gibt.
 }
