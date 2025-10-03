@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ModalController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 
 import { InventoryService } from '../../services/inventory.service';
 import { StorageLocationService } from '../../services/storage-location.service';
 import { ItemService } from '../../services/item.service';
-import { FoodItemInterface } from '../../models/food-item.interface';
+import { AddItemModalComponent } from '../../components/modals/add-item-modal/add-item-modal.component';
 import { Inventory } from '../../models/inventory.interface';
 import { Item } from '../../models/item.interface';
 import { StorageLocation } from '../../models/storage-location.interface';
@@ -63,7 +64,8 @@ export class InventoryPage implements OnInit, OnDestroy {
   constructor(
     private inventory: InventoryService,
     private storageLocationService: StorageLocationService,
-    private itemService: ItemService
+    private itemService: ItemService,
+    private modalController: ModalController
   ) {
     addIcons({
       filterOutline,
@@ -178,6 +180,18 @@ export class InventoryPage implements OnInit, OnDestroy {
 
   trackById(_index: number, item: InventoryCardItem) {
     return item.id;
+  }
+
+  async openAddItemModal() {
+    const modal = await this.modalController.create({
+      component: AddItemModalComponent,
+      componentProps: {
+        isEdit: false,
+        storageLocations: this.storageLocationService.getStorageLocations(),
+      },
+    });
+
+    await modal.present();
   }
 
   sortInventoryCards(invCards: any[]): any[] {
