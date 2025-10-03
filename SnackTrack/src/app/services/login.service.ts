@@ -18,15 +18,20 @@ export class LoginService {
   ) {}
 
   async login(email: string, password: string): Promise<void> {
-    // Clear all cached data BEFORE login to prevent data leakage
-    this.accountService.clearData();
-    this.inventoryService.clearData();
-    this.storageLocationService.clearData();
-    this.itemService.clearData();
-
     const { error } = await this.authService.signIn(email, password);
     if (error) {
       throw new Error(error.message);
     }
+
+    await this.storageLocationService.loadStorageLocations();
+    await this.inventoryService.loadInventory();
+  }
+
+  logout(): void {
+    // Clear all cached data on logout to prevent data leakage
+    this.accountService.clearData();
+    this.inventoryService.clearData();
+    this.storageLocationService.clearData();
+    this.itemService.clearData();
   }
 }

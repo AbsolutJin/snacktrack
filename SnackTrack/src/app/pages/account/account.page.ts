@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 
 import { AccountService, UserProfile } from '../../services/account.service';
 import { AuthService } from '../../services/auth.service';
+import { LoginService } from '../../services/login.service';
 import { ToastService } from '../../services/toast.service';
 import { Router } from '@angular/router';
 import { ChangePasswordModal } from './change-password.modal';
@@ -38,6 +39,7 @@ export class AccountPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private toast: ToastService,
     private auth: AuthService,
+    private loginService: LoginService,
     private router: Router,
   ) {
     addIcons({ cameraOutline, trashOutline, saveOutline, closeOutline, mailOutline, callOutline, personOutline });
@@ -123,6 +125,7 @@ export class AccountPage implements OnInit, OnDestroy {
 
   async logout() {
     try {
+      this.loginService.logout();
       const { error } = await this.auth.signOut();
       if (error) throw error;
       await this.router.navigate(['/login']);
