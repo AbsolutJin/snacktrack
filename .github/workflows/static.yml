@@ -21,11 +21,11 @@ jobs:
       # Hier verwenden wir die Secrets, die du in den Repository-Einstellungen angelegt hast
       - name: Create environment.prod.ts 🤫
         run: |
-          echo "export const environment = {" > ./src/environments/environment.prod.ts
-          echo "  production: true," >> ./src/environments/environment.prod.ts
-          echo "  supabaseUrl: '${{ secrets.SUPABASE_URL }}'," >> ./src/environments/environment.prod.ts
-          echo "  supabaseKey: '${{ secrets.SUPABASE_ANON_KEY }}'" >> ./src/environments/environment.prod.ts
-          echo "};" >> ./src/environments/environment.prod.ts
+          echo "export const environment = {" > ./SnackTrack/src/environments/environment.prod.ts
+          echo "  production: true," >> ./SnackTrack/src/environments/environment.prod.ts
+          echo "  supabaseUrl: '${{ secrets.SUPABASE_URL }}'," >> ./SnackTrack/src/environments/environment.prod.ts
+          echo "  supabaseKey: '${{ secrets.SUPABASE_ANON_KEY }}'" >> ./SnackTrack/src/environments/environment.prod.ts
+          echo "};" >> ./SnackTrack/src/environments/environment.prod.ts
 
       # Schritt 3: Node.js einrichten
       - name: Setup Node.js ⚙️
