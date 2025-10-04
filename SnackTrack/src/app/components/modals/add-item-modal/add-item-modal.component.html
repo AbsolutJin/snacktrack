@@ -30,10 +30,10 @@
             </ion-item>
           }
         </ion-list>
-        <ion-button 
-          fill="outline" 
-          color="light" 
-          size="small" 
+        <ion-button
+          fill="outline"
+          color="light"
+          size="small"
           (click)="showValidationErrors = false"
           class="close-errors-btn"
         >
@@ -165,6 +165,7 @@
               required
               presentation="date"
               [min]="minDate"
+              [max]="maxDate"
             >
             </ion-datetime>
           </ion-col>
