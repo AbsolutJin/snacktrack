@@ -120,4 +120,11 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+    <!-- Fixed FAB Button für neue Artikel -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-with-tabs">
+    <ion-fab-button (click)="openAddItemModal()" color="primary">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
