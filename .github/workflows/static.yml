@@ -1,20 +1,51 @@
+# .github/workflows/deploy.yml
+
+name: Build and Deploy to GitHub Pages
+
+# Dieser Workflow startet, wenn du auf den 'main'-Branch pushst
 on:
   push:
     branches:
-      - "main" # change to the branch you wish to deploy from
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+      - main # oder 'master', je nachdem, wie dein Hauptbranch heißt
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest # Verwendet eine virtuelle Ubuntu-Maschine
+
     steps:
-    - id: build-publish
-      uses: bitovi/github-actions-angular-to-github-pages@v1.0.0
-      with:
-        install_command: echo ${{ secrets.ENVIRONMENT_PROD_BASE64 }} | base64 -d > ./SnackTrack/src/environments/environment.prod.ts && cd SnackTrack && npm ci
-        build_command: npm run build -- --base-href=/${{ github.event.repository.name }}/
-        path: ./SnackTrack/dist/${{ github.event.repository.name }}/browser
+      # Schritt 1: Code aus dem Repository auschecken
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      # Schritt 2: Dynamisch die environment.prod.ts erstellen
+      # Hier verwenden wir die Secrets, die du in den Repository-Einstellungen angelegt hast
+      - name: Create environment.prod.ts 🤫
+        run: |
+          echo "export const environment = {" > ./src/environments/environment.prod.ts
+          echo "  production: true," >> ./src/environments/environment.prod.ts
+          echo "  supabaseUrl: '${{ secrets.SUPABASE_URL }}'," >> ./src/environments/environment.prod.ts
+          echo "  supabaseKey: '${{ secrets.SUPABASE_ANON_KEY }}'" >> ./src/environments/environment.prod.ts
+          echo "};" >> ./src/environments/environment.prod.ts
+
+      # Schritt 3: Node.js einrichten
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Wähle die passende Node.js-Version
+          cache: 'npm'
+
+      # Schritt 4: Abhängigkeiten installieren und App bauen
+      - name: Install and Build 🔨
+        run: |
+          npm install
+          # WICHTIG: Passe den Build-Befehl an dein Projekt an!
+          # --base-href muss dem Namen deines Repositorys entsprechen.
+          npm run build -- --configuration production --base-href /snacktrack/
+
+      # Schritt 5: Gebaute App auf GitHub Pages deployen
+      - name: Deploy 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Der Ordner, in dem sich die gebaute App befindet (oft 'www' bei Ionic/Angular)
+          publish_dir: ./www
