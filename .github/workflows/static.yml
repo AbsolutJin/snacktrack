@@ -1,76 +1,56 @@
-# Der Name des Workflows, der in der "Actions"-Übersicht angezeigt wird
 name: Build and Deploy to GitHub Pages
 
-# Legt fest, wann der Workflow ausgeführt wird
 on:
   push:
     branches:
-      - "main" # Startet bei jedem Push auf den main-Branch
+      - "main"
 
-# Definiert die Berechtigungen, die der Workflow benötigt
 permissions:
   contents: read
   pages: write
   id-token: write
 
 jobs:
-  # Job 1: Baut die Angular-Anwendung
   build:
     runs-on: ubuntu-latest
     steps:
-      # Schritt 1: Holt den Code aus deinem Repository
       - name: Checkout 🛎️
         uses: actions/checkout@v4
 
-      # Schritt 2: Richtet die Node.js-Umgebung ein
       - name: Setup Node.js ⚙️
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          # WICHTIG: Hier geben wir den korrekten Pfad zur Lock-Datei an
           cache-dependency-path: SnackTrack/package-lock.json
 
-      # Schritt 3: Erstellt die Environment-Datei mit den Secrets
       - name: Create environment file 🤫
         run: |
-          # Erstellt zuerst den Ordner, da er in Git fehlt
           mkdir -p ./SnackTrack/src/environments
-          # Schreibt dann die Secrets in die Datei
           echo "export const environment = {" > ./SnackTrack/src/environments/environment.prod.ts
           echo "  production: true," >> ./SnackTrack/src/environments/environment.prod.ts
           echo "  supabaseUrl: '${{ secrets.SUPABASE_URL }}'," >> ./SnackTrack/src/environments/environment.prod.ts
           echo "  supabaseKey: '${{ secrets.SUPABASE_ANON_KEY }}'" >> ./SnackTrack/src/environments/environment.prod.ts
           echo "};" >> ./SnackTrack/src/environments/environment.prod.ts
         
-      # Schritt 4: Installiert die Abhängigkeiten und baut die App
       - name: Install and Build 🔨
-        working-directory: ./SnackTrack # Führt die Befehle im richtigen Ordner aus
+        working-directory: ./SnackTrack
         run: |
           npm ci
           npm run build -- --base-href=/${{ github.event.repository.name }}/
 
-      # NEUER SCHRITT: Zeige den Inhalt des dist-Ordners an
-      - name: List dist folder contents
-        run: ls -R ./SnackTrack/dist
-
-      # Schritt 5: Lädt das Build-Ergebnis als "Artefakt" hoch
       - name: Upload artifact 📦
         uses: actions/upload-pages-artifact@v3
         with:
-          # Dies ist der korrekte Pfad zum Build-Ordner
-          path: ./SnackTrack/dist/${{ github.event.repository.name }}/browser
+          path: ./SnackTrack/www
           
-  # Job 2: Deployt die Anwendung auf GitHub Pages
   deploy:
-    # Dieser Job wartet, bis der 'build'-Job erfolgreich abgeschlossen ist
     needs: build 
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Schritt 6: Stellt das hochgeladene Artefakt auf GitHub Pages bereit
       - name: Deploy to GitHub Pages 🚀
         id: deployment
         uses: actions/deploy-pages@v4
