@@ -50,6 +50,10 @@ jobs:
           npm ci
           npm run build -- --base-href=/${{ github.event.repository.name }}/
 
+      # NEUER SCHRITT: Zeige den Inhalt des dist-Ordners an
+      - name: List dist folder contents
+        run: ls -R ./SnackTrack/dist
+
       # Schritt 5: Lädt das Build-Ergebnis als "Artefakt" hoch
       - name: Upload artifact 📦
         uses: actions/upload-pages-artifact@v3
