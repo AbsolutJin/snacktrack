@@ -100,6 +100,7 @@ export class AddItemModalComponent implements OnInit {
         this.fillFormFromItem(existingItem);
         this.productFound = true;
         await this.toastService.success('Produkt aus lokaler Datenbank geladen');
+        this.isLoadingProduct = false;
       } else {
         this.openFoodFactsService.getProductByBarcode(this.formData.barcode).subscribe({
           next: async (product) => {
