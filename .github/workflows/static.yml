@@ -37,7 +37,7 @@ jobs:
         working-directory: ./SnackTrack
         run: |
           npm ci
-          npm run build -- --base-href=/${{ github.event.repository.name }}/
+          npm run build -- --no-optimization --base-href=/${{ github.event.repository.name }}/
 
       - name: Upload artifact 📦
         uses: actions/upload-pages-artifact@v3
