@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { BarcodeService } from 'src/app/services/barcode.service';
 import { IONIC_COMPONENTS } from '../../../shared/ionic-components.module';
 import { addIcons } from 'ionicons';
-import { close, calendarOutline, alertCircleOutline, closeCircle, scanOutline, searchOutline, barcodeOutline } from 'ionicons/icons';
+import { close, calendarOutline, alertCircleOutline, closeCircle, scanOutline, searchOutline, barcodeOutline, barcode } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -199,6 +199,8 @@ export class AddItemModalComponent implements OnInit {
         await this.toastService.error('Benutzer nicht authentifiziert');
         return;
       }
+
+      this.searchByBarcode();
 
       const userId = userData.user.id;
 
