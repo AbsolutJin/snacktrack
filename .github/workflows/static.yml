@@ -14,3 +14,7 @@ jobs:
     steps:
     - id: build-publish
       uses: bitovi/github-actions-angular-to-github-pages@v1.0.0
+      with:
+        install_command: cd snacktrack && npm ci
+        build_command: cd snacktrack && npm run build -- --base-href=/${{ github.event.repository.name }}/
+        path: ./snacktrack/dist/${{ github.event.repository.name }}/browser
