@@ -49,7 +49,8 @@ export class AddItemModalComponent implements OnInit {
   isLoadingProduct = false;
   productFound = false;
 
-  minDate = new Date().toISOString();
+  minDate = "2000-01-31T00:00:01"
+  maxDate = "2999-12-31T23:59:59"
   foodUnits = Object.values(FoodUnit);
 
   showValidationErrors = false;
