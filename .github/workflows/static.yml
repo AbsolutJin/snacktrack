@@ -17,6 +17,10 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
+      # NEUER SCHRITT: Zeige die Dateistruktur an
+      - name: List files in the repository
+        run: ls -R
+
       # Schritt 2: Dynamisch die environment.prod.ts erstellen
       # Hier verwenden wir die Secrets, die du in den Repository-Einstellungen angelegt hast
       - name: Create environment.prod.ts 🤫
