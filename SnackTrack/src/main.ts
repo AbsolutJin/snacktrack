@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
+import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules, withHashLocation  } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -14,10 +14,10 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideRouter(routes, withPreloading(PreloadAllModules), withHashLocation()),
     provideHttpClient(),
     provideServiceWorker('ngsw-worker.js', {
-      enabled: false,
+      enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
