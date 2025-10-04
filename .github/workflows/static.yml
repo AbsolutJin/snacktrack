@@ -1,55 +1,72 @@
-# .github/workflows/deploy.yml
-
+# Der Name des Workflows, der in der "Actions"-Übersicht angezeigt wird
 name: Build and Deploy to GitHub Pages
 
-# Dieser Workflow startet, wenn du auf den 'main'-Branch pushst
+# Legt fest, wann der Workflow ausgeführt wird
 on:
   push:
     branches:
-      - main # oder 'master', je nachdem, wie dein Hauptbranch heißt
+      - "main" # Startet bei jedem Push auf den main-Branch
+
+# Definiert die Berechtigungen, die der Workflow benötigt
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest # Verwendet eine virtuelle Ubuntu-Maschine
-
+  # Job 1: Baut die Angular-Anwendung
+  build:
+    runs-on: ubuntu-latest
     steps:
-      # Schritt 1: Code aus dem Repository auschecken
+      # Schritt 1: Holt den Code aus deinem Repository
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Schritt 2: Dynamisch die environment.prod.ts erstellen
-      # Hier verwenden wir die Secrets, die du in den Repository-Einstellungen angelegt hast
-      - name: Create environment.prod.ts 🤫
+      # Schritt 2: Richtet die Node.js-Umgebung ein
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          # WICHTIG: Hier geben wir den korrekten Pfad zur Lock-Datei an
+          cache-dependency-path: SnackTrack/package-lock.json
+
+      # Schritt 3: Erstellt die Environment-Datei mit den Secrets
+      - name: Create environment file 🤫
         run: |
-          # 1. Erstelle den Ordner, da er im Repository fehlt.
+          # Erstellt zuerst den Ordner, da er in Git fehlt
           mkdir -p ./SnackTrack/src/environments
-
-          # 2. Schreibe jetzt die Secrets in die neue Datei.
+          # Schreibt dann die Secrets in die Datei
           echo "export const environment = {" > ./SnackTrack/src/environments/environment.prod.ts
           echo "  production: true," >> ./SnackTrack/src/environments/environment.prod.ts
           echo "  supabaseUrl: '${{ secrets.SUPABASE_URL }}'," >> ./SnackTrack/src/environments/environment.prod.ts
           echo "  supabaseKey: '${{ secrets.SUPABASE_ANON_KEY }}'" >> ./SnackTrack/src/environments/environment.prod.ts
           echo "};" >> ./SnackTrack/src/environments/environment.prod.ts
-
-      # Schritt 3: Node.js einrichten
-      - name: Setup Node.js ⚙️
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18' # Wähle die passende Node.js-Version
-          cache: 'npm'
-
-      # Schritt 4: Abhängigkeiten installieren und App bauen
+        
+      # Schritt 4: Installiert die Abhängigkeiten und baut die App
       - name: Install and Build 🔨
+        working-directory: ./SnackTrack # Führt die Befehle im richtigen Ordner aus
         run: |
-          npm install
-          # WICHTIG: Passe den Build-Befehl an dein Projekt an!
-          # --base-href muss dem Namen deines Repositorys entsprechen.
-          npm run build -- --configuration production --base-href /snacktrack/
+          npm ci
+          npm run build -- --base-href=/${{ github.event.repository.name }}/
 
-      # Schritt 5: Gebaute App auf GitHub Pages deployen
-      - name: Deploy 🚀
-        uses: peaceiris/actions-gh-pages@v3
+      # Schritt 5: Lädt das Build-Ergebnis als "Artefakt" hoch
+      - name: Upload artifact 📦
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Der Ordner, in dem sich die gebaute App befindet (oft 'www' bei Ionic/Angular)
-          publish_dir: ./www
+          # Dies ist der korrekte Pfad zum Build-Ordner
+          path: ./SnackTrack/dist/${{ github.event.repository.name }}/browser
+          
+  # Job 2: Deployt die Anwendung auf GitHub Pages
+  deploy:
+    # Dieser Job wartet, bis der 'build'-Job erfolgreich abgeschlossen ist
+    needs: build 
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Schritt 6: Stellt das hochgeladene Artefakt auf GitHub Pages bereit
+      - name: Deploy to GitHub Pages 🚀
+        id: deployment
+        uses: actions/deploy-pages@v4
