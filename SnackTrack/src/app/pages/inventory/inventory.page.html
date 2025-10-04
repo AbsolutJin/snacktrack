@@ -3,7 +3,7 @@
     <ion-title>
       <div class="header-content">
         <ion-icon name="restaurant-outline"></ion-icon>
-        Küche
+        Inventar
       </div>
     </ion-title>
 
@@ -11,9 +11,18 @@
       <ion-button fill="clear" (click)="toggleSearch()" aria-label="Suche">
         <ion-icon name="search-outline"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" (click)="openFilters()" aria-label="Filter">
+      <!-- <ion-button fill="clear" (click)="openFilters()" aria-label="Filter">
         <ion-icon name="filter-outline"></ion-icon>
-      </ion-button>
+      </ion-button> -->
+      <ion-list class="custom-list">
+        <ion-item fill="clear" color="success">
+          <ion-select lable="default" placeholder="inventory" [(ngModel)]="selectedLocationId" (ionChange)="onLocationChange()">
+            <ion-select-option *ngFor="let loc of locations" [value]="loc.location_id">
+              {{loc.name}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
     </ion-buttons>
   </ion-toolbar>
 

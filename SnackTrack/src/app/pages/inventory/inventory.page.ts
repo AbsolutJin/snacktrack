@@ -30,13 +30,14 @@ import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
 interface InventoryCardItem {
   id: string;
-  inventoryId: string; // Always the inventory_id for database operations
+  inventoryId: string;
   name: string;
   unit: string;
   count: number;
   img?: string | null;
   badge?: string;
   isExpired?: boolean;
+  locationId?: string;
 }
 
 @Component({
@@ -59,6 +60,7 @@ export class InventoryPage implements OnInit, OnDestroy {
   editingId: string | null = null;
   editName = '';
 
+  selectedLocationId!: string;
   private sub?: Subscription;
 
   constructor(
@@ -94,9 +96,22 @@ export class InventoryPage implements OnInit, OnDestroy {
         invList.map(inv => this.toCard(inv))
       );
 
-      this.filter();
+      const saved = localStorage.getItem('lastSelectedLocation');
+      const savedId = saved ? saved.trim() : null;
+
+      const exists = savedId ? this.locations.find(loc => loc.location_id === savedId) : null;
+
+      if (exists) {
+        this.selectedLocationId = exists.location_id;
+      } else if (this.locations.length > 0) {
+        this.selectedLocationId = this.locations[0].location_id;
+        localStorage.setItem('lastSelectedLocation', this.selectedLocationId);
+      }
+
+      this.applyLocationFilter();
     });
   }
+
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
@@ -124,6 +139,7 @@ export class InventoryPage implements OnInit, OnDestroy {
       img: item?.image_url ?? null,
       badge: inv.expiration_date ? `Ablauf: ${inv.expiration_date}` : undefined,
       isExpired: expired,
+      locationId: inv.location_id,
     };
   }
 
@@ -213,4 +229,15 @@ export class InventoryPage implements OnInit, OnDestroy {
 
     return safeCards;
   }
+
+  onLocationChange() {
+    localStorage.setItem('lastSelectedLocation', this.selectedLocationId);
+    this.applyLocationFilter(); 
+  };
+
+  applyLocationFilter() {
+    if (!this.selectedLocationId) return;
+
+    this.filteredCards = this.inventoryCards.filter( card => card.locationId === this.selectedLocationId);
+  };
 }
