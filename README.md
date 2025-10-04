@@ -1,6 +1,8 @@
 # SnackTrack 🍎🥕📱  
 **Digitale Verwaltung von Lebensmitteln & Rezeptvorschlägen als Progressive Web App (PWA)**
 
+https://absolutjin.github.io/snacktrack/
+
 ## 📋 Projektbeschreibung
 
 **SnackTrack** ist eine Progressive Web App (PWA), die Nutzerinnen und Nutzern dabei hilft, ihren Lebensmittelvorrat digital zu erfassen und zu verwalten. Ziel des Projekts ist es, **Lebensmittelverschwendung zu reduzieren** und den **Alltag in der Küche zu erleichtern**.
