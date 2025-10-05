@@ -67,7 +67,7 @@ export class StorageLocationService {
     return data;
   }
 
-  async updateStorageLocation(id: string, location: StorageLocation): Promise<StorageLocation> {
+  async updateStorageLocation(id: number, location: StorageLocation): Promise<StorageLocation> {
     const { data, error } = await this.supabaseClient.client
       .from('storage_locations')
       .update({
@@ -85,7 +85,7 @@ export class StorageLocationService {
 
     const currentLocations = this.storageLocationsSubject.value;
     const index = currentLocations.findIndex(s => s.location_id === id);
-    
+
     if (index !== -1) {
       const updatedLocations = [...currentLocations];
       updatedLocations[index] = data;
@@ -95,7 +95,7 @@ export class StorageLocationService {
     return data;
   }
 
-  async deleteStorageLocation(id: string): Promise<void> {
+  async deleteStorageLocation(id: number): Promise<void> {
     const { data, error } = await this.supabaseClient.client
       .from('storage_locations')
       .delete()

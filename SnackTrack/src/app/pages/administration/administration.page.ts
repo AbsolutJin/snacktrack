@@ -94,7 +94,7 @@ export class AdministrationPage implements OnInit, OnDestroy {
     }
   }
 
-  getItemCount(locationId: string): number {
+  getItemCount(locationId: number): number {
     return this.itemCounts[locationId] || 0;
   }
 

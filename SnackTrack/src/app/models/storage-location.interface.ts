@@ -1,5 +1,5 @@
 export interface StorageLocation {
-  location_id: string;
+  location_id: number;
   user_id: string;
   name: string;
   description?: string;

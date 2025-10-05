@@ -109,7 +109,7 @@ export class InventoryService {
     }
   }
 
-  async canDeleteStorageLocation(id: string): Promise<boolean> {
+  async canDeleteStorageLocation(id: number): Promise<boolean> {
     const { data, error } = await this.supabaseClient.client
       .from('inventory')
       .select('inventory_id')

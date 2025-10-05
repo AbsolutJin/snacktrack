@@ -42,7 +42,7 @@ export class AddItemModalComponent implements OnInit {
     brand: '',
     quantity: 1,
     unit: FoodUnit.Piece,
-    storageLocationId: '',
+    storageLocationId: 0,
     expiryDate: new Date().toISOString().split('T')[0],
     notes: '',
     image_url: null as string | null
