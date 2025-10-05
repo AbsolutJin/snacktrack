@@ -86,6 +86,11 @@ export class AddItemModalComponent implements OnInit {
         notes: '',
         image_url: null
       };
+    }else {
+      const savedId = localStorage.getItem('lastSelectedLocation');
+      if (savedId) {
+        this.formData.storageLocationId = Number(savedId); 
+      }
     }
   }
 
