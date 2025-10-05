@@ -24,7 +24,7 @@ SnackTrack soll:
 
 - **Frontend:** Angular mit Ionic
 - **Backend:** SupaBase
-- **PWA-Funktionen:** Offlinefähigkeit(?), Add-to-Home-Screen, Responsive Design
+- **PWA-Funktionen:** Add-to-Home-Screen, Responsive Design
 
 ---
 
