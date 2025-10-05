@@ -172,16 +172,16 @@ export class InventoryPage implements OnInit, OnDestroy {
   item.count += 1;
   await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count);
   this.filter;
-}
+  }
 
   async decrement(item: InventoryCardItem) {
-    if (item.count > 1) {
-      item.count -= 1;
-      await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count);
-    } else {
-      this.inventoryCards = this.inventoryCards.filter(i => i.inventoryId !== item.inventoryId);
-      await this.inventory.deleteInventoryItem(item.inventoryId);
-    }
+    item.count -= 1;
+    await this.inventory.updateFoodItemQuantity(item.inventoryId, item.count);
+  }
+
+  async deleteItem(item: InventoryCardItem) {
+    this.inventoryCards = this.inventoryCards.filter(i => i.inventoryId !== item.inventoryId);
+    await this.inventory.deleteInventoryItem(item.inventoryId);
   }
 
   // startRename(item: InventoryCardItem) {
