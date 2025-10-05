@@ -38,7 +38,7 @@ interface InventoryCardItem {
   img?: string | null;
   badge?: string;
   isExpired?: boolean;
-  locationId?: string;
+  locationId?: number;
 }
 
 @Component({
@@ -62,7 +62,7 @@ export class InventoryPage implements OnInit, OnDestroy {
   editingId: string | null = null;
   editName = '';
 
-  selectedLocationId!: string;
+  selectedLocationId!: number;
   private sub?: Subscription;
 
   constructor(
@@ -107,7 +107,8 @@ export class InventoryPage implements OnInit, OnDestroy {
         this.selectedLocationId = exists.location_id;
       } else if (this.locations.length > 0) {
         this.selectedLocationId = this.locations[0].location_id;
-        localStorage.setItem('lastSelectedLocation', this.selectedLocationId);
+        const selectedLocationId = this.selectedLocationId.toString();
+        localStorage.setItem('lastSelectedLocation', selectedLocationId);
       }
 
       this.applyLocationFilter();
@@ -236,7 +237,8 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   onLocationChange() {
-    localStorage.setItem('lastSelectedLocation', this.selectedLocationId);
+    const selectedLocationId = this.selectedLocationId.toString();
+    localStorage.setItem('lastSelectedLocation', selectedLocationId);
     this.applyLocationFilter();
   };
 

@@ -104,7 +104,7 @@ export class InventoryChartComponent implements OnInit, OnDestroy {
     return total > 0 ? Math.round((current / total) * 100) : 0;
   }
 
-  trackByLocationId(index: number, location: StorageLocation): string {
+  trackByLocationId(index: number, location: StorageLocation): number {
   return location.location_id;
   }
 
