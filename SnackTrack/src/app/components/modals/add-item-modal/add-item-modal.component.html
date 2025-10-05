@@ -159,15 +159,22 @@
       <ion-grid>
         <ion-row class="ion-justify-content-center">
           <ion-col size="auto">
-            <ion-datetime
-              [(ngModel)]="formData.expiryDate"
-              name="expiryDate"
-              required
-              presentation="date"
-              [min]="minDate"
-              [max]="maxDate"
-            >
-            </ion-datetime>
+
+            @if (isPickerReady) {
+              <ion-datetime
+                [(ngModel)]="formData.expiryDate"
+                name="expiryDate"
+                required
+                presentation="date"
+                [min]="minDate"
+                [max]="maxDate">
+              </ion-datetime>
+            } @else {
+              <div style="padding: 20px 0;">
+                <ion-spinner name="crescent"></ion-spinner>
+              </div>
+            }
+
           </ion-col>
         </ion-row>
       </ion-grid>

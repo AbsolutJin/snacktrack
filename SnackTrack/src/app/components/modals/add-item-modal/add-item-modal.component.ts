@@ -34,6 +34,8 @@ export class AddItemModalComponent implements OnInit {
   item?: FoodItemInterface;
   storageLocations: StorageLocation[] = [];
 
+  isPickerReady = false;
+
   formData = {
     barcode: '',
     name: '',
@@ -41,7 +43,7 @@ export class AddItemModalComponent implements OnInit {
     quantity: 1,
     unit: FoodUnit.Piece,
     storageLocationId: '',
-    expiryDate: new Date().toISOString(),
+    expiryDate: new Date().toISOString().split('T')[0],
     notes: '',
     image_url: null as string | null
   };
@@ -49,8 +51,8 @@ export class AddItemModalComponent implements OnInit {
   isLoadingProduct = false;
   productFound = false;
 
-  minDate = "2000-01-31T00:00:01"
-  maxDate = "2999-12-31T23:59:59"
+  minDate = "2000-01-01"
+  maxDate = "2999-12-31"
   foodUnits = Object.values(FoodUnit);
 
   showValidationErrors = false;
@@ -70,6 +72,9 @@ export class AddItemModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.isEdit && this.item) {
+
+    const expiryDateString = new Date(this.item.expiryDate).toISOString().split('T')[0];
+
       this.formData = {
         barcode: '',
         name: this.item.name,
@@ -77,7 +82,7 @@ export class AddItemModalComponent implements OnInit {
         quantity: this.item.quantity,
         unit: this.item.unit,
         storageLocationId: this.item.storageLocation.location_id,
-        expiryDate: this.item.expiryDate.toISOString(),
+        expiryDate: expiryDateString,
         notes: '',
         image_url: null
       };
@@ -287,5 +292,11 @@ export class AddItemModalComponent implements OnInit {
         this.content.scrollToTop(300);
       }
     }, 150);
+  }
+
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.isPickerReady = true;
+    }, 0);
   }
 }
