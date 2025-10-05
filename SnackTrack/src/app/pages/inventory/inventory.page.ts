@@ -99,9 +99,9 @@ export class InventoryPage implements OnInit, OnDestroy {
       );
 
       const saved = localStorage.getItem('lastSelectedLocation');
-      const savedId = saved ? saved.trim() : null;
+      const savedId = saved !== null ? Number(saved) : null;
 
-      const exists = savedId ? this.locations.find(loc => loc.location_id === savedId) : null;
+      const exists = savedId !== null ? this.locations.find(loc => Number(loc.location_id) === savedId): null;
 
       if (exists) {
         this.selectedLocationId = exists.location_id;
