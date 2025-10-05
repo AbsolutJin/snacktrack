@@ -75,8 +75,10 @@
       </ion-badge>
           <ion-card-header>
             <ng-container>
-              <ion-card-title class="card__title">
+              <ion-card-title class="card__title" style="flex-direction: column;">
+                <span>{{ item.brand }}</span>
                 <span>{{ item.name }}</span>
+                <span>{{ item.quantity }} </span>
                 <span *ngIf="item.isExpired" class="expired-icon" title="Abgelaufen" aria-hidden="true">
                   <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false">
                     <path d="M12 2 2 20h20L12 2z" />

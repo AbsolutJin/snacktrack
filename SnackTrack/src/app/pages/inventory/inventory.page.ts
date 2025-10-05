@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
@@ -32,7 +32,8 @@ interface InventoryCardItem {
   id: string;
   inventoryId: string;
   name: string;
-  unit: string;
+  brand: string;
+  quantity: string;
   count: number;
   img?: string | null;
   badge?: string;
@@ -46,6 +47,7 @@ interface InventoryCardItem {
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss'],
   imports: [CommonModule, FormsModule, ...IONIC_COMPONENTS],
+  providers: [DatePipe]
 })
 export class InventoryPage implements OnInit, OnDestroy {
   showSearch = false;
@@ -67,7 +69,8 @@ export class InventoryPage implements OnInit, OnDestroy {
     private inventory: InventoryService,
     private storageLocationService: StorageLocationService,
     private itemService: ItemService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private datePipe: DatePipe
   ) {
     addIcons({
       filterOutline,
@@ -91,7 +94,6 @@ export class InventoryPage implements OnInit, OnDestroy {
     ]).subscribe(([invList, itemList, locList]) => {
       this.items = itemList;
       this.locations = locList;
-
       this.inventoryCards = this.sortInventoryCards(
         invList.map(inv => this.toCard(inv))
       );
@@ -123,21 +125,24 @@ export class InventoryPage implements OnInit, OnDestroy {
     const foodItem = this.inventory.getFoodItems().find(fi => fi.id === inv.barcode);
     // determine if expired (expiration_date is expected as YYYY-MM-DD or ISO)
     let expired = false;
+    let formattedDate = '';
     if (inv.expiration_date) {
       const exp = new Date(inv.expiration_date);
       const today = new Date();
       exp.setHours(0,0,0,0);
       today.setHours(0,0,0,0);
       expired = exp < today;
+      formattedDate = this.datePipe.transform(inv.expiration_date, 'dd.MM.yyyy') ?? '';
     }
     return {
       id: foodItem?.id ?? inv.inventory_id,
       inventoryId: inv.inventory_id,
       name: item?.product_name ?? inv.barcode,
-      unit: item?.brand ?? '',
+      brand: item?.brand ?? '',
+      quantity: item?.quantity ?? '',
       count: inv.quantity,
       img: item?.image_url ?? null,
-      badge: inv.expiration_date ? `Ablauf: ${inv.expiration_date}` : undefined,
+      badge: inv.expiration_date ? `Ablauf: ${formattedDate}` : undefined,
       isExpired: expired,
       locationId: inv.location_id,
     };
@@ -232,7 +237,7 @@ export class InventoryPage implements OnInit, OnDestroy {
 
   onLocationChange() {
     localStorage.setItem('lastSelectedLocation', this.selectedLocationId);
-    this.applyLocationFilter(); 
+    this.applyLocationFilter();
   };
 
   applyLocationFilter() {
