@@ -1,7 +1,9 @@
 // src/app/components/expiring-items-list/expiring-items-list.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 import { InventoryStatsService } from '../../services/inventory-stats.service';
+import { InventoryService } from '../../services/inventory.service';
 import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 import { checkmarkCircleOutline, warningOutline, calendarOutline, chevronUp, chevronDown, warning, time, locationOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -16,14 +18,18 @@ import { addIcons } from 'ionicons';
     ...IONIC_COMPONENTS
   ],
 })
-export class ExpiringItemsListComponent implements OnInit {
+export class ExpiringItemsListComponent implements OnInit, OnDestroy {
   expiringItems: any[] = [];
   displayItems: any[] = [];
   showMore = false;
   isLoading = true;
   readonly itemLimit = 5;
+  private destroy$ = new Subject<void>();
 
-  constructor(private inventoryStatsService: InventoryStatsService) {
+  constructor(
+    private inventoryStatsService: InventoryStatsService,
+    private inventoryService: InventoryService
+  ) {
     addIcons({
       checkmarkCircleOutline,
       warningOutline,
@@ -36,8 +42,17 @@ export class ExpiringItemsListComponent implements OnInit {
     });
   }
 
-  async ngOnInit() {
-    await this.loadExpiringItems();
+  ngOnInit() {
+    this.inventoryService.inventory$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async () => {
+        await this.loadExpiringItems();
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   async loadExpiringItems() {
