@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalController } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ExpiringItemsListComponent } from '../../components/expiring-items-list/expiring-items-list.component';
 import { InventoryChartComponent } from '../../components/inventory-chart/inventory-chart.component';
 import { AddItemModalComponent } from '../../components/modals/add-item-modal/add-item-modal.component';
@@ -24,6 +24,7 @@ import {
   thermometerOutline,
   timeOutline,
 } from 'ionicons/icons';
+import { Inventory } from 'src/app/models/inventory.interface';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,6 +40,7 @@ import {
 })
 export class DashboardPage implements OnInit, OnDestroy {
   storageLocations: StorageLocation[] = [];
+  displayItems: Inventory[] = [];
   stats: { itemsByLocation: { [key: string]: number }, totalItems: number } = { itemsByLocation: {}, totalItems: 0 };
   currentUserName: string = 'Koch';
 
@@ -98,13 +100,11 @@ export class DashboardPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadDashboardData();
 
-    this.storageLocationService.storageLocations$.subscribe(locations => {
-      this.storageLocations = locations;
-    });
-
-    this.accountService.profile$.subscribe(profile => {
-      this.currentUserName = profile?.username || 'Koch';
-    });
+    this.accountService.profile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(profile => {
+        this.currentUserName = profile?.username || 'Koch';
+      });
   }
 
   ngOnDestroy() {
