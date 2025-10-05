@@ -43,7 +43,7 @@ export class OpenFoodFactsService {
           const product = response.product;
           return {
             barcode: cleanBarcode,
-            product_name: product.product_name || product.product_name_en || 'Unbekanntes Produkt',
+            product_name: product.product_name_de || product.product_name_en || product.product_name || 'Unbekanntes Produkt',
             brand: product.brands ? product.brands.split(',')[0].trim() : '',
             quantity: product.quantity || '',
             image_url: product.image_front_small_url || product.image_front_url || product.image_url || null
