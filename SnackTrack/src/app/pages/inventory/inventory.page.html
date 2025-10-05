@@ -108,19 +108,19 @@
           </ion-card-header>
 
           <ion-card-content>
+            <div class="card__controls qty" aria-live="polite" aria-atomic="true">
+              <span class="qty__value">{{ item.count }}</span>
+            </div>
             <div class="card__controls">
-              <div *ngIf="item.count != 1">
+              <div>
                 <ion-button fill="clear" (click)="decrement(item)" aria-label="Entfernen oder Produkt löschen">
                   <ion-icon name="remove-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
-              <div *ngIf="item.count == 1">
-                <ion-button fill="clear" color="danger" (click)="decrement(item)" aria-label="Entferne oder Anzahl verringern">
+              <div>
+                <ion-button fill="clear" color="danger" (click)="deleteItem(item)" aria-label="Entferne oder Anzahl verringern">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
-              </div>
-              <div class="qty" aria-live="polite" aria-atomic="true">
-                <span class="qty__value">{{ item.count }}</span>
               </div>
               <ion-button fill="clear" (click)="increment(item)" aria-label="Hinzufügen">
                 <ion-icon name="add-outline" slot="icon-only"></ion-icon>
