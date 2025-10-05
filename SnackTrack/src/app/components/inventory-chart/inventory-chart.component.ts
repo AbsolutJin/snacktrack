@@ -6,6 +6,7 @@ import { InventoryStatsInterface } from 'src/app/models/inventory-stats.interfac
 import { StorageLocation } from 'src/app/models/storage-location.interface';
 import { StorageLocationService } from '../../services/storage-location.service';
 import { InventoryStatsService } from '../../services/inventory-stats.service';
+import { InventoryService } from '../../services/inventory.service';
 import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 import { addIcons } from 'ionicons';
 import {
@@ -43,7 +44,8 @@ export class InventoryChartComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageLocationService: StorageLocationService,
-    private inventoryStatsService: InventoryStatsService
+    private inventoryStatsService: InventoryStatsService,
+    private inventoryService: InventoryService
   ) {
     addIcons({
       homeOutline,
@@ -56,14 +58,18 @@ export class InventoryChartComponent implements OnInit, OnDestroy {
     });
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.storageLocationService.storageLocations$
       .pipe(takeUntil(this.destroy$))
       .subscribe(locations => {
         this.storageLocations = locations;
       });
 
-    await this.loadInventoryStats();
+    this.inventoryService.inventory$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async () => {
+        await this.loadInventoryStats();
+      });
   }
 
   ngOnDestroy() {
