@@ -18,6 +18,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "baseHref": "/",
             "outputPath": {
               "base": "www",
               "browser": ""
@@ -65,6 +66,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "baseHref": "/snacktrack/",
               "outputHashing": "all"
             },
             "development": {
