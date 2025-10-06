@@ -6,6 +6,9 @@
 
 <ion-content [fullscreen]="true" class="page-content">
   <div style="padding: 16px;">
+    <div class="login-logo-wrapper">
+      <img src="assets/logo/snacktrack_logo.png" alt="SnackTrack Logo" class="login-logo" />
+    </div>
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
       <ion-item>
         <ion-label position="stacked">E-Mail</ion-label>

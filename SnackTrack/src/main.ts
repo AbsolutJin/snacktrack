@@ -13,7 +13,11 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+  // Force Ionic to use the Material Design (md) mode globally so the
+  // app looks the same on iOS devices. By default Ionic adapts the
+  // look to the platform (ios/md). Setting `mode: 'md'` disables the
+  // automatic iOS styling differences.
+  provideIonicAngular({ mode: 'md' }),
     provideRouter(routes, withPreloading(PreloadAllModules), withHashLocation()),
     provideHttpClient(),
     provideServiceWorker('ngsw-worker.js', {

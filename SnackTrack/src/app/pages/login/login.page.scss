@@ -8,3 +8,17 @@
   margin: 12px 0;
   text-align: center;
 }
+
+.login-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.login-logo {
+  height: 96px;
+  width: 96px;
+  object-fit: contain;
+  border-radius: 12px;
+}
