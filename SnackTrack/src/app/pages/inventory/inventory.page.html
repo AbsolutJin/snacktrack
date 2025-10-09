@@ -49,17 +49,11 @@
     <ion-chip *ngFor="let f of activeFilters" outline>{{ f }}</ion-chip>
   </div>
 
-  <!-- Inventar-Grid -->
-  <ion-grid class="inventory">
-    <ion-row>
-      <ion-col
-        size="12"
-        size-md="8"
-        size-lg="5"
-        sizeXl="3"
-  *ngFor="let item of filteredCards; trackBy: trackById"
-      >
-  <ion-card class="card" [class.expired]="item.isExpired" [class.expiring-soon]="item.isExpiringSoon" [class.highlighted]="highlightedInventoryId === item.inventoryId" [attr.data-inventory-id]="item.inventoryId">
+  <!-- Inventar-Grid (kompakte Version) -->
+  <div class="inventory">
+    <div class="inventory-grid">
+      <ng-container *ngFor="let item of filteredCards; trackBy: trackById">
+        <ion-card class="card" [class.expired]="item.isExpired" [class.expiring-soon]="item.isExpiringSoon" [class.highlighted]="highlightedInventoryId === item.inventoryId" [attr.data-inventory-id]="item.inventoryId">
           <div class="card__imgwrap">
             <ng-container *ngIf="item.img; else iconThumb">
               <img [src]="item.img" [alt]="item.name" loading="lazy" />
@@ -152,9 +146,9 @@
             </div>
           </ion-card-content>
         </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      </ng-container>
+    </div>
+  </div>
 
     <!-- Fixed FAB Button für neue Artikel -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-with-tabs">

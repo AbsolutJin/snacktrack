@@ -18,6 +18,154 @@ ion-content {
   padding: 1rem;
 }
 
+/* Compact inventory grid (user requested 4x4, even on mobile) */
+.inventory {
+  width: 100%;
+}
+
+/* Allow easy customization: keep columns at 4 by default */
+/* Local inventory variables to avoid global override */
+.inventory {
+  --inventory-columns: 2; /* default desktop */
+  --inventory-gap: 8px;
+  --inventory-card-padding: 8px;
+  --inventory-card-radius: 10px;
+  --inventory-card-image-height: 72px; /* compact */
+  --inventory-card-font-size: 12px;
+}
+
+.inventory .inventory-grid {
+  display: grid;
+  /* use fallback to 4 columns if variable missing */
+  grid-template-columns: repeat(var(--inventory-columns, 2), 1fr);
+  gap: var(--inventory-gap, 8px);
+  width: 100%;
+  box-sizing: border-box;
+  /* ensure consistent row sizing so grid doesn't collapse into 1 column */
+  grid-auto-rows: minmax(120px, auto);
+}
+
+/* show only about 4 rows and make container scrollable */
+.content > .inventory {
+  /* approximate per-card height: image + header + controls. adjust multiplier if you tweak card internals */
+  --approx-card-height: calc(var(--inventory-card-image-height) + 84px);
+  max-height: calc(var(--approx-card-height) * 4);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 6px;
+}
+
+/* make each card compact and tight-packed */
+.inventory-grid .card {
+  padding: var(--inventory-card-padding);
+  border-radius: var(--inventory-card-radius);
+  margin: 0; /* remove margin between grid rows; gap handles spacing */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 1px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.inventory-grid .card ion-card-header,
+.inventory-grid .card ion-card-content {
+  padding: 4px 6px;
+}
+
+.inventory-grid .card__imgwrap {
+  height: var(--inventory-card-image-height);
+  width: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventory-grid .card__title {
+  font-size: var(--inventory-card-font-size);
+  line-height: 1.1;
+  text-align: center;
+  display: block;
+}
+
+/* badges and controls smaller */
+.inventory-grid .card__badge {
+  font-size: 11px;
+  padding: 2px 6px;
+}
+
+/* Buttons inside cards: smaller touch targets but still usable */
+.inventory-grid ion-button {
+  --padding-start: 0.3rem;
+  --padding-end: 0.3rem;
+  height: 30px;
+}
+
+/* Slight adjustments to make text clearer but compact */
+.inventory-grid .card__title span {
+  display: block;
+  font-size: calc(var(--inventory-card-font-size) - 1px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inventory-grid .qty__value {
+  font-size: calc(var(--inventory-card-font-size) + 1px);
+}
+
+/* Mobile: 2 columns for small phones */
+@media (max-width: 479px) {
+  .inventory {
+    --inventory-columns: 2;
+    --inventory-card-image-height: 56px;
+    --inventory-card-font-size: 11px;
+    --inventory-gap: 6px;
+    --inventory-card-padding: 6px;
+  }
+  .inventory-grid { grid-template-columns: repeat(var(--inventory-columns), 1fr); }
+  .content > .inventory { --approx-card-height: calc(var(--inventory-card-image-height) + 72px); max-height: calc(var(--approx-card-height) * 4); }
+}
+
+/* Small tablets: 3 columns (phones in landscape / small tablets) */
+@media (min-width: 480px) and (max-width: 767px) {
+  .inventory {
+    --inventory-columns: 3;
+    --inventory-card-image-height: 64px;
+    --inventory-card-font-size: 12px;
+    --inventory-gap: 8px;
+  }
+  .inventory-grid { grid-template-columns: repeat(var(--inventory-columns), 1fr); }
+  .content > .inventory { --approx-card-height: calc(var(--inventory-card-image-height) + 76px); max-height: calc(var(--approx-card-height) * 4); }
+}
+
+/* iPad and larger tablets: 4 columns */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .inventory {
+    --inventory-columns: 4;
+    --inventory-card-image-height: 72px;
+    --inventory-card-font-size: 13px;
+    --inventory-gap: 10px;
+  }
+  .inventory-grid { grid-template-columns: repeat(var(--inventory-columns), 1fr); }
+  .content > .inventory { --approx-card-height: calc(var(--inventory-card-image-height) + 88px); max-height: calc(var(--approx-card-height) * 4); }
+}
+
+/* Large desktops: 5 columns */
+@media (min-width: 1200px) {
+  .inventory {
+    --inventory-columns: 5;
+    --inventory-card-image-height: 80px;
+    --inventory-card-font-size: 14px;
+    --inventory-gap: 12px;
+  }
+  .inventory-grid { grid-template-columns: repeat(var(--inventory-columns), 1fr); }
+  .content > .inventory { --approx-card-height: calc(var(--inventory-card-image-height) + 96px); max-height: calc(var(--approx-card-height) * 4); }
+}
+
 .inventory-title {
   color: #222;
   font-weight: 500;
