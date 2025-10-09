@@ -21,6 +21,8 @@ ion-content {
 /* Compact inventory grid (user requested 4x4, even on mobile) */
 .inventory {
   width: 100%;
+  --inventory-top-gap: 12px; /* default top spacing */
+  margin-top: var(--inventory-top-gap);
 }
 
 /* Allow easy customization: keep columns at 4 by default */
