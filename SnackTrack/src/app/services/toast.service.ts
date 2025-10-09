@@ -36,4 +36,25 @@ export class ToastService {
   warning(message: string) {
     return this.show(message, 'warning');
   }
+
+  /**
+   * Show a toast with custom position and duration.
+   * position: 'top' | 'middle' | 'bottom'
+   */
+  async showCustom(message: string, color: 'success' | 'danger' | 'warning', position: 'top' | 'middle' | 'bottom' = 'bottom', duration = 3500) {
+    const toast = await this.toastController.create({
+      message,
+      duration,
+      color,
+      position,
+    });
+    await toast.present();
+
+    const clickHandler = () => {
+      toast.dismiss();
+      document.removeEventListener('click', clickHandler);
+    };
+
+    document.addEventListener('click', clickHandler, { once: true });
+  }
 }

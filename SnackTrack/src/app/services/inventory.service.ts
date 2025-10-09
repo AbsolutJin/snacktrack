@@ -86,6 +86,42 @@ export class InventoryService {
     }
   }
 
+  /**
+   * Update the expiration_date for an inventory item.
+   * expirationDate must be a string in YYYY-MM-DD format (or ISO date string).
+   */
+  async updateExpirationDate(inventoryId: string, expirationDate: string | null): Promise<void> {
+    try {
+      const current = this.inventorySubject.value;
+      const inventoryItem = current.find((inv) => inv.inventory_id === inventoryId);
+      if (!inventoryItem) throw new Error('Inventory item not found');
+
+      const updatedInventoryItem: Inventory = {
+        ...inventoryItem,
+        inventory_id: String(inventoryItem.inventory_id),
+        expiration_date: expirationDate ?? null,
+      } as any;
+
+      const { data, error } = await this.supabaseClient.client
+        .from('inventory')
+        .update({ expiration_date: expirationDate })
+        .eq('inventory_id', inventoryId)
+        .select();
+
+      if (error) {
+        console.error('Fehler beim Aktualisieren des Ablaufdatums:', error);
+        throw error;
+      }
+
+      // Update local state
+      const updated = current.map((inv) => (inv.inventory_id === inventoryId ? { ...inv, expiration_date: expirationDate } : inv));
+      this.inventorySubject.next(updated);
+    } catch (error) {
+      console.error('Fehler beim Aktualisieren des Ablaufdatums:', error);
+      throw error;
+    }
+  }
+
   async deleteInventoryItem(inventoryId: string): Promise<void> {
     try {
       const { error, status } = await this.supabaseClient.client
@@ -138,6 +174,13 @@ export class InventoryService {
 
   getFoodItems() {
     return this.itemService.getFoodItems();
+  }
+
+  /**
+   * Return current inventory snapshot (synchronous).
+   */
+  getInventorySnapshot(): Inventory[] {
+    return this.inventorySubject.value;
   }
 
   async createInventoryItem(inventoryItem: CreateInventoryItem): Promise<void> {

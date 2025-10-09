@@ -168,4 +168,9 @@ export class DashboardPage implements OnInit, OnDestroy {
   navigateToInventory() {
     this.router.navigate(['/tabs/kitchen']);
   }
+
+  navigateToManageLocations() {
+    // Navigate to the Stammdaten -> Lagerorte page. Adjust route if your app uses a different path.
+    this.router.navigate(['/stammdaten/locations']);
+  }
 }

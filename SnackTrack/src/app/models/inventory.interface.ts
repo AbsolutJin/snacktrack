@@ -4,7 +4,7 @@ export interface Inventory {
   location_id: number;
   barcode: string;
   quantity: number;
-  expiration_date: string;
+  expiration_date?: string | null;
   notes?: string;
   last_update: string;
 }

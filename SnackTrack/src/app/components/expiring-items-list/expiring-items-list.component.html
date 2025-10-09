@@ -28,7 +28,14 @@
       } @else {
         <div class="mobile-items-container">
           @for(item of displayItems; track item.id) {
-            <div class="mobile-item-card" [class]="getItemCssClass(item)">
+            <div
+              class="mobile-item-card"
+              [class]="getItemCssClass(item)"
+              role="link"
+              tabindex="0"
+              (click)="openInInventory(item)"
+              (keydown.enter)="openInInventory(item)"
+            >
               <div class="item-left">
                 <div class="warning-indicator">
                   <ion-icon
@@ -48,7 +55,7 @@
                 </div>
                 <ng-template #fallbackImage>
                   <div class="item-image fallback">
-                    <ion-icon name="cube-outline"></ion-icon>
+                    <ion-icon name="time-outline"></ion-icon>
                   </div>
                 </ng-template>
               </div>

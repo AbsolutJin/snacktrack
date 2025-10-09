@@ -14,6 +14,7 @@ import { StorageLocation } from '../../models/storage-location.interface';
 import { combineLatest } from 'rxjs';
 
 import { addIcons } from 'ionicons';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   filterOutline,
   addOutline,
@@ -38,6 +39,7 @@ interface InventoryCardItem {
   img?: string | null;
   badge?: string;
   isExpired?: boolean;
+  isExpiringSoon?: boolean;
   locationId?: number;
 }
 
@@ -61,9 +63,11 @@ export class InventoryPage implements OnInit, OnDestroy {
 
   editingId: string | null = null;
   editName = '';
+  editingExpiry: string | null = null; // YYYY-MM-DD
 
   selectedLocationId!: number;
   private sub?: Subscription;
+  private pendingQueryParams: any = null;
 
   constructor(
     private inventory: InventoryService,
@@ -71,6 +75,7 @@ export class InventoryPage implements OnInit, OnDestroy {
     private itemService: ItemService,
     private modalController: ModalController,
     private datePipe: DatePipe
+    ,private route: ActivatedRoute
   ) {
     addIcons({
       filterOutline,
@@ -87,6 +92,12 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // subscribe to query params; if data already loaded, apply immediately, else store pending
+    this.route.queryParams.subscribe(params => {
+      this.pendingQueryParams = params || null;
+      this.applyQueryParamsIfReady();
+    });
+
     this.sub = combineLatest([
       this.inventory.inventory$,
       this.itemService.items$,
@@ -112,7 +123,31 @@ export class InventoryPage implements OnInit, OnDestroy {
       }
 
       this.applyLocationFilter();
+      // try to apply any pending query params now that data arrived
+      this.applyQueryParamsIfReady();
     });
+  }
+
+  private applyQueryParamsIfReady() {
+    if (!this.pendingQueryParams) return;
+    // only apply if locations have been loaded
+    if (!this.locations || this.locations.length === 0) return;
+
+    const loc = this.pendingQueryParams['locationId'];
+    const inventoryId = this.pendingQueryParams['inventoryId'];
+    if (loc) {
+      const asNum = Number(loc);
+      const exists = this.locations.find(l => Number(l.location_id) === asNum);
+      if (exists) {
+        this.selectedLocationId = asNum;
+        localStorage.setItem('lastSelectedLocation', String(asNum));
+        this.applyLocationFilter();
+      }
+    }
+    if (inventoryId) {
+      setTimeout(() => this.highlightInventoryCard(String(inventoryId)), 250);
+    }
+    this.pendingQueryParams = null;
   }
 
 
@@ -124,15 +159,20 @@ export class InventoryPage implements OnInit, OnDestroy {
     const item = this.items.find(i => i.barcode === inv.barcode);
     const location = this.locations.find(l => l.location_id === inv.location_id);
     const foodItem = this.inventory.getFoodItems().find(fi => fi.id === inv.barcode);
-    // determine if expired (expiration_date is expected as YYYY-MM-DD or ISO)
+    // determine if expired or expiring soon (expiration_date is expected as YYYY-MM-DD or ISO)
     let expired = false;
+    let expiringSoon = false;
     let formattedDate = '';
     if (inv.expiration_date) {
       const exp = new Date(inv.expiration_date);
       const today = new Date();
       exp.setHours(0,0,0,0);
       today.setHours(0,0,0,0);
+      const diffTime = exp.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       expired = exp < today;
+      // expiring soon = not expired and within next 7 days (including today)
+      expiringSoon = !expired && diffDays <= 7;
       formattedDate = this.datePipe.transform(inv.expiration_date, 'dd.MM.yyyy') ?? '';
     }
     return {
@@ -145,6 +185,7 @@ export class InventoryPage implements OnInit, OnDestroy {
       img: item?.image_url ?? null,
       badge: inv.expiration_date ? `Ablauf: ${formattedDate}` : undefined,
       isExpired: expired,
+      isExpiringSoon: expiringSoon,
       locationId: inv.location_id,
     };
   }
@@ -204,6 +245,53 @@ export class InventoryPage implements OnInit, OnDestroy {
     return item.id;
   }
 
+  highlightedInventoryId: string | null = null;
+
+  highlightInventoryCard(inventoryId: string) {
+    this.highlightedInventoryId = inventoryId;
+    // attempt to scroll the corresponding card into view
+    try {
+      const selector = `ion-card.card[data-inventory-id="${inventoryId}"]`;
+      const el = document.querySelector(selector) as HTMLElement | null;
+      if (el && el.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // determine if we should flash: expired or expiring soon (within 7 days)
+        try {
+          const inv = this.inventory.getInventorySnapshot().find((i: any) => String(i.inventory_id) === String(inventoryId));
+          let shouldFlash = false;
+          if (inv && inv.expiration_date) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const expiry = new Date(inv.expiration_date);
+            expiry.setHours(0,0,0,0);
+            const diffTime = expiry.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            // flash if already expired (diffDays < 0) or within next 7 days (<=7)
+            if (diffDays <= 7) {
+              shouldFlash = true;
+            }
+          }
+          if (shouldFlash) {
+            el.classList.add('flash-expired');
+            // remove flash class after animation
+            setTimeout(() => el.classList.remove('flash-expired'), 1600);
+          }
+        } catch (e) {
+          // ignore snapshot errors and fall back to DOM class
+          if (el.classList.contains('expired')) {
+            el.classList.add('flash-expired');
+            setTimeout(() => el.classList.remove('flash-expired'), 1600);
+          }
+        }
+
+        // remove highlight after a short delay
+        setTimeout(() => (this.highlightedInventoryId = null), 4000);
+      }
+    } catch (e) {
+      // ignore DOM errors
+    }
+  }
+
   async openAddItemModal() {
     const modal = await this.modalController.create({
       component: AddItemModalComponent,
@@ -214,6 +302,59 @@ export class InventoryPage implements OnInit, OnDestroy {
     });
 
     await modal.present();
+  }
+
+  startEditExpiry(item: InventoryCardItem) {
+    this.editingId = item.inventoryId;
+    // derive date string from badge or underlying inventory data
+  const inv = this.inventory.getInventorySnapshot().find((i: any) => i.inventory_id === item.inventoryId);
+  const raw = inv?.expiration_date ?? null;
+    // if raw is ISO or YYYY-MM-DD, ensure YYYY-MM-DD for input
+    this.editingExpiry = raw ? new Date(raw).toISOString().split('T')[0] : null;
+  }
+
+  async saveExpiry(item: InventoryCardItem) {
+    if (!this.editingId) return;
+    try {
+      // call service to persist
+      await this.inventory.updateExpirationDate(item.inventoryId, this.editingExpiry);
+      // update local card badge and expired flag
+      const updatedCards = this.inventoryCards.map(c => {
+        if (c.inventoryId === item.inventoryId) {
+          const formatted = this.editingExpiry ? this.datePipe.transform(this.editingExpiry, 'dd.MM.yyyy') ?? '' : '';
+          let isExpired = false;
+          let isExpiringSoon = false;
+          if (this.editingExpiry) {
+            const exp = new Date(this.editingExpiry);
+            const today = new Date();
+            exp.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+            const diffTime = exp.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            isExpired = exp < today;
+            isExpiringSoon = !isExpired && diffDays <= 7;
+          }
+          return {
+            ...c,
+            badge: this.editingExpiry ? `Ablauf: ${formatted}` : undefined,
+            isExpired,
+            isExpiringSoon,
+          };
+        }
+        return c;
+      });
+      this.inventoryCards = this.sortInventoryCards(updatedCards);
+      this.applyLocationFilter();
+    } catch (error) {
+      console.error('Fehler beim Speichern des Ablaufdatums', error);
+    } finally {
+      this.cancelEdit();
+    }
+  }
+
+  cancelEdit() {
+    this.editingId = null;
+    this.editingExpiry = null;
   }
 
   sortInventoryCards(invCards: any[]): any[] {

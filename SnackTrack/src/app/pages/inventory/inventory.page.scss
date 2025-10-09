@@ -120,6 +120,44 @@ ion-content {
     text-align: center;
   }
 
+  .card__badge-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+  }
+
+  .editable-badge {
+    cursor: pointer;
+    transition: box-shadow .12s ease, transform .08s ease;
+  }
+
+  .editable-badge:hover,
+  .editable-badge:focus {
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .expiry-editor {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+
+    input[type="date"] {
+      border: 1px solid #e5e7eb;
+      padding: .25rem .4rem;
+      border-radius: 6px;
+      background: white;
+      font-size: .9rem;
+    }
+
+    ion-button {
+      --padding-start: .4rem;
+      --padding-end: .4rem;
+    }
+  }
+
   &.expired, &.expired &__badge {
     border-color: #f87171;
   }
@@ -132,14 +170,28 @@ ion-content {
   border: 1px solid #fecaca;
 }
 
-.expired-icon {
+/* icon elements removed from template; badge colors indicate state now */
+
+// =====================
+// EXPIRING SOON (warning) styles
+// =====================
+.card.expiring-soon {
+  border-color: #ffd54f; // amber border
+}
+
+.card.expiring-soon .card__badge {
+  background-color: #fff8e1; // light yellow
+  color: #8a6d00; // dark amber text
+  border: 1px solid #ffecb3;
+}
+
+.expiring-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-left: 8px;
 }
-.expired-icon svg { fill: #dc2626; /* red-600 */ }
-.expired-icon svg path[fill] { fill: #fff; }
+/* cleaned up: fills are applied with more specific selectors above to avoid being overridden */
 
 // =====================
 // QTY (Anzahl-Anzeige)
@@ -239,4 +291,26 @@ ion-content {
 .custom-list {
   background: var(--ion-color-success);
   border: none;
+}
+
+.card.highlighted {
+  box-shadow: 0 8px 30px rgba(34,197,94,0.15);
+  border: 2px solid rgba(34,197,94,0.18);
+  transform: translateY(-4px);
+}
+
+/* flash color for expired items when navigated to - color-only blink (no movement) */
+@keyframes flashExpired {
+  0% { background-color: #ffffff; }
+  50% { background-color: #919191; } 
+  100% { background-color: #ffffff; }
+}
+
+.card.flash-expired {
+  animation: flashExpired 1.2s ease-in-out;
+}
+
+/* also animate the image wrapper inside the card so the exact element flashes as requested */
+.card.flash-expired .card__imgwrap {
+  animation: flashExpired 1.2s ease-in-out;
 }

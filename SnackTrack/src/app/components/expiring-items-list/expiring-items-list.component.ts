@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { InventoryStatsService } from '../../services/inventory-stats.service';
 import { InventoryService } from '../../services/inventory.service';
+import { Router } from '@angular/router';
+import { ToastService } from '../../services/toast.service';
 import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 import { checkmarkCircleOutline, warningOutline, calendarOutline, chevronUp, chevronDown, warning, time, locationOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -29,6 +31,8 @@ export class ExpiringItemsListComponent implements OnInit, OnDestroy {
   constructor(
     private inventoryStatsService: InventoryStatsService,
     private inventoryService: InventoryService
+    ,private router: Router
+    ,private toastService: ToastService
   ) {
     addIcons({
       checkmarkCircleOutline,
@@ -109,7 +113,8 @@ export class ExpiringItemsListComponent implements OnInit, OnDestroy {
     const daysLeft = this.getDaysLeftNumber(item.expiryDate);
 
     if (daysLeft <= 0) return 'danger';
-    if (daysLeft <= 2) return 'danger';
+    // Fast ablaufend (1-2 Tage) should be highlighted as warning (gelb) instead of danger (rot)
+    if (daysLeft <= 2) return 'warning';
     if (daysLeft <= 5) return 'warning';
     return 'medium';
   }
@@ -131,5 +136,36 @@ export class ExpiringItemsListComponent implements OnInit, OnDestroy {
 
     const diffTime = expiry.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  openInInventory(item: any) {
+    // Navigate to the inventory tab; include inventory id as query param for future highlighting
+    const params: any = {};
+    if (item.id) params.inventoryId = item.id;
+    // include storage location id if available so inventory can preselect the correct location
+    if (item.storageLocation && item.storageLocation.location_id) {
+      params.locationId = item.storageLocation.location_id;
+    }
+  console.log('Navigating to /tabs/kitchen with params', params);
+    this.router.navigate(['/tabs/kitchen'], { queryParams: params }).then(navigated => {
+      if (navigated) {
+        // show a clearer bottom-positioned toast with location and item name (if available)
+        const locName = item.storageLocation?.name ? `Lagerort: ${item.storageLocation.name}` : '';
+        const itemName = item.name ? `Artikel: ${item.name}` : '';
+        const messageParts = ['Wechsle zum Inventar', locName, itemName].filter(Boolean).join(' — ');
+  this.toastService.showCustom(messageParts, 'success', 'middle', 3000);
+      } else {
+        // fallback attempt
+        try {
+          this.router.navigateByUrl('/tabs/kitchen').then(() => this.toastService.success('Gehe zum Inventar...'));
+        } catch (err) {
+          console.error('Navigation fehlgeschlagen', err);
+          this.toastService.error('Konnte nicht zum Inventar navigieren');
+        }
+      }
+    }).catch(err => {
+      console.error('Navigation fehlerhaft', err);
+      this.toastService.error('Konnte nicht zum Inventar navigieren');
+    });
   }
 }

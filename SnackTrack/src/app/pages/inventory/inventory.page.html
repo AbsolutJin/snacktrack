@@ -59,7 +59,7 @@
         sizeXl="3"
   *ngFor="let item of filteredCards; trackBy: trackById"
       >
-  <ion-card class="card" [class.expired]="item.isExpired">
+  <ion-card class="card" [class.expired]="item.isExpired" [class.expiring-soon]="item.isExpiringSoon" [class.highlighted]="highlightedInventoryId === item.inventoryId" [attr.data-inventory-id]="item.inventoryId">
           <div class="card__imgwrap">
             <ng-container *ngIf="item.img; else iconThumb">
               <img [src]="item.img" [alt]="item.name" loading="lazy" />
@@ -70,21 +70,45 @@
               </div>
             </ng-template>
           </div>
-      <ion-badge class="card__badge" *ngIf="item.badge" [class.expired]="item.isExpired" color="dark">
-        {{ item.badge }}
-      </ion-badge>
+      <!-- Expiration badge: clickable to edit -->
+      <div class="card__badge-wrap">
+        <ion-badge
+          class="card__badge editable-badge"
+          *ngIf="item.badge && editingId !== item.inventoryId"
+          [class.expired]="item.isExpired"
+          color="dark"
+          role="button"
+          tabindex="0"
+          (click)="startEditExpiry(item)"
+          (keydown.enter)="startEditExpiry(item)"
+          title="Ablaufdatum bearbeiten"
+          [style.--background]="item.isExpired ? '#fee2e2' : item.isExpiringSoon ? '#fff8e1' : 'white'"
+          [style.--color]="item.isExpired ? '#991b1b' : item.isExpiringSoon ? '#8a6d00' : '#111'"
+          [style.--border-color]="item.isExpired ? '#fecaca' : item.isExpiringSoon ? '#ffecb3' : 'transparent'"
+        >
+          {{ item.badge }}
+        </ion-badge>
+
+        <!-- Inline editor when editing this item -->
+        <div *ngIf="editingId === item.inventoryId" class="expiry-editor">
+          <input type="date" [(ngModel)]="editingExpiry" aria-label="Ablaufdatum bearbeiten" />
+          <ion-buttons>
+            <ion-button size="small" (click)="saveExpiry(item)" aria-label="Speichern">
+              <ion-icon name="save-outline"></ion-icon>
+            </ion-button>
+            <ion-button size="small" fill="clear" (click)="cancelEdit()" aria-label="Abbrechen">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </div>
+      </div>
           <ion-card-header>
             <ng-container>
               <ion-card-title class="card__title" style="flex-direction: column;">
                 <span>{{ item.brand }}</span>
                 <span>{{ item.name }}</span>
                 <span>{{ item.quantity }} </span>
-                <span *ngIf="item.isExpired" class="expired-icon" title="Abgelaufen" aria-hidden="true">
-                  <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                    <path d="M12 2 2 20h20L12 2z" />
-                    <path d="M11 10h2v5h-2zm0 6h2v2h-2z" fill="#fff" />
-                  </svg>
-                </span>
+                <!-- Icons removed: using badge color instead to indicate expired/expiring soon -->
               </ion-card-title>
             </ng-container>
             <!-- <ng-template #editTitle>
