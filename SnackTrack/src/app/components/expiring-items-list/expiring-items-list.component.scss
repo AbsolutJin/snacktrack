@@ -83,7 +83,7 @@
 .mobile-items-container {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 // Individual item cards
@@ -91,10 +91,10 @@
   display: flex;
   background: var(--ion-color-light);
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 0.5rem;
   border-left: 4px solid transparent;
   transition: all 0.2s ease;
-  min-height: 80px;
+  min-height: 64px;
 
   cursor: pointer;
 
@@ -156,8 +156,8 @@
 }
 
 .item-image {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
@@ -197,7 +197,7 @@
 }
 
 .item-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   margin: 0;
   line-height: 1.2;
@@ -210,9 +210,9 @@
 }
 
 .days-badge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 12px;
   flex-shrink: 0;
   min-width: fit-content;
@@ -295,24 +295,24 @@
   }
 
   .mobile-item-card {
-    padding: 0.625rem;
-    gap: 0.625rem;
+    padding: 0.5rem;
+    gap: 0.5rem;
   }
 
   .item-image {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
   }
 
   .item-name {
-    font-size: 0.9rem;
+    font-size: 0.82rem;
   }
 }
 
 // Touch targets for better mobile UX
 @media (hover: none) and (pointer: coarse) {
   .mobile-item-card {
-    min-height: 88px; // Larger touch target
+    min-height: 76px; // slightly reduced but still comfortable
 
     &:active {
       background: var(--ion-color-light-shade);
