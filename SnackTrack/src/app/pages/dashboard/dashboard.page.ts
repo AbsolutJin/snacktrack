@@ -170,7 +170,8 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   navigateToManageLocations() {
-    // Navigate to the Stammdaten -> Lagerorte page. Adjust route if your app uses a different path.
-    this.router.navigate(['/stammdaten/locations']);
+    // Navigate to the Administration (Stammdaten) tab where Lagerorte verwaltet werden.
+    // The administration page is under the tabs route.
+    this.router.navigate(['/tabs/administration']);
   }
 }
