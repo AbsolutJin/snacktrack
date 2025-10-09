@@ -313,39 +313,11 @@ ion-content {
   }
 }
 
-/* stronger rule for expired badge text/background */
-.card.expired .card__badge {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
-
 /* icon elements removed from template; badge colors indicate state now */
 
-// =====================
-// EXPIRING SOON (warning) styles
-// =====================
-.card.expiring-soon {
-  border-color: #ffd54f; // amber border
-}
-
-.card.expiring-soon .card__badge {
-  background-color: #fff8e1; // light yellow
-  color: #8a6d00; // dark amber text
-  border: 1px solid #ffecb3;
-}
-
-.expiring-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 8px;
-}
-/* cleaned up: fills are applied with more specific selectors above to avoid being overridden */
-
-// =====================
-// QTY (Anzahl-Anzeige)
-// =====================
+/* =====================
+   QTY (Anzahl-Anzeige)
+   ===================== */
 .qty {
   display: flex;
   align-items: baseline;
@@ -362,9 +334,9 @@ ion-content {
   }
 }
 
-// =====================
-// SEARCHBAR
-// =====================
+/* =====================
+   SEARCHBAR
+   ===================== */
 .searchbar {
   background: #eef8ef;
   border-bottom: 1px solid #dde9de;
@@ -398,16 +370,16 @@ ion-content {
   }
 }
 
-// =====================
-// CONTENT
-// =====================
+/* =====================
+   CONTENT
+   ===================== */
 .content {
   padding: .75rem;
 }
 
-// =====================
-// FILTER CHIPS
-// =====================
+/* =====================
+   FILTER CHIPS
+   ===================== */
 .filter-chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -421,17 +393,17 @@ ion-content {
   }
 }
 
-// Add Button
+/* Add Button */
 .fab-with-tabs {
   position: fixed !important;
-  bottom: 20px !important; // 20px über den Tabs
+  bottom: 20px !important; /* 20px über den Tabs */
   right: 40px !important;
   z-index: 999 !important;
-  
+
   ion-fab-button {
     --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     --transition: transform 0.2s ease;
-    
+
     &:hover {
       --transform: scale(1.1);
     }
@@ -447,20 +419,4 @@ ion-content {
   box-shadow: 0 8px 30px rgba(34,197,94,0.15);
   border: 2px solid rgba(34,197,94,0.18);
   transform: translateY(-4px);
-}
-
-/* flash color for expired items when navigated to - color-only blink (no movement) */
-@keyframes flashExpired {
-  0% { background-color: #ffffff; }
-  50% { background-color: #919191; } 
-  100% { background-color: #ffffff; }
-}
-
-.card.flash-expired {
-  animation: flashExpired 1.2s ease-in-out;
-}
-
-/* also animate the image wrapper inside the card so the exact element flashes as requested */
-.card.flash-expired .card__imgwrap {
-  animation: flashExpired 1.2s ease-in-out;
 }
