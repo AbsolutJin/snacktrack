@@ -15,6 +15,7 @@ import { addIcons } from 'ionicons';
 import { close, calendarOutline, alertCircleOutline, closeCircle, scanOutline, searchOutline, barcodeOutline, barcode } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-add-item-modal',
@@ -113,25 +114,25 @@ export class AddItemModalComponent implements OnInit {
         await this.toastService.success('Produkt aus lokaler Datenbank geladen');
         this.isLoadingProduct = false;
       } else {
-        this.openFoodFactsService.getProductByBarcode(this.formData.barcode).subscribe({
-          next: async (product) => {
-            if (product) {
-              this.fillFormFromProductInfo(product);
-              this.productFound = true;
-              await this.toastService.success('Produkt von OpenFoodFacts geladen');
+        try {
+          const product = await firstValueFrom(
+            this.openFoodFactsService.getProductByBarcode(this.formData.barcode)
+          );
 
-              await this.itemService.saveNewItem(product);
-            } else {
-              await this.toastService.warning('Produkt nicht gefunden. Sie können die Daten manuell eingeben.');
-            }
-            this.isLoadingProduct = false;
-          },
-          error: async (error) => {
-            console.error('Error fetching product:', error);
-            await this.toastService.error('Fehler beim Laden des Produkts');
-            this.isLoadingProduct = false;
+          if (product) {
+            this.fillFormFromProductInfo(product);
+            this.productFound = true;
+            await this.toastService.success('Produkt von OpenFoodFacts geladen');
+            await this.itemService.saveNewItem(product);
+          } else {
+            await this.toastService.warning('Produkt nicht gefunden. Sie können die Daten manuell eingeben.');
           }
-        });
+        } catch (error) {
+          console.error('Error fetching product:', error);
+          await this.toastService.error('Fehler beim Laden des Produkts');
+        } finally {
+          this.isLoadingProduct = false;
+        }
       }
     } catch (error) {
       console.error('Error searching product:', error);
@@ -211,8 +212,6 @@ export class AddItemModalComponent implements OnInit {
         await this.toastService.error('Benutzer nicht authentifiziert');
         return;
       }
-
-      this.searchByBarcode();
 
       const userId = userData.user.id;
 
