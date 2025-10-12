@@ -159,7 +159,7 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   private toCard(inv: Inventory): InventoryCardItem {
-    const item = this.items.find(i => i.barcode === inv.barcode);
+    const item = this.items.find(i => String(i.barcode) === String(inv.barcode));
     const location = this.locations.find(l => l.location_id === inv.location_id);
     const foodItem = this.inventory.getFoodItems().find(fi => fi.id === inv.barcode);
     // determine if expired or expiring soon (expiration_date is expected as YYYY-MM-DD or ISO)
