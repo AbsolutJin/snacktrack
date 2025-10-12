@@ -26,6 +26,8 @@ import {
   cubeOutline,
   imageOutline,
   removeOutline,
+  infiniteOutline,
+  alertCircleOutline,
 } from 'ionicons/icons';
 import { IONIC_COMPONENTS } from '../../shared/ionic-components.module';
 
@@ -88,6 +90,7 @@ export class InventoryPage implements OnInit, OnDestroy {
       cubeOutline,
       imageOutline,
       removeOutline,
+      alertCircleOutline
     });
   }
 
