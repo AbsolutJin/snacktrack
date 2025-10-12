@@ -50,6 +50,17 @@
   </div>
 
   <!-- Inventar-Grid (kompakte Version) -->
+      @if(filteredCards.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      @if(query.trim().length > 0) {
+        <p>Keine Artikel gefunden für "{{ query }}"</p>
+        <ion-button (click)="clearSearch()" color="primary">Suche zurücksetzen</ion-button>
+      } @else {
+        <p>In diesem Lagerort befindet sich noch kein Artikel.</p>
+        <ion-button (click)="openAddItemModal()" color="primary">Jetzt Artikel hinzufügen</ion-button>
+      }
+    </div>} @else {
   <div class="inventory">
     <div class="inventory-grid">
       <ng-container *ngFor="let item of filteredCards; trackBy: trackById">
@@ -149,6 +160,7 @@
       </ng-container>
     </div>
   </div>
+}
 
     <!-- Fixed FAB Button für neue Artikel -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-with-tabs">
